@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AnnouncementsRouteImport } from './routes/announcements'
+import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as AttendanceRouteImport } from './routes/attendance'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CoursesRouteImport } from './routes/courses'
@@ -21,7 +23,9 @@ import { Route as MaterialsRouteImport } from './routes/materials'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ScheduleRouteImport } from './routes/schedule'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TasksRouteImport } from './routes/tasks'
+import { Route as TeacherRouteImport } from './routes/teacher'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses.$courseId'
 
@@ -30,9 +34,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnnouncementsRoute = AnnouncementsRouteImport.update({
   id: '/announcements',
   path: '/announcements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssistantRoute = AssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AttendanceRoute = AttendanceRouteImport.update({
@@ -85,9 +99,19 @@ const ScheduleRoute = ScheduleRouteImport.update({
   path: '/schedule',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TasksRoute = TasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeacherRoute = TeacherRouteImport.update({
+  id: '/teacher',
+  path: '/teacher',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoursesIndexRoute = CoursesIndexRouteImport.update({
@@ -103,7 +127,9 @@ const CoursesCourseIdRoute = CoursesCourseIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/announcements': typeof AnnouncementsRoute
+  '/assistant': typeof AssistantRoute
   '/attendance': typeof AttendanceRoute
   '/auth': typeof AuthRoute
   '/courses': typeof CoursesRouteWithChildren
@@ -114,13 +140,17 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/schedule': typeof ScheduleRoute
+  '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
+  '/teacher': typeof TeacherRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses/': typeof CoursesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/announcements': typeof AnnouncementsRoute
+  '/assistant': typeof AssistantRoute
   '/attendance': typeof AttendanceRoute
   '/auth': typeof AuthRoute
   '/events': typeof EventsRoute
@@ -130,14 +160,18 @@ export interface FileRoutesByTo {
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/schedule': typeof ScheduleRoute
+  '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
+  '/teacher': typeof TeacherRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses': typeof CoursesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/announcements': typeof AnnouncementsRoute
+  '/assistant': typeof AssistantRoute
   '/attendance': typeof AttendanceRoute
   '/auth': typeof AuthRoute
   '/courses': typeof CoursesRouteWithChildren
@@ -148,7 +182,9 @@ export interface FileRoutesById {
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/schedule': typeof ScheduleRoute
+  '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
+  '/teacher': typeof TeacherRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses/': typeof CoursesIndexRoute
 }
@@ -156,7 +192,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/announcements'
+    | '/assistant'
     | '/attendance'
     | '/auth'
     | '/courses'
@@ -167,13 +205,17 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/schedule'
+    | '/settings'
     | '/tasks'
+    | '/teacher'
     | '/courses/$courseId'
     | '/courses/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/announcements'
+    | '/assistant'
     | '/attendance'
     | '/auth'
     | '/events'
@@ -183,13 +225,17 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/schedule'
+    | '/settings'
     | '/tasks'
+    | '/teacher'
     | '/courses/$courseId'
     | '/courses'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/announcements'
+    | '/assistant'
     | '/attendance'
     | '/auth'
     | '/courses'
@@ -200,14 +246,18 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/schedule'
+    | '/settings'
     | '/tasks'
+    | '/teacher'
     | '/courses/$courseId'
     | '/courses/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AnnouncementsRoute: typeof AnnouncementsRoute
+  AssistantRoute: typeof AssistantRoute
   AttendanceRoute: typeof AttendanceRoute
   AuthRoute: typeof AuthRoute
   CoursesRoute: typeof CoursesRouteWithChildren
@@ -218,7 +268,9 @@ export interface RootRouteChildren {
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRoute
   ScheduleRoute: typeof ScheduleRoute
+  SettingsRoute: typeof SettingsRoute
   TasksRoute: typeof TasksRoute
+  TeacherRoute: typeof TeacherRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -230,11 +282,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/announcements': {
       id: '/announcements'
       path: '/announcements'
       fullPath: '/announcements'
       preLoaderRoute: typeof AnnouncementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assistant': {
+      id: '/assistant'
+      path: '/assistant'
+      fullPath: '/assistant'
+      preLoaderRoute: typeof AssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/attendance': {
@@ -307,11 +373,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ScheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tasks': {
       id: '/tasks'
       path: '/tasks'
       fullPath: '/tasks'
       preLoaderRoute: typeof TasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teacher': {
+      id: '/teacher'
+      path: '/teacher'
+      fullPath: '/teacher'
+      preLoaderRoute: typeof TeacherRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/courses/': {
@@ -346,7 +426,9 @@ const CoursesRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AnnouncementsRoute: AnnouncementsRoute,
+  AssistantRoute: AssistantRoute,
   AttendanceRoute: AttendanceRoute,
   AuthRoute: AuthRoute,
   CoursesRoute: CoursesRouteWithChildren,
@@ -357,7 +439,9 @@ const rootRouteChildren: RootRouteChildren = {
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRoute,
   ScheduleRoute: ScheduleRoute,
+  SettingsRoute: SettingsRoute,
   TasksRoute: TasksRoute,
+  TeacherRoute: TeacherRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
