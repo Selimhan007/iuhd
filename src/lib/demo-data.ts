@@ -241,7 +241,7 @@ export const gpa = 3.72;
 const attStatuses = ["present", "present", "present", "late", "present", "absent", "present", "excused", "present", "present"] as const;
 export const attendance: AttendanceCourse[] = courses.map((c, i) => ({
   courseId: c.id,
-  percent: [90, 95, 88, 92, 86, 97, 93, 91][i],
+  percent: [90, 95, 88, 92, 86, 97, 93, 91][i] ?? 90,
   history: attStatuses.map((s, j) => ({
     date: new Date(Date.now() - (j + 1) * 86400000 * 2).toISOString().slice(0, 10),
     status: (i + j) % 7 === 0 ? "absent" : (i + j) % 5 === 0 ? "late" : s,

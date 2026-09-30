@@ -21,7 +21,7 @@ import {
   LogOut,
   type LucideIcon,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { RoleNav, type NavItem, type RoleKind } from "./role-nav";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import type { Role } from "@/lib/demo-data";
@@ -36,11 +36,7 @@ import {
   courseById,
 } from "@/lib/demo-data";
 
-type NavItem = { to: string; icon: LucideIcon; key: string };
-
-type RoleKind = "student" | "teacher" | "admin";
-
-const roleKind = (role: Role): RoleKind =>
+export const roleKind = (role: Role): RoleKind =>
   role === "teacher" ? "teacher" : role === "admin" || role === "superadmin" ? "admin" : "student";
 
 export const roleHome = (role: Role) => {
@@ -146,78 +142,24 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
 
   const isActive = (to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
 
-  const navLink = (item: NavItem) => (
-    <Link
-      key={item.to}
-      to={item.to}
-      className={cn(
-        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-        isActive(item.to)
-          ? "bg-primary-soft text-primary"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground",
-      )}
-    >
-      <item.icon className="h-4.5 w-4.5" />
-      {t(item.key)}
-    </Link>
-  );
+  const handleLogout = () => {
+    logout();
+    navigate({ to: "/auth", replace: true });
+  };
 
   return (
     <div data-role={kind} className="min-h-screen bg-background text-foreground">
-      {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-border bg-card px-4 py-6 lg:flex">
-        <Link to={home} className="mb-6 flex items-center gap-2 px-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <BrandIcon className="h-5 w-5" />
-          </span>
-          <span className="flex flex-col leading-tight">
-            <span className="text-lg font-bold tracking-tight">{config.brand}</span>
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-primary">
-              {t(`role.${kind}`)}
-            </span>
-          </span>
-        </Link>
-
-        <nav className="flex-1 space-y-1 overflow-y-auto" aria-label={t(`role.${kind}`)}>
-          {config.main.map(navLink)}
-          <p className="px-3 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            {t("nav.more")}
-          </p>
-          {config.more.map(navLink)}
-        </nav>
-
-        <div className="mt-4 flex items-center gap-3 rounded-xl border border-border bg-background p-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-xs font-bold text-primary">
-            {initials}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{user.name}</p>
-            <p className="truncate text-xs text-muted-foreground">{user.email}</p>
-          </div>
-          <button
-            onClick={() => {
-              logout();
-              navigate({ to: "/auth", replace: true });
-            }}
-            aria-label={t("settings.logout")}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
-            <LogOut className="h-4 w-4" />
-          </button>
-        </div>
-      </aside>
-
-      <div className="lg:pl-64">
+      <div>
         {/* Sticky header */}
         <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-md">
-          <div className="mx-auto flex h-14 max-w-5xl items-center gap-3 px-4">
-            <Link to={home} className="flex items-center gap-2 lg:hidden">
+          <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
+            <Link to={home} className="flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <BrandIcon className="h-4 w-4" />
               </span>
               <span className="font-bold">{config.brand}</span>
             </Link>
-            <span className="hidden rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary sm:inline-flex lg:inline-flex">
+            <span className="hidden rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary sm:inline-flex">
               {t(`role.${kind}`)}
             </span>
             <button
@@ -243,27 +185,18 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
           </div>
         </header>
 
-        <main className="mx-auto max-w-5xl px-4 pb-28 pt-5 lg:pb-12">{children}</main>
+        <main className="mx-auto max-w-6xl px-4 pb-28 pt-5 md:pb-32">{children}</main>
       </div>
 
-      {/* Mobile bottom navigation */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
-        <div className="mx-auto flex max-w-lg items-stretch justify-between px-2">
-          {config.main.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={cn(
-                "tap-target flex flex-1 flex-col items-center gap-1 py-2 text-[11px] font-medium transition-colors",
-                isActive(item.to) ? "text-primary" : "text-muted-foreground",
-              )}
-            >
-              <item.icon className="h-5 w-5" />
-              {t(item.key)}
-            </Link>
-          ))}
-        </div>
-      </nav>
+      <RoleNav
+        kind={kind}
+        main={config.main}
+        more={config.more}
+        isActive={isActive}
+        userName={user.name}
+        initials={initials}
+        onLogout={handleLogout}
+      />
 
       {searchOpen ? <SearchOverlay onClose={() => setSearchOpen(false)} /> : null}
     </div>

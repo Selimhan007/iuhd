@@ -229,6 +229,34 @@ export function AnnouncementCard({ a }: { a: Announcement }) {
   );
 }
 
+function downloadIcs(e: UniEvent) {
+  const start = new Date(e.date);
+  const end = new Date(start.getTime() + 2 * 3600000);
+  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const esc = (s: string) => s.replace(/[\\,;]/g, (c) => `\\${c}`).replace(/\n/g, "\\n");
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Student TM//EN",
+    "BEGIN:VEVENT",
+    `UID:${e.id}@student.tm`,
+    `DTSTAMP:${fmt(new Date())}`,
+    `DTSTART:${fmt(start)}`,
+    `DTEND:${fmt(end)}`,
+    `SUMMARY:${esc(e.title)}`,
+    `LOCATION:${esc(e.place)}`,
+    `DESCRIPTION:${esc(e.description)}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+  const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${e.id}.ics`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function EventCard({ e, registered, onRegister }: { e: UniEvent; registered: boolean; onRegister: () => void }) {
   const { t } = useI18n();
   const d = new Date(e.date);
@@ -253,7 +281,10 @@ export function EventCard({ e, registered, onRegister }: { e: UniEvent; register
         >
           {registered ? t("events.registered") : t("events.register")}
         </button>
-        <button className="tap-target rounded-xl border border-border px-4 text-sm font-medium">
+        <button
+          onClick={() => downloadIcs(e)}
+          className="tap-target rounded-xl border border-border px-4 text-sm font-medium"
+        >
           {t("events.addCalendar")}
         </button>
       </div>

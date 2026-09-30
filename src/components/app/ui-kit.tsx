@@ -104,7 +104,7 @@ export function ListSkeleton({ rows = 3 }: { rows?: number }) {
   );
 }
 
-export function ProgressBar({ value, color }: { value: number; color?: string }) {
+export function ProgressBar({ value, color }: { value: number; color?: string | undefined }) {
   return (
     <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
       <div

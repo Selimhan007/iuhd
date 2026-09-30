@@ -55,7 +55,7 @@ function AttendancePage() {
               <p className="truncate text-sm font-medium">{courseById(h.courseId)?.name}</p>
               <p className="text-xs text-muted-foreground">{h.date}</p>
             </div>
-            <Pill tone={tone[h.status]}>{t(`att.${h.status}`)}</Pill>
+            <Pill tone={tone[h.status] ?? "neutral"}>{t(`att.${h.status}`)}</Pill>
           </Card>
         ))}
       </div>

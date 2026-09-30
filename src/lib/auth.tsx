@@ -9,6 +9,10 @@ export interface SessionUser {
   role: Role;
   studentCode?: string;
   phone?: string;
+  staffCode?: string;
+  office?: string;
+  officeHours?: string;
+  accessLevel?: string;
 }
 
 const DEMO: { email: string; password: string; user: SessionUser }[] = [
@@ -27,12 +31,30 @@ const DEMO: { email: string; password: string; user: SessionUser }[] = [
   {
     email: "teacher@student.tm",
     password: "teacher123",
-    user: { id: "t1", name: "Gowher Yarashowa", email: "teacher@student.tm", role: "teacher" },
+    user: {
+      id: "t1",
+      name: "Gowher Yarashowa",
+      email: "teacher@student.tm",
+      role: "teacher",
+      staffCode: "IUHD-T-0142",
+      phone: "+993 65 214 780",
+      office: "Block B, Room 305",
+      officeHours: "Mon, Wed 14:00–16:00",
+    },
   },
   {
     email: "admin@student.tm",
     password: "admin123",
-    user: { id: "adm1", name: "Musa Yazynov", email: "admin@student.tm", role: "admin" },
+    user: {
+      id: "adm1",
+      name: "Musa Yazynov",
+      email: "admin@student.tm",
+      role: "admin",
+      staffCode: "IUHD-A-0007",
+      phone: "+993 12 480 100",
+      office: "Main Building, Room 101",
+      accessLevel: "Full access",
+    },
   },
 ];
 
