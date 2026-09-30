@@ -69,7 +69,7 @@ function HomePage() {
     .slice(0, 3);
 
   return (
-    <AppShell>
+    <AppShell allow={["student"]}>
       <div className="animate-rise space-y-8">
         <header>
           <h1 className="text-2xl font-bold tracking-tight">

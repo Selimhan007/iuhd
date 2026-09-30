@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { GraduationCap } from "lucide-react";
 import { useI18n, LANGUAGES } from "@/lib/i18n";
 import { DEMO_ACCOUNTS, useAuth } from "@/lib/auth";
+import { roleHome } from "@/components/app/AppShell";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -32,7 +33,7 @@ function AuthPage() {
   const [info, setInfo] = useState("");
 
   useEffect(() => {
-    if (ready && user) navigate({ to: "/", replace: true });
+    if (ready && user) navigate({ to: roleHome(user.role), replace: true });
   }, [ready, user, navigate]);
 
   const submit = (e: React.FormEvent) => {
@@ -42,7 +43,6 @@ function AuthPage() {
     if (mode === "login") {
       const res = login(email, password, remember);
       if (!res.ok) setError(t("auth.invalid"));
-      else navigate({ to: "/", replace: true });
     } else if (mode === "register") {
       register(name || email.split("@")[0]!, email);
       navigate({ to: "/", replace: true });
