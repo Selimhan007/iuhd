@@ -157,7 +157,7 @@ export const program: Program = { id: "p1", departmentId: "d1", name: "Software"
 export const group: Group = { id: "g1", programId: "p1", name: "SOFT-1B", year: 1 };
 
 export const teachers: Teacher[] = [
-  { id: "t1", universityId: "u1", departmentId: "d1", name: "A. Ahmedow", title: "Senior Lecturer", email: "a.ahmedow@iuhd.edu.tm" },
+  { id: "t1", universityId: "u1", departmentId: "d1", name: "Gowher Yarashowa", title: "Senior Lecturer", email: "a.ahmedow@iuhd.edu.tm" },
   { id: "t2", universityId: "u1", departmentId: "d1", name: "Ch. Wekilowa", title: "Lecturer", email: "ch.wekilowa@iuhd.edu.tm" },
   { id: "t3", universityId: "u1", departmentId: "d1", name: "B. Berdimuhamedow", title: "Associate Professor", email: "b.berdi@iuhd.edu.tm" },
   { id: "t4", universityId: "u1", departmentId: "d1", name: "M. Orazowa", title: "Lecturer", email: "m.orazowa@iuhd.edu.tm" },
@@ -274,11 +274,11 @@ export const announcements: Announcement[] = [
   { id: "n2", title: "Library closed on Friday", body: "The main library will be closed for inventory on Friday.", author: "Library", date: "2026-05-01", category: "university" },
   { id: "n3", title: "Faculty meeting for first-year students", body: "All first-year students of Digital Technologies must attend at 15:00, Main Hall.", author: "Dean's Office", date: "2026-04-29", category: "faculty", important: true },
   { id: "n4", title: "Software department office hours", body: "New office hours: Monday–Friday, 10:00–16:00.", author: "Software Department", date: "2026-04-27", category: "department" },
-  { id: "n5", title: "SOFT-1B: room change", body: "Monday Mathematics moves from 108 to 110 next week.", author: "A. Ahmedow", date: "2026-04-26", category: "group" },
+  { id: "n5", title: "SOFT-1B: room change", body: "Monday Mathematics moves from 108 to 110 next week.", author: "Gowher Yarashowa", date: "2026-04-26", category: "group" },
   { id: "n6", title: "Fire drill on Wednesday", body: "A campus-wide fire drill takes place at 11:00. Follow staff instructions.", author: "Security", date: "2026-04-25", category: "emergency", important: true },
   { id: "n7", title: "English Week is coming", body: "Register for competitions and workshops in the events section.", author: "Language Centre", date: "2026-04-24", category: "event" },
   { id: "n8", title: "Scholarship applications open", body: "Submit your documents to the Academic Office before 20 May.", author: "Academic Office", date: "2026-04-22", category: "university" },
-  { id: "n9", title: "New study materials uploaded", body: "Programming Fundamentals lectures 1–3 are available.", author: "A. Ahmedow", date: "2026-04-20", category: "group" },
+  { id: "n9", title: "New study materials uploaded", body: "Programming Fundamentals lectures 1–3 are available.", author: "Gowher Yarashowa", date: "2026-04-20", category: "group" },
   { id: "n10", title: "Student ID renewal", body: "First-year students can collect renewed IDs at the registry.", author: "Registry", date: "2026-04-18", category: "university" },
 ];
 
@@ -304,7 +304,7 @@ export const notifications: Notification[] = [
 ];
 
 const studentNames = [
-  "Suleyman Abbaskaramzad",
+  "Selim Sahedov",
   "Aýgül Amanowa",
   "Merdan Hojaýew",
   "Dmitriy Ivanov",

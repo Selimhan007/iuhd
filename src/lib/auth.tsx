@@ -27,12 +27,12 @@ const DEMO: { email: string; password: string; user: SessionUser }[] = [
   {
     email: "teacher@student.tm",
     password: "teacher123",
-    user: { id: "t1", name: "A. Ahmedow", email: "teacher@student.tm", role: "teacher" },
+    user: { id: "t1", name: "Gowher Yarashowa", email: "teacher@student.tm", role: "teacher" },
   },
   {
     email: "admin@student.tm",
     password: "admin123",
-    user: { id: "adm1", name: "Administrator", email: "admin@student.tm", role: "admin" },
+    user: { id: "adm1", name: "Musa Yazynov", email: "admin@student.tm", role: "admin" },
   },
 ];
 
