@@ -3,11 +3,13 @@ import { useState } from "react";
 import {
   BookOpen,
   CalendarDays,
-  CalendarHeart,
+  AlertTriangle,
+  CheckCircle2,
   GraduationCap,
-  Megaphone,
   Presentation,
   Shield,
+  TrendingUp,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
@@ -39,15 +41,13 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type TabId = "students" | "teachers" | "courses" | "schedule" | "announcements" | "events";
+type TabId = "students" | "teachers" | "courses" | "schedule";
 
 const TABS: { id: TabId; icon: LucideIcon }[] = [
   { id: "students", icon: GraduationCap },
   { id: "teachers", icon: Presentation },
   { id: "courses", icon: BookOpen },
   { id: "schedule", icon: CalendarDays },
-  { id: "announcements", icon: Megaphone },
-  { id: "events", icon: CalendarHeart },
 ];
 
 const DAYS = ["", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -73,8 +73,6 @@ function AdminConsole() {
       label: `${DAYS[l.weekday]} ${l.start}–${l.end} · ${courseById(l.courseId)?.name ?? ""}`,
       sub: `${group.name} · ${l.room} · ${l.type}`,
     })),
-    announcements: demoAnnouncements.map((a) => ({ id: a.id, label: a.title, sub: `${a.author} · ${a.date}` })),
-    events: demoEvents.map((e) => ({ id: e.id, label: e.title, sub: `${e.date} · ${e.place}` })),
   }));
 
   const stats: { id: TabId; value: number; icon: LucideIcon; label: string }[] = [
@@ -82,8 +80,13 @@ function AdminConsole() {
     { id: "teachers", value: data.teachers.length, icon: Presentation, label: t("admin.teachers") },
     { id: "courses", value: data.courses.length, icon: BookOpen, label: t("admin.courses") },
     { id: "schedule", value: data.schedule.length, icon: CalendarDays, label: t("admin.lessonsWeek") },
-    { id: "announcements", value: data.announcements.length, icon: Megaphone, label: t("admin.announcements") },
-    { id: "events", value: data.events.length, icon: CalendarHeart, label: t("admin.events") },
+  ];
+
+  const monitoring = [
+    { label: "Active students", value: data.students.length, detail: "Registered in the group", icon: Users, tone: "text-primary" },
+    { label: "Published content", value: demoAnnouncements.length + demoEvents.length, detail: "Announcements and events", icon: CheckCircle2, tone: "text-success" },
+    { label: "Schedule coverage", value: `${Math.round((data.schedule.length / 16) * 100)}%`, detail: "Lessons configured this week", icon: TrendingUp, tone: "text-primary" },
+    { label: "Attention needed", value: data.schedule.filter((item) => item.sub.includes("—")).length, detail: "Lessons without room", icon: AlertTriangle, tone: "text-warning" },
   ];
 
   return (
@@ -118,6 +121,19 @@ function AdminConsole() {
             <span className="mt-3 text-2xl font-bold leading-none">{s.value}</span>
             <span className="mt-1 w-full truncate text-xs text-muted-foreground">{s.label}</span>
           </button>
+        ))}
+      </section>
+
+      <section aria-label="System monitoring" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {monitoring.map((item) => (
+          <div key={item.label} className="card-surface p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{item.label}</span>
+              <item.icon className={cn("h-4 w-4", item.tone)} />
+            </div>
+            <p className="mt-3 text-2xl font-bold">{item.value}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{item.detail}</p>
+          </div>
         ))}
       </section>
 
