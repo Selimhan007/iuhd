@@ -82,21 +82,11 @@ function AdminConsole() {
     { id: "schedule", value: data.schedule.length, icon: CalendarDays, label: t("admin.lessonsWeek") },
   ];
 
-  const lessonsWithoutRoom = data.schedule.filter((item) => item.sub.includes("—")).length;
-  const averageGrade = Math.round(demoCourses.reduce((sum, course) => sum + course.grade, 0) / demoCourses.length);
-  const averageAttendance = Math.round(
-    demoCourses.reduce((sum, course, index) => sum + ([90, 95, 88, 92, 86, 97, 93, 91][index] ?? 90), 0) / demoCourses.length,
-  );
   const monitoring = [
     { label: "Active students", value: data.students.length, detail: "Registered in the group", icon: Users, tone: "text-primary" },
-    { label: "Average grade", value: `${averageGrade}%`, detail: "Across all courses", icon: TrendingUp, tone: "text-success" },
-    { label: "Attendance", value: `${averageAttendance}%`, detail: "Average attendance rate", icon: CheckCircle2, tone: "text-success" },
-    { label: "Attention needed", value: lessonsWithoutRoom, detail: "Lessons without room", icon: AlertTriangle, tone: lessonsWithoutRoom ? "text-warning" : "text-success" },
-  ];
-  const healthChecks = [
-    { label: "Schedule", value: `${data.schedule.length}/16 lessons`, percent: Math.min(100, Math.round((data.schedule.length / 16) * 100)), ok: true },
-    { label: "Course coverage", value: `${data.courses.length}/8 courses`, percent: Math.min(100, Math.round((data.courses.length / 8) * 100)), ok: data.courses.length >= 8 },
-    { label: "Room assignment", value: lessonsWithoutRoom ? `${lessonsWithoutRoom} missing` : "Complete", percent: Math.round(((data.schedule.length - lessonsWithoutRoom) / Math.max(1, data.schedule.length)) * 100), ok: lessonsWithoutRoom === 0 },
+    { label: "Published content", value: demoAnnouncements.length + demoEvents.length, detail: "Announcements and events", icon: CheckCircle2, tone: "text-success" },
+    { label: "Schedule coverage", value: `${Math.round((data.schedule.length / 16) * 100)}%`, detail: "Lessons configured this week", icon: TrendingUp, tone: "text-primary" },
+    { label: "Attention needed", value: data.schedule.filter((item) => item.sub.includes("—")).length, detail: "Lessons without room", icon: AlertTriangle, tone: "text-warning" },
   ];
 
   return (
@@ -145,67 +135,6 @@ function AdminConsole() {
             <p className="mt-1 text-xs text-muted-foreground">{item.detail}</p>
           </div>
         ))}
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]" aria-label="Statistics and monitoring">
-        <div className="card-surface p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold">Academic statistics</p>
-              <p className="mt-1 text-xs text-muted-foreground">Current performance across the group</p>
-            </div>
-            <TrendingUp className="h-5 w-5 text-primary" />
-          </div>
-          <div className="mt-5 grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-2xl font-bold">{averageGrade}%</p>
-              <p className="mt-1 text-xs text-muted-foreground">Average grade</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{averageAttendance}%</p>
-              <p className="mt-1 text-xs text-muted-foreground">Average attendance</p>
-            </div>
-          </div>
-          <div className="mt-5 space-y-3">
-            {demoCourses.slice(0, 4).map((course) => (
-              <div key={course.id}>
-                <div className="mb-1 flex items-center justify-between gap-2 text-xs">
-                  <span className="truncate font-medium">{course.code} · {course.name}</span>
-                  <span className="shrink-0 text-muted-foreground">{course.grade}%</span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${course.grade}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="card-surface p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold">System monitoring</p>
-              <p className="mt-1 text-xs text-muted-foreground">Data readiness and coverage</p>
-            </div>
-            <Shield className="h-5 w-5 text-primary" />
-          </div>
-          <div className="mt-5 space-y-4">
-            {healthChecks.map((check) => (
-              <div key={check.label}>
-                <div className="mb-1 flex items-center justify-between gap-2 text-xs">
-                  <span className="font-medium">{check.label}</span>
-                  <span className={cn(check.ok ? "text-success" : "text-warning")}>{check.value}</span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-muted">
-                  <div className={cn("h-full rounded-full transition-all", check.ok ? "bg-success" : "bg-warning")} style={{ width: `${Math.max(0, check.percent)}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className={cn("mt-5 flex items-center gap-2 rounded-xl px-3 py-2 text-xs", lessonsWithoutRoom ? "bg-warning/10 text-warning" : "bg-success/10 text-success")}>
-            {lessonsWithoutRoom ? <AlertTriangle className="h-4 w-4 shrink-0" /> : <CheckCircle2 className="h-4 w-4 shrink-0" />}
-            <span>{lessonsWithoutRoom ? `${lessonsWithoutRoom} schedule item needs attention` : "All core systems are ready"}</span>
-          </div>
-        </div>
       </section>
 
       <div className="flex flex-col gap-4 lg:flex-row">

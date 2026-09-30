@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Home,
   CalendarDays,
@@ -21,7 +21,7 @@ import {
   LogOut,
   type LucideIcon,
 } from "lucide-react";
-import type { NavItem, RoleKind } from "./role-nav";
+import { RoleNav, type NavItem, type RoleKind } from "./role-nav";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import type { Role } from "@/lib/demo-data";
@@ -110,6 +110,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
   const { t } = useI18n();
   const { user, ready, logout } = useAuth();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [searchOpen, setSearchOpen] = useState(false);
 
   const allowed = !user || !allow || allow.includes(user.role);
@@ -140,6 +141,8 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
+  const isActive = (to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
 
   const handleLogout = () => {
     logout();
@@ -184,30 +187,18 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
           </div>
         </header>
 
-        <main className="mx-auto max-w-6xl px-4 pb-24 pt-5">{children}</main>
+        <main className="mx-auto max-w-6xl px-4 pb-28 pt-5 md:pb-32">{children}</main>
       </div>
 
-      <nav
-        aria-label="Основная навигация"
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur-md"
-      >
-        <div className="mx-auto flex max-w-2xl items-center justify-around gap-1 py-2">
-          {config.main.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                activeProps={{ className: "text-primary" }}
-                className="tap-target flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              >
-                <Icon className="h-5 w-5" />
-                <span className="max-w-full truncate text-[11px] font-semibold">{t(item.key)}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      <RoleNav
+        kind={kind}
+        main={config.main}
+        more={config.more}
+        isActive={isActive}
+        userName={user.name}
+        initials={initials}
+        onLogout={handleLogout}
+      />
 
       {searchOpen ? <SearchOverlay onClose={() => setSearchOpen(false)} /> : null}
     </div>
