@@ -55,7 +55,7 @@ function AdminPage() {
 
 function AdminConsole() {
   const { t } = useI18n();
-  const [tab] = useState<TabId>("students");
+  const [tab, setTab] = useState<TabId>("students");
 
   const [data, setData] = useState<Record<TabId, ResourceItem[]>>(() => ({
     students: demoStudents.map((s) => ({ id: s.id, label: s.name, sub: `${s.studentCode} · ${group.name}` })),

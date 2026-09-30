@@ -30,6 +30,7 @@ function SettingsPage() {
   const navigate = useNavigate();
   const [notifs, setNotifs] = useState(true);
   const [installEvent, setInstallEvent] = useState<InstallPrompt | null>(null);
+  const [openInfo, setOpenInfo] = useState<string | null>(null);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -112,11 +113,41 @@ function SettingsPage() {
             t("settings.terms"),
             t("settings.privacy"),
           ].map((label) => (
-            <div key={label} className="flex items-center justify-between px-4 py-3.5 text-sm font-medium">
+            <button
+              key={label}
+              type="button"
+              onClick={() => setOpenInfo(label)}
+              className="flex w-full items-center justify-between px-4 py-3.5 text-left text-sm font-medium transition-colors hover:bg-muted/60"
+            >
               {label} <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </div>
+            </button>
           ))}
         </Card>
+
+        {openInfo ? (
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 p-4 sm:items-center">
+            <div role="dialog" aria-modal="true" aria-labelledby="settings-dialog-title" className="w-full max-w-md rounded-2xl bg-card p-5 shadow-xl">
+              <div className="flex items-center justify-between gap-4">
+                <h2 id="settings-dialog-title" className="text-lg font-semibold">{openInfo}</h2>
+                <button type="button" onClick={() => setOpenInfo(null)} aria-label={t("close")} className="tap-target text-muted-foreground">×</button>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                {openInfo === t("settings.changePassword")
+                  ? "Password changes are handled securely through the sign-in recovery flow."
+                  : openInfo === t("settings.security")
+                    ? "Your account session is protected. Sign out when using a shared device."
+                    : openInfo === t("settings.about")
+                      ? "Student TM helps students manage schedules, courses, tasks and academic progress."
+                      : openInfo === t("settings.help")
+                        ? "For help, check your course information or contact your administrator."
+                        : openInfo === t("settings.terms")
+                          ? "Use Student TM responsibly and follow your institution's rules."
+                          : "Your personal data is used only to provide the Student TM experience."}
+              </p>
+              <button type="button" onClick={() => setOpenInfo(null)} className="mt-5 w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground">{t("close")}</button>
+            </div>
+          </div>
+        ) : null}
 
         <button
           onClick={() => {
