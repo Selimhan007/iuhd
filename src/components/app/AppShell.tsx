@@ -184,8 +184,30 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
           </div>
         </header>
 
-        <main className="mx-auto max-w-6xl px-4 pt-5">{children}</main>
+        <main className="mx-auto max-w-6xl px-4 pb-24 pt-5">{children}</main>
       </div>
+
+      <nav
+        aria-label="Основная навигация"
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur-md"
+      >
+        <div className="mx-auto flex max-w-2xl items-center justify-around gap-1 py-2">
+          {config.main.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                activeProps={{ className: "text-primary" }}
+                className="tap-target flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <Icon className="h-5 w-5" />
+                <span className="max-w-full truncate text-[11px] font-semibold">{t(item.key)}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
 
       {searchOpen ? <SearchOverlay onClose={() => setSearchOpen(false)} /> : null}
     </div>
