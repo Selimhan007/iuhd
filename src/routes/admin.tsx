@@ -2,14 +2,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   AlertTriangle,
+  BookOpen,
+  CalendarDays,
   CheckCircle2,
+  GraduationCap,
+  Presentation,
   Shield,
   TrendingUp,
   Users,
+  type LucideIcon,
 } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { ResourceManager, type ResourceItem } from "@/components/admin/resource-manager";
 import { useI18n } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 import {
   announcements as demoAnnouncements,
   courseById,
