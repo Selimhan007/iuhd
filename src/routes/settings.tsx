@@ -125,8 +125,8 @@ function SettingsPage() {
         </Card>
 
         {openInfo ? (
-          <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 p-4 sm:items-center">
-            <div role="dialog" aria-modal="true" aria-labelledby="settings-dialog-title" className="w-full max-w-md rounded-2xl bg-card p-5 shadow-xl">
+          <div className="animate-dialog-backdrop fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 p-4 sm:items-center">
+            <div role="dialog" aria-modal="true" aria-labelledby="settings-dialog-title" className="animate-dialog-enter w-full max-w-md rounded-2xl bg-card p-5 shadow-xl">
               <div className="flex items-center justify-between gap-4">
                 <h2 id="settings-dialog-title" className="text-lg font-semibold">{openInfo}</h2>
                 <button type="button" onClick={() => setOpenInfo(null)} aria-label={t("close")} className="tap-target text-muted-foreground">×</button>
