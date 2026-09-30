@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Home,
   CalendarDays,
@@ -21,7 +21,7 @@ import {
   LogOut,
   type LucideIcon,
 } from "lucide-react";
-import { RoleNav, type NavItem, type RoleKind } from "./role-nav";
+import type { NavItem, RoleKind } from "./role-nav";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import type { Role } from "@/lib/demo-data";
@@ -110,7 +110,6 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
   const { t } = useI18n();
   const { user, ready, logout } = useAuth();
   const navigate = useNavigate();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [searchOpen, setSearchOpen] = useState(false);
 
   const allowed = !user || !allow || allow.includes(user.role);
@@ -141,8 +140,6 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
     .join("")
     .slice(0, 2)
     .toUpperCase();
-
-  const isActive = (to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
 
   const handleLogout = () => {
     logout();
@@ -189,16 +186,6 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
 
         <main className="mx-auto max-w-6xl px-4 pb-28 pt-5 md:pb-32">{children}</main>
       </div>
-
-      <RoleNav
-        kind={kind}
-        main={config.main}
-        more={config.more}
-        isActive={isActive}
-        userName={user.name}
-        initials={initials}
-        onLogout={handleLogout}
-      />
 
       {searchOpen ? <SearchOverlay onClose={() => setSearchOpen(false)} /> : null}
     </div>
