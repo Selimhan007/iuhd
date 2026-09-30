@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Check, Clock, MapPin, Search, Users } from "lucide-react";
+import { useMemo, useState, type FormEvent } from "react";
+import { Check, Clock, FileUp, MapPin, Search, Trash2, Users } from "lucide-react";
 import { Card, EmptyState, Pill, ProgressBar } from "@/components/app/ui-kit";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -298,6 +298,109 @@ export function SubmissionsPanel({
           </Card>
         );
       })}
+    </div>
+  );
+}
+
+type LectureMaterial = {
+  id: string;
+  title: string;
+  fileName: string;
+  courseId: string;
+  groupId: string;
+  uploadedAt: string;
+};
+
+export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
+  const [materials, setMaterials] = useState<LectureMaterial[]>([]);
+  const [courseId, setCourseId] = useState(courses[0]?.id ?? "");
+  const [title, setTitle] = useState("");
+  const [fileName, setFileName] = useState("");
+  const [published, setPublished] = useState<string | null>(null);
+
+  const addMaterial = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!title.trim() || !fileName || !courseId) return;
+    setMaterials((current) => [
+      {
+        id: `lecture-${Date.now()}`,
+        title: title.trim(),
+        fileName,
+        courseId,
+        groupId: group.id,
+        uploadedAt: new Date().toLocaleDateString(),
+      },
+      ...current,
+    ]);
+    setTitle("");
+    setFileName("");
+    setPublished("Lecture published for group 1B");
+  };
+
+  return (
+    <div className="space-y-4">
+      <Card className="border-primary/20 bg-primary-soft/30">
+        <div className="mb-4 flex items-start gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <FileUp className="h-5 w-5" />
+          </span>
+          <div>
+            <h3 className="font-semibold">Upload lecture</h3>
+            <p className="text-xs text-muted-foreground">Publish a file directly to a selected group.</p>
+          </div>
+        </div>
+        <form onSubmit={addMaterial} className="grid gap-3">
+          <label className="grid gap-1.5 text-sm font-medium">
+            Lecture title
+            <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Week 4 — Motion" className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring" required />
+          </label>
+          <label className="grid gap-1.5 text-sm font-medium">
+            Course
+            <select value={courseId} onChange={(event) => setCourseId(event.target.value)} className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring">
+              {courses.map((course) => <option key={course.id} value={course.id}>{course.name}</option>)}
+            </select>
+          </label>
+          <label className="grid gap-1.5 text-sm font-medium">
+            Student group
+            <select value={group.id} disabled className="rounded-xl border border-input bg-muted px-3 py-2.5 text-sm text-muted-foreground">
+              <option value={group.id}>{group.name} · Year {group.year}</option>
+            </select>
+          </label>
+          <label className="grid gap-1.5 text-sm font-medium">
+            Lecture file
+            <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.mp4" onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")} className="block w-full rounded-xl border border-input bg-background px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-primary-soft file:px-2 file:py-1 file:text-xs file:font-semibold file:text-primary" required />
+          </label>
+          <button type="submit" className="tap-target flex items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">
+            <FileUp className="h-4 w-4" /> Publish lecture
+          </button>
+          {published ? <p role="status" className="text-center text-xs font-medium text-success">{published}</p> : null}
+        </form>
+      </Card>
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="font-semibold">Published lectures</h3>
+          <p className="text-xs text-muted-foreground">Visible to group {group.name}</p>
+        </div>
+        <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold">{materials.length}</span>
+      </div>
+      {materials.length === 0 ? (
+        <EmptyState message="No lectures uploaded yet." />
+      ) : (
+        <div className="space-y-3">
+          {materials.map((material) => (
+            <Card key={material.id} className="flex items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary"><FileText className="h-5 w-5" /></span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold">{material.title}</p>
+                <p className="truncate text-xs text-muted-foreground">{material.fileName} · {material.uploadedAt}</p>
+                <p className="mt-1 text-xs font-medium text-primary">{group.name}</p>
+              </div>
+              <button aria-label={`Delete ${material.title}`} onClick={() => setMaterials((current) => current.filter((item) => item.id !== material.id))} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></button>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
