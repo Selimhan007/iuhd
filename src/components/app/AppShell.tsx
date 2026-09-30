@@ -125,7 +125,9 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
 
   if (!ready || !user || !allowed) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">{t("loading")}</div>
+      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
+        {t("loading")}
+      </div>
     );
   }
 
@@ -207,29 +209,45 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
   const { t } = useI18n();
   const [q, setQ] = useState("");
 
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
   const results = useMemo(() => {
     const query = q.trim().toLowerCase();
     if (!query) return [];
     const out: { label: string; hint: string; to: string }[] = [];
     courses.forEach((c) => {
-      if (c.name.toLowerCase().includes(query)) out.push({ label: c.name, hint: t("nav.courses"), to: "/courses" });
+      if (c.name.toLowerCase().includes(query))
+        out.push({ label: c.name, hint: t("nav.courses"), to: "/courses" });
     });
     teachers.forEach((tc) => {
-      if (tc.name.toLowerCase().includes(query)) out.push({ label: tc.name, hint: t("schedule.teacher"), to: "/courses" });
+      if (tc.name.toLowerCase().includes(query))
+        out.push({ label: tc.name, hint: t("schedule.teacher"), to: "/courses" });
     });
     assignments.forEach((a) => {
       if (a.title.toLowerCase().includes(query))
-        out.push({ label: a.title, hint: courseById(a.courseId)?.name ?? t("nav.tasks"), to: "/tasks" });
+        out.push({
+          label: a.title,
+          hint: courseById(a.courseId)?.name ?? t("nav.tasks"),
+          to: "/tasks",
+        });
     });
     materials.forEach((m) => {
-      if (m.title.toLowerCase().includes(query)) out.push({ label: m.title, hint: t("nav.materials"), to: "/materials" });
+      if (m.title.toLowerCase().includes(query))
+        out.push({ label: m.title, hint: t("nav.materials"), to: "/materials" });
     });
     announcements.forEach((a) => {
       if (a.title.toLowerCase().includes(query))
         out.push({ label: a.title, hint: t("nav.announcements"), to: "/announcements" });
     });
     events.forEach((e) => {
-      if (e.title.toLowerCase().includes(query)) out.push({ label: e.title, hint: t("nav.events"), to: "/events" });
+      if (e.title.toLowerCase().includes(query))
+        out.push({ label: e.title, hint: t("nav.events"), to: "/events" });
     });
     return out.slice(0, 12);
   }, [q, t]);
@@ -237,7 +255,15 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
   const suggestions = [courses[0]!.name, courses[1]!.name, "Prepare presentation", "English Week"];
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" role="dialog" aria-modal="true">
+    <div
+      className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label={t("search.placeholder")}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
       <div className="mx-auto mt-16 w-[min(40rem,92vw)] overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
         <div className="flex items-center gap-2 border-b border-border px-4">
           <Search className="h-4 w-4 text-muted-foreground" />
@@ -248,14 +274,20 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
             placeholder={t("search.placeholder")}
             className="h-12 flex-1 bg-transparent text-sm outline-none"
           />
-          <button onClick={onClose} aria-label={t("close")} className="tap-target text-muted-foreground">
+          <button
+            onClick={onClose}
+            aria-label={t("close")}
+            className="tap-target text-muted-foreground"
+          >
             <X className="h-4 w-4" />
           </button>
         </div>
         <div className="max-h-80 overflow-y-auto p-2">
           {!q ? (
             <>
-              <p className="px-3 py-2 text-xs font-semibold uppercase text-muted-foreground">{t("search.suggestions")}</p>
+              <p className="px-3 py-2 text-xs font-semibold uppercase text-muted-foreground">
+                {t("search.suggestions")}
+              </p>
               {suggestions.map((s) => (
                 <button
                   key={s}
@@ -267,7 +299,9 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
               ))}
             </>
           ) : results.length === 0 ? (
-            <p className="px-3 py-6 text-center text-sm text-muted-foreground">{t("search.noResults")}</p>
+            <p className="px-3 py-6 text-center text-sm text-muted-foreground">
+              {t("search.noResults")}
+            </p>
           ) : (
             results.map((r, i) => (
               <Link
