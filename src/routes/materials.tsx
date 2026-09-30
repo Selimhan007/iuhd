@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, PageHeader } from "@/components/app/ui-kit";
 import { MaterialCard } from "@/components/app/cards";
+import { LectureMaterialsPanel } from "@/components/teacher/panels";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
 import { courses, materials } from "@/lib/demo-data";
 
 export const Route = createFileRoute("/materials")({
@@ -19,6 +21,18 @@ export const Route = createFileRoute("/materials")({
 
 function MaterialsPage() {
   const { t } = useI18n();
+  const { user } = useAuth();
+
+  if (user?.role === "teacher") {
+    const teacherCourses = courses.filter((course) => course.teacherId === user.id);
+    return (
+      <AppShell allow={["student", "teacher"]}>
+        <PageHeader title={t("materials.title")} />
+        <LectureMaterialsPanel courses={teacherCourses} />
+      </AppShell>
+    );
+  }
+
   const grouped = courses
     .map((c) => ({ course: c, items: materials.filter((m) => m.courseId === c.id) }))
     .filter((g) => g.items.length);
