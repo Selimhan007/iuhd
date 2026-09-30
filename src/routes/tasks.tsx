@@ -37,7 +37,7 @@ function TasksPage() {
     .sort((a, b) => a.dueInDays - b.dueInDays);
 
   return (
-    <AppShell allow={["student"]}>
+    <AppShell allow={["student", "teacher"]}>
       <PageHeader title={t("tasks.title")} />
 
       <div className="mb-5 inline-flex rounded-xl bg-muted p-1">

@@ -28,7 +28,7 @@ function AttendancePage() {
     .slice(0, 12);
 
   return (
-    <AppShell allow={["student"]}>
+    <AppShell allow={["student", "teacher"]}>
       <PageHeader title={t("nav.attendance")} />
 
       <Card className="mb-5">

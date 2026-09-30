@@ -78,6 +78,9 @@ const ROLE_CONFIG: Record<
       { to: "/schedule", icon: CalendarDays, key: "nav.schedule" },
       { to: "/courses", icon: BookOpen, key: "nav.courses" },
       { to: "/materials", icon: FileText, key: "nav.materials" },
+      { to: "/tasks", icon: ClipboardList, key: "nav.tasks" },
+      { to: "/grades", icon: GraduationCap, key: "nav.grades" },
+      { to: "/attendance", icon: CheckSquare, key: "nav.attendance" },
       { to: "/announcements", icon: Megaphone, key: "nav.announcements" },
     ],
     more: [
