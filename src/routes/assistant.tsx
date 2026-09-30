@@ -4,6 +4,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { Card, PageHeader } from "@/components/app/ui-kit";
 import { useI18n } from "@/lib/i18n";
 import { Send, Sparkles } from "lucide-react";
+import { LatticeLoader } from "@/components/app/LatticeLoader";
 
 export const Route = createFileRoute("/assistant")({
   head: () => ({
@@ -64,7 +65,7 @@ function AssistantPage() {
         <div className="flex flex-1 flex-col gap-3 overflow-y-auto">
           {messages.length === 0 ? (
             <div className="m-auto max-w-md text-center"><Sparkles className="mx-auto mb-3 h-8 w-8 text-primary" /><p className="font-medium">Что изучаем сегодня?</p><p className="mt-1 text-sm text-muted-foreground">Спросите об экзамене, теме или попросите составить план.</p></div>
-          ) : messages.map((message, index) => <div key={index} className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm ${message.role === "user" ? "ml-auto bg-primary text-primary-foreground" : "bg-muted"}`}>{message.content || (loading ? "Думаю…" : "")}</div>)}
+          ) : messages.map((message, index) => <div key={index} className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm ${message.role === "user" ? "ml-auto bg-primary text-primary-foreground" : "bg-muted"}`}>{message.content || (loading ? <LatticeLoader label="Ýüklenýär" color="currentColor" /> : "")}</div>)}
         </div>
         <div className="flex gap-2 border-t border-border pt-4">
           <input aria-label="Сообщение" value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.nativeEvent.isComposing && event.keyCode !== 229) void sendMessage(); }} placeholder="Напишите вопрос..." className="min-w-0 flex-1 rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary" />
