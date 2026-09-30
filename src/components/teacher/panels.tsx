@@ -308,12 +308,16 @@ type LectureMaterial = {
   fileName: string;
   courseId: string;
   groupId: string;
+  groupName: string;
   uploadedAt: string;
 };
+
+const TEACHER_GROUPS = [group, { id: "g2", programId: "p1", name: "1C", year: 1 }, { id: "g3", programId: "p1", name: "2A", year: 2 }];
 
 export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
   const [materials, setMaterials] = useState<LectureMaterial[]>([]);
   const [courseId, setCourseId] = useState(courses[0]?.id ?? "");
+  const [groupId, setGroupId] = useState(group.id);
   const [title, setTitle] = useState("");
   const [fileName, setFileName] = useState("");
   const [published, setPublished] = useState<string | null>(null);
@@ -327,7 +331,8 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
         title: title.trim(),
         fileName,
         courseId,
-        groupId: group.id,
+        groupId,
+        groupName: TEACHER_GROUPS.find((item) => item.id === groupId)?.name ?? group.name,
         uploadedAt: new Date().toLocaleDateString(),
       },
       ...current,
@@ -362,8 +367,10 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
           </label>
           <label className="grid gap-1.5 text-sm font-medium">
             Student group
-            <select value={group.id} disabled className="rounded-xl border border-input bg-muted px-3 py-2.5 text-sm text-muted-foreground">
-              <option value={group.id}>{group.name} · Year {group.year}</option>
+            <select value={groupId} onChange={(event) => setGroupId(event.target.value)} className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring">
+              {TEACHER_GROUPS.map((studentGroup) => (
+                <option key={studentGroup.id} value={studentGroup.id}>{studentGroup.name} · Year {studentGroup.year}</option>
+              ))}
             </select>
           </label>
           <label className="grid gap-1.5 text-sm font-medium">
@@ -394,7 +401,7 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{material.title}</p>
                 <p className="truncate text-xs text-muted-foreground">{material.fileName} · {material.uploadedAt}</p>
-                <p className="mt-1 text-xs font-medium text-primary">{group.name}</p>
+                <p className="mt-1 text-xs font-medium text-primary">{material.groupName}</p>
               </div>
               <button aria-label={`Delete ${material.title}`} onClick={() => setMaterials((current) => current.filter((item) => item.id !== material.id))} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></button>
             </Card>

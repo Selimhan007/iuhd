@@ -81,7 +81,6 @@ const ROLE_CONFIG: Record<
       { to: "/profile", icon: User, key: "nav.profile" },
     ],
     more: [
-      { to: "/materials", icon: FileText, key: "nav.materials" },
       { to: "/events", icon: CalendarHeart, key: "nav.events" },
       { to: "/notifications", icon: Bell, key: "nav.notifications" },
       { to: "/assistant", icon: Sparkles, key: "nav.ai" },

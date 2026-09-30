@@ -24,7 +24,7 @@ function MaterialsPage() {
     .filter((g) => g.items.length);
 
   return (
-    <AppShell>
+    <AppShell allow={["student"]}>
       <PageHeader title={t("materials.title")} />
       {grouped.length === 0 ? (
         <EmptyState message={t("empty.materials")} />
