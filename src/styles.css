@@ -95,6 +95,43 @@
   --ring: oklch(0.6 0.1 258);
 }
 
+/* Role themes: teacher = emerald, admin = violet (student keeps the default blue) */
+[data-role="teacher"] {
+  --primary: oklch(0.5 0.12 165);
+  --primary-foreground: oklch(0.99 0.005 165);
+  --primary-soft: oklch(0.94 0.035 165);
+  --accent: oklch(0.9 0.06 170);
+  --accent-foreground: oklch(0.3 0.08 165);
+  --ring: oklch(0.58 0.11 165);
+}
+.dark [data-role="teacher"],
+.dark[data-role="teacher"] {
+  --primary: oklch(0.74 0.13 165);
+  --primary-foreground: oklch(0.17 0.03 165);
+  --primary-soft: oklch(0.29 0.05 165);
+  --accent: oklch(0.33 0.06 165);
+  --accent-foreground: oklch(0.92 0.03 165);
+  --ring: oklch(0.65 0.11 165);
+}
+
+[data-role="admin"] {
+  --primary: oklch(0.48 0.19 295);
+  --primary-foreground: oklch(0.99 0.005 295);
+  --primary-soft: oklch(0.94 0.04 295);
+  --accent: oklch(0.9 0.06 295);
+  --accent-foreground: oklch(0.3 0.1 295);
+  --ring: oklch(0.56 0.16 295);
+}
+.dark [data-role="admin"],
+.dark[data-role="admin"] {
+  --primary: oklch(0.72 0.15 295);
+  --primary-foreground: oklch(0.17 0.04 295);
+  --primary-soft: oklch(0.3 0.07 295);
+  --accent: oklch(0.34 0.08 295);
+  --accent-foreground: oklch(0.93 0.03 295);
+  --ring: oklch(0.64 0.14 295);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

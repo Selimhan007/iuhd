@@ -23,7 +23,7 @@ function ExamsPage() {
   const sorted = exams.slice().sort((a, b) => a.date.localeCompare(b.date));
 
   return (
-    <AppShell>
+    <AppShell allow={["student"]}>
       <PageHeader title={t("exams.upcoming")} />
       {sorted.length === 0 ? (
         <EmptyState message={t("empty.exams")} icon={<FileText className="h-6 w-6" />} />

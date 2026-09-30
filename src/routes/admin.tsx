@@ -1,20 +1,31 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import {
+  BookOpen,
+  CalendarDays,
+  CalendarHeart,
+  GraduationCap,
+  Megaphone,
+  Presentation,
+  Shield,
+  type LucideIcon,
+} from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
-import { Card, PageHeader } from "@/components/app/ui-kit";
+import { ResourceManager, type ResourceItem } from "@/components/admin/resource-manager";
 import { useI18n } from "@/lib/i18n";
-import { useAuth } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 import {
   announcements as demoAnnouncements,
+  courseById,
   courses as demoCourses,
   events as demoEvents,
+  faculty,
   group,
   lessons,
   students as demoStudents,
   teachers as demoTeachers,
   university,
 } from "@/lib/demo-data";
-import { Plus, Pencil, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -28,121 +39,118 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-const TABS = ["students", "teachers", "courses", "schedule", "announcements", "events"] as const;
+type TabId = "students" | "teachers" | "courses" | "schedule" | "announcements" | "events";
+
+const TABS: { id: TabId; icon: LucideIcon }[] = [
+  { id: "students", icon: GraduationCap },
+  { id: "teachers", icon: Presentation },
+  { id: "courses", icon: BookOpen },
+  { id: "schedule", icon: CalendarDays },
+  { id: "announcements", icon: Megaphone },
+  { id: "events", icon: CalendarHeart },
+];
+
+const DAYS = ["", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function AdminPage() {
+  return (
+    <AppShell allow={["admin", "superadmin"]}>
+      <AdminConsole />
+    </AppShell>
+  );
+}
+
+function AdminConsole() {
   const { t } = useI18n();
-  const { user, ready } = useAuth();
-  const navigate = useNavigate();
-  const [tab, setTab] = useState<(typeof TABS)[number]>("students");
+  const [tab, setTab] = useState<TabId>("students");
 
-  const [students, setStudents] = useState(demoStudents.map((s) => ({ id: s.id, label: s.name, sub: s.studentCode })));
-  const [teachers, setTeachers] = useState(demoTeachers.map((x) => ({ id: x.id, label: x.name, sub: x.title })));
-  const [courses, setCourses] = useState(
-    demoCourses.map((c) => ({ id: c.id, label: c.name, sub: `${c.credits} ${t("courses.credits")}` })),
-  );
-  const [schedule, setSchedule] = useState(
-    lessons.slice(0, 8).map((l) => ({ id: l.id, label: `${l.start} ${l.room}`, sub: group.name })),
-  );
-  const [anns, setAnns] = useState(demoAnnouncements.map((a) => ({ id: a.id, label: a.title, sub: a.author })));
-  const [events, setEvents] = useState(demoEvents.map((e) => ({ id: e.id, label: e.title, sub: e.date })));
-  const [newLabel, setNewLabel] = useState("");
+  const [data, setData] = useState<Record<TabId, ResourceItem[]>>(() => ({
+    students: demoStudents.map((s) => ({ id: s.id, label: s.name, sub: `${s.studentCode} · ${group.name}` })),
+    teachers: demoTeachers.map((x) => ({ id: x.id, label: x.name, sub: `${x.title} · ${x.email}` })),
+    courses: demoCourses.map((c) => ({ id: c.id, label: c.name, sub: `${c.code} · ${c.credits} ECTS` })),
+    schedule: lessons.map((l) => ({
+      id: l.id,
+      label: `${DAYS[l.weekday]} ${l.start}–${l.end} · ${courseById(l.courseId)?.name ?? ""}`,
+      sub: `${group.name} · ${l.room} · ${l.type}`,
+    })),
+    announcements: demoAnnouncements.map((a) => ({ id: a.id, label: a.title, sub: `${a.author} · ${a.date}` })),
+    events: demoEvents.map((e) => ({ id: e.id, label: e.title, sub: `${e.date} · ${e.place}` })),
+  }));
 
-  useEffect(() => {
-    if (ready && user && user.role !== "admin" && user.role !== "superadmin") navigate({ to: "/", replace: true });
-  }, [ready, user, navigate]);
-
-  const state = { students, teachers, courses, schedule, announcements: anns, events } as const;
-  const setters = {
-    students: setStudents,
-    teachers: setTeachers,
-    courses: setCourses,
-    schedule: setSchedule,
-    announcements: setAnns,
-    events: setEvents,
-  } as const;
-
-  const items = state[tab];
-  const setItems = setters[tab];
+  const stats: { id: TabId; value: number; icon: LucideIcon; label: string }[] = [
+    { id: "students", value: data.students.length, icon: GraduationCap, label: t("admin.students") },
+    { id: "teachers", value: data.teachers.length, icon: Presentation, label: t("admin.teachers") },
+    { id: "courses", value: data.courses.length, icon: BookOpen, label: t("admin.courses") },
+    { id: "schedule", value: data.schedule.length, icon: CalendarDays, label: t("admin.lessonsWeek") },
+    { id: "announcements", value: data.announcements.length, icon: Megaphone, label: t("admin.announcements") },
+    { id: "events", value: data.events.length, icon: CalendarHeart, label: t("admin.events") },
+  ];
 
   return (
-    <AppShell>
-      <PageHeader title={t("admin.title")} subtitle={university.name} />
+    <div className="animate-rise space-y-6">
+      <section className="flex flex-col gap-4 rounded-3xl border border-border bg-card p-6 shadow-card sm:flex-row sm:items-center">
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+          <Shield className="h-7 w-7" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary">{t("admin.title")}</p>
+          <h1 className="mt-1 text-balance text-2xl font-bold tracking-tight">{university.name}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t("admin.subtitle")}</p>
+        </div>
+        <div className="flex flex-wrap gap-2 text-xs font-medium sm:flex-col sm:items-end">
+          <span className="rounded-full bg-primary-soft px-3 py-1 text-primary">{university.shortName}</span>
+          <span className="rounded-full bg-muted px-3 py-1 text-muted-foreground">{faculty.name}</span>
+        </div>
+      </section>
 
-      <div className="mb-4 grid grid-cols-3 gap-3 sm:grid-cols-6">
-        {[
-          [demoStudents.length, t("admin.students")],
-          [demoTeachers.length, t("admin.teachers")],
-          [demoCourses.length, t("admin.courses")],
-        ].map(([n, label]) => (
-          <Card key={String(label)} className="text-center">
-            <p className="text-2xl font-bold">{n}</p>
-            <p className="text-xs text-muted-foreground">{label}</p>
-          </Card>
-        ))}
-      </div>
-
-      <div className="mb-5 flex gap-2 overflow-x-auto pb-1">
-        {TABS.map((x) => (
+      <section aria-label={t("admin.overview")} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {stats.map((s) => (
           <button
-            key={x}
-            onClick={() => setTab(x)}
-            className={`tap-target whitespace-nowrap rounded-xl px-4 text-sm font-semibold ${
-              tab === x ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-            }`}
+            key={s.id}
+            onClick={() => setTab(s.id)}
+            aria-pressed={tab === s.id}
+            className={cn(
+              "card-surface flex flex-col items-start p-4 text-left transition-colors hover:border-primary/50",
+              tab === s.id && "border-primary ring-1 ring-primary",
+            )}
           >
-            {t(`admin.${x}`)}
+            <s.icon className="h-5 w-5 text-primary" />
+            <span className="mt-3 text-2xl font-bold leading-none">{s.value}</span>
+            <span className="mt-1 w-full truncate text-xs text-muted-foreground">{s.label}</span>
           </button>
         ))}
-      </div>
+      </section>
 
-      <div className="mb-4 flex gap-2">
-        <input
-          value={newLabel}
-          onChange={(e) => setNewLabel(e.target.value)}
-          placeholder={`${t("admin.add")}…`}
-          className="flex-1 rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:border-ring"
-        />
-        <button
-          onClick={() => {
-            if (!newLabel.trim()) return;
-            setItems((prev) => [{ id: `new-${Date.now()}`, label: newLabel.trim(), sub: "—" }, ...prev]);
-            setNewLabel("");
-          }}
-          className="tap-target flex items-center gap-1 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground"
+      <div className="flex flex-col gap-4 lg:flex-row">
+        <nav
+          aria-label={t("admin.title")}
+          className="flex gap-1 overflow-x-auto rounded-2xl bg-muted p-1 lg:w-52 lg:shrink-0 lg:flex-col lg:self-start"
         >
-          <Plus className="h-4 w-4" /> {t("admin.add")}
-        </button>
-      </div>
+          {TABS.map((x) => (
+            <button
+              key={x.id}
+              onClick={() => setTab(x.id)}
+              aria-current={tab === x.id ? "page" : undefined}
+              className={cn(
+                "tap-target flex items-center gap-2 whitespace-nowrap rounded-xl px-3 text-sm font-semibold transition-colors",
+                tab === x.id ? "bg-card text-primary shadow-soft" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <x.icon className="h-4 w-4" />
+              {t(`admin.${x.id}`)}
+            </button>
+          ))}
+        </nav>
 
-      <div className="space-y-2">
-        {items.map((item) => (
-          <Card key={item.id} className="flex items-center gap-3 py-3">
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{item.label}</p>
-              <p className="truncate text-xs text-muted-foreground">{item.sub}</p>
-            </div>
-            <button
-              aria-label={t("admin.edit")}
-              onClick={() => {
-                const next = prompt(t("admin.edit"), item.label);
-                if (next)
-                  setItems((prev) => prev.map((x) => (x.id === item.id ? { ...x, label: next } : x)));
-              }}
-              className="tap-target flex items-center text-muted-foreground"
-            >
-              <Pencil className="h-4 w-4" />
-            </button>
-            <button
-              aria-label={t("admin.delete")}
-              onClick={() => setItems((prev) => prev.filter((x) => x.id !== item.id))}
-              className="tap-target flex items-center text-destructive"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
-          </Card>
-        ))}
+        <div className="min-w-0 flex-1">
+          <ResourceManager
+            key={tab}
+            title={t(`admin.${tab}`)}
+            items={data[tab]}
+            onChange={(next) => setData((d) => ({ ...d, [tab]: next }))}
+          />
+        </div>
       </div>
-    </AppShell>
+    </div>
   );
 }
