@@ -77,7 +77,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Student TM — University student platform" },
+      { title: "Student TM — University platform" },
       {
         name: "description",
         content: "Schedule, grades, attendance, assignments and announcements for university students in Turkmenistan.",

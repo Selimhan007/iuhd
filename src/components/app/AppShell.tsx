@@ -79,9 +79,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-border bg-card px-4 py-6 lg:flex">
         <Link to="/" className="mb-8 flex items-center gap-2 px-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <GraduationCap className="h-5 w-5" />
-          </span>
+          <img
+            src="/icons/icon-512.png"
+            alt="Student TM"
+            className="h-9 w-9 rounded-xl object-cover"
+          />
           <span className="text-lg font-bold tracking-tight">Student TM</span>
         </Link>
         <nav className="flex-1 space-y-1 overflow-y-auto">
@@ -108,10 +110,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-md">
           <div className="mx-auto flex h-14 max-w-5xl items-center gap-3 px-4">
             <span className="flex items-center gap-2 lg:hidden">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <GraduationCap className="h-4 w-4" />
-              </span>
-              <span className="font-bold">Student TM</span>
+            <img
+              src="/icons/icon-512.png"
+              alt="Student TM"
+              className="h-8 w-8 rounded-lg object-cover"
+            />
+            <span className="font-bold">Student TM</span>
             </span>
             <button
               onClick={() => setSearchOpen(true)}
