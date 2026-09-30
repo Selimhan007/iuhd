@@ -154,53 +154,49 @@ export const university: University = {
 export const faculty: Faculty = { id: "f1", universityId: "u1", name: "Faculty of Digital Technologies" };
 export const department: Department = { id: "d1", facultyId: "f1", name: "Department of Software Engineering" };
 export const program: Program = { id: "p1", departmentId: "d1", name: "Software", degree: "Bachelor" };
-export const group: Group = { id: "g1", programId: "p1", name: "SOFT-1B", year: 1 };
+export const group: Group = { id: "g1", programId: "p1", name: "1B", year: 1 };
 
 export const teachers: Teacher[] = [
-  { id: "t1", universityId: "u1", departmentId: "d1", name: "Gowher Yarashowa", title: "Senior Lecturer", email: "a.ahmedow@iuhd.edu.tm" },
-  { id: "t2", universityId: "u1", departmentId: "d1", name: "Ch. Wekilowa", title: "Lecturer", email: "ch.wekilowa@iuhd.edu.tm" },
-  { id: "t3", universityId: "u1", departmentId: "d1", name: "B. Berdimuhamedow", title: "Associate Professor", email: "b.berdi@iuhd.edu.tm" },
-  { id: "t4", universityId: "u1", departmentId: "d1", name: "M. Orazowa", title: "Lecturer", email: "m.orazowa@iuhd.edu.tm" },
-  { id: "t5", universityId: "u1", departmentId: "d1", name: "S. Nurыýew", title: "Senior Lecturer", email: "s.nuryyew@iuhd.edu.tm" },
-  { id: "t6", universityId: "u1", departmentId: "d1", name: "E. Petrova", title: "Lecturer", email: "e.petrova@iuhd.edu.tm" },
-  { id: "t7", universityId: "u1", departmentId: "d1", name: "G. Hojaýewa", title: "Assistant", email: "g.hojayewa@iuhd.edu.tm" },
-  { id: "t8", universityId: "u1", departmentId: "d1", name: "D. Sokolov", title: "Associate Professor", email: "d.sokolov@iuhd.edu.tm" },
+  { id: "t1", universityId: "u1", departmentId: "d1", name: "G. Nurygdyyev", title: "Lecturer", email: "g.nurygdyyev@iuhd.edu.tm" },
+  { id: "t2", universityId: "u1", departmentId: "d1", name: "D. Allanurov", title: "Lecturer", email: "d.allanurov@iuhd.edu.tm" },
+  { id: "t3", universityId: "u1", departmentId: "d1", name: "A. Ashyraliyeva", title: "Lecturer", email: "a.ashyraliyeva@iuhd.edu.tm" },
+  { id: "t4", universityId: "u1", departmentId: "d1", name: "O. Mamikov", title: "Lecturer", email: "o.mamikov@iuhd.edu.tm" },
+  { id: "t5", universityId: "u1", departmentId: "d1", name: "G. Yarashova", title: "Lecturer", email: "g.yarashova@iuhd.edu.tm" },
+  { id: "t6", universityId: "u1", departmentId: "d1", name: "A. Gurbanmuradyev", title: "Lecturer", email: "a.gurbanmuradyev@iuhd.edu.tm" },
+  { id: "t7", universityId: "u1", departmentId: "d1", name: "J. Ashirbayev", title: "Lecturer", email: "j.ashirbayev@iuhd.edu.tm" },
+  { id: "t8", universityId: "u1", departmentId: "d1", name: "G. Gutlyyeva", title: "Lecturer", email: "g.gutlyyeva@iuhd.edu.tm" },
 ];
 
 export const courses: Course[] = [
-  { id: "c1", universityId: "u1", programId: "p1", code: "CS101", name: "Programming Fundamentals", teacherId: "t1", credits: 5, progress: 68, grade: 87, color: "oklch(0.55 0.15 262)" },
-  { id: "c2", universityId: "u1", programId: "p1", code: "ENG120", name: "English for IT", teacherId: "t2", credits: 4, progress: 74, grade: 92, color: "oklch(0.6 0.12 200)" },
-  { id: "c3", universityId: "u1", programId: "p1", code: "MTH110", name: "Mathematics", teacherId: "t3", credits: 4, progress: 61, grade: 81, color: "oklch(0.62 0.13 150)" },
-  { id: "c4", universityId: "u1", programId: "p1", code: "CS110", name: "Computer Science", teacherId: "t1", credits: 5, progress: 57, grade: 85, color: "oklch(0.58 0.14 290)" },
-  { id: "c5", universityId: "u1", programId: "p1", code: "PHY105", name: "Physics", teacherId: "t5", credits: 3, progress: 48, grade: 78, color: "oklch(0.64 0.13 60)" },
-  { id: "c6", universityId: "u1", programId: "p1", code: "HIS100", name: "History of Turkmenistan", teacherId: "t4", credits: 3, progress: 80, grade: 94, color: "oklch(0.6 0.13 30)" },
-  { id: "c7", universityId: "u1", programId: "p1", code: "RUS101", name: "Russian Language", teacherId: "t6", credits: 2, progress: 70, grade: 89, color: "oklch(0.6 0.12 330)" },
-  { id: "c8", universityId: "u1", programId: "p1", code: "CS120", name: "Web Technologies", teacherId: "t8", credits: 4, progress: 40, grade: 83, color: "oklch(0.56 0.14 240)" },
+  { id: "c1", universityId: "u1", programId: "p1", code: "PHY", name: "Physics", teacherId: "t1", credits: 3, progress: 48, grade: 78, color: "oklch(0.64 0.13 60)" },
+  { id: "c2", universityId: "u1", programId: "p1", code: "ESP", name: "English for Special Purposes", teacherId: "t2", credits: 4, progress: 74, grade: 92, color: "oklch(0.6 0.12 200)" },
+  { id: "c3", universityId: "u1", programId: "p1", code: "CALC", name: "Calculus", teacherId: "t3", credits: 4, progress: 61, grade: 81, color: "oklch(0.62 0.13 150)" },
+  { id: "c4", universityId: "u1", programId: "p1", code: "IP", name: "Introduction to Programming", teacherId: "t4", credits: 5, progress: 68, grade: 87, color: "oklch(0.55 0.15 262)" },
+  { id: "c5", universityId: "u1", programId: "p1", code: "CCT", name: "Contemporary Computer Technologies", teacherId: "t5", credits: 5, progress: 57, grade: 85, color: "oklch(0.58 0.14 290)" },
+  { id: "c6", universityId: "u1", programId: "p1", code: "PE", name: "Physical Education", teacherId: "t6", credits: 2, progress: 80, grade: 94, color: "oklch(0.6 0.13 30)" },
+  { id: "c7", universityId: "u1", programId: "p1", code: "ISE", name: "Introduction to Software Engineering", teacherId: "t7", credits: 4, progress: 70, grade: 89, color: "oklch(0.6 0.12 330)" },
+  { id: "c8", universityId: "u1", programId: "p1", code: "FTL", name: "Foundations of Turkmenistan’s Legislation", teacherId: "t8", credits: 3, progress: 40, grade: 83, color: "oklch(0.56 0.14 240)" },
 ];
 
 const T = (h: number, m = 0) => `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 
 export const lessons: Lesson[] = [
-  { id: "l1", courseId: "c1", groupId: "g1", weekday: 1, start: T(9), end: T(10, 30), room: "204", type: "lecture" },
-  { id: "l2", courseId: "c2", groupId: "g1", weekday: 1, start: T(10, 40), end: T(12, 10), room: "305", type: "practice" },
-  { id: "l3", courseId: "c3", groupId: "g1", weekday: 1, start: T(12, 20), end: T(13, 50), room: "108", type: "seminar" },
-  { id: "l4", courseId: "c4", groupId: "g1", weekday: 2, start: T(9), end: T(10, 30), room: "201", type: "lecture" },
-  { id: "l5", courseId: "c8", groupId: "g1", weekday: 2, start: T(10, 40), end: T(12, 10), room: "IT-2", type: "lab" },
-  { id: "l6", courseId: "c6", groupId: "g1", weekday: 2, start: T(12, 20), end: T(13, 50), room: "112", type: "lecture" },
-  { id: "l7", courseId: "c1", groupId: "g1", weekday: 3, start: T(9), end: T(10, 30), room: "IT-1", type: "lab" },
-  { id: "l8", courseId: "c5", groupId: "g1", weekday: 3, start: T(10, 40), end: T(12, 10), room: "007", type: "lecture" },
-  { id: "l9", courseId: "c7", groupId: "g1", weekday: 3, start: T(12, 20), end: T(13, 50), room: "309", type: "practice" },
-  { id: "l10", courseId: "c2", groupId: "g1", weekday: 4, start: T(9), end: T(10, 30), room: "305", type: "seminar" },
-  { id: "l11", courseId: "c3", groupId: "g1", weekday: 4, start: T(10, 40), end: T(12, 10), room: "108", type: "lecture" },
-  { id: "l12", courseId: "c4", groupId: "g1", weekday: 4, start: T(12, 20), end: T(13, 50), room: "201", type: "practice" },
-  { id: "l13", courseId: "c8", groupId: "g1", weekday: 5, start: T(9), end: T(10, 30), room: "IT-2", type: "lecture" },
-  { id: "l14", courseId: "c1", groupId: "g1", weekday: 5, start: T(10, 40), end: T(12, 10), room: "204", type: "practice" },
-  { id: "l15", courseId: "c5", groupId: "g1", weekday: 5, start: T(12, 20), end: T(13, 50), room: "007", type: "lab" },
-  { id: "l16", courseId: "c6", groupId: "g1", weekday: 6, start: T(9), end: T(10, 30), room: "112", type: "seminar" },
-  { id: "l17", courseId: "c7", groupId: "g1", weekday: 6, start: T(10, 40), end: T(12, 10), room: "309", type: "practice" },
-  { id: "l18", courseId: "c2", groupId: "g1", weekday: 2, start: T(14), end: T(15, 30), room: "305", type: "lecture" },
-  { id: "l19", courseId: "c3", groupId: "g1", weekday: 3, start: T(14), end: T(15, 30), room: "108", type: "practice", notes: "Bring calculator" },
-  { id: "l20", courseId: "c4", groupId: "g1", weekday: 5, start: T(14), end: T(15, 30), room: "201", type: "seminar", cancelled: true },
+  { id: "l1", courseId: "c1", groupId: "g1", weekday: 1, start: "09:00", end: "10:20", room: "—", type: "seminar" },
+  { id: "l2", courseId: "c2", groupId: "g1", weekday: 1, start: "10:30", end: "11:50", room: "—", type: "lecture" },
+  { id: "l3", courseId: "c3", groupId: "g1", weekday: 1, start: "12:10", end: "13:30", room: "—", type: "seminar" },
+  { id: "l4", courseId: "c4", groupId: "g1", weekday: 2, start: "09:00", end: "10:20", room: "—", type: "practice" },
+  { id: "l5", courseId: "c5", groupId: "g1", weekday: 2, start: "10:30", end: "11:50", room: "—", type: "lecture" },
+  { id: "l6", courseId: "c6", groupId: "g1", weekday: 2, start: "12:10", end: "13:30", room: "—", type: "lecture" },
+  { id: "l7", courseId: "c4", groupId: "g1", weekday: 3, start: "09:00", end: "10:20", room: "—", type: "lecture" },
+  { id: "l8", courseId: "c7", groupId: "g1", weekday: 3, start: "10:30", end: "11:50", room: "—", type: "lecture" },
+  { id: "l9", courseId: "c3", groupId: "g1", weekday: 3, start: "12:10", end: "13:30", room: "—", type: "lecture" },
+  { id: "l10", courseId: "c8", groupId: "g1", weekday: 4, start: "09:00", end: "10:20", room: "—", type: "seminar" },
+  { id: "l11", courseId: "c8", groupId: "g1", weekday: 4, start: "10:30", end: "11:50", room: "—", type: "lecture" },
+  { id: "l12", courseId: "c5", groupId: "g1", weekday: 4, start: "12:10", end: "13:30", room: "—", type: "practice" },
+  { id: "l13", courseId: "c4", groupId: "g1", weekday: 5, start: "09:00", end: "10:20", room: "—", type: "seminar" },
+  { id: "l14", courseId: "c1", groupId: "g1", weekday: 5, start: "10:30", end: "11:50", room: "—", type: "lecture" },
+  { id: "l15", courseId: "c2", groupId: "g1", weekday: 6, start: "09:00", end: "10:20", room: "—", type: "lecture" },
+  { id: "l16", courseId: "c7", groupId: "g1", weekday: 6, start: "10:30", end: "11:50", room: "—", type: "practice" },
 ];
 
 export const assignments: Assignment[] = [
