@@ -98,7 +98,7 @@ export function RoleNav({ kind, main, more, isActive, userName, initials, onLogo
         aria-label={t(`role.${kind}`)}
         className="fixed inset-x-0 bottom-4 z-30 hidden justify-center px-4 md:flex lg:hidden"
       >
-        <div className="flex items-center gap-1 rounded-2xl border border-border bg-card/95 p-1.5 shadow-lg backdrop-blur-md">
+        <div className="flex items-center gap-1 rounded-2xl border border-white/25 bg-background/55 p-1.5 shadow-[0_16px_45px_rgb(15_23_42/0.16)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/45 dark:border-white/10 dark:shadow-[0_16px_45px_rgb(0_0_0/0.35)]">
           {main.map((item) => {
             const active = isActive(item.to);
             return (
@@ -138,7 +138,7 @@ export function RoleNav({ kind, main, more, isActive, userName, initials, onLogo
         aria-label={t(`role.${kind}`)}
         className="fixed inset-x-0 bottom-5 z-30 hidden justify-center px-6 lg:flex"
       >
-        <div className="flex items-center gap-1 rounded-2xl border border-border bg-card/95 p-2 shadow-xl backdrop-blur-md">
+        <div className="flex items-center gap-1 rounded-2xl border border-white/25 bg-background/55 p-2 shadow-[0_18px_55px_rgb(15_23_42/0.18)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/45 dark:border-white/10 dark:shadow-[0_18px_55px_rgb(0_0_0/0.38)]">
           {[...main, ...more].map((item, i) => {
             const active = isActive(item.to);
             return (
@@ -185,7 +185,7 @@ export function RoleNav({ kind, main, more, isActive, userName, initials, onLogo
             onClick={() => setSheetOpen(false)}
             className="absolute inset-0 bg-background/70 backdrop-blur-sm"
           />
-          <div className="absolute inset-x-0 bottom-0 rounded-t-3xl border-t border-border bg-card p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-2xl md:inset-x-auto md:bottom-24 md:left-1/2 md:w-[32rem] md:-translate-x-1/2 md:rounded-3xl md:border">
+          <div className="absolute inset-x-0 bottom-0 rounded-t-3xl border-t border-white/25 bg-background/70 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-[0_-18px_60px_rgb(15_23_42/0.2)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/55 dark:border-white/10 dark:shadow-[0_-18px_60px_rgb(0_0_0/0.4)] md:inset-x-auto md:bottom-24 md:left-1/2 md:w-[32rem] md:-translate-x-1/2 md:rounded-3xl md:border">
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary">
