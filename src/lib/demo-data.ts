@@ -304,7 +304,7 @@ export const notifications: Notification[] = [
 ];
 
 const studentNames = [
-  "Suleyman Abbaskaramzad",
+  "Selim Sahedov",
   "Aýgül Amanowa",
   "Merdan Hojaýew",
   "Dmitriy Ivanov",

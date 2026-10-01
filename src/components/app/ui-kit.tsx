@@ -53,7 +53,7 @@ export function Pill({
 }: {
   children: ReactNode;
   tone?: keyof typeof toneMap | string | undefined;
-  className?: string | undefined;
+  className?: string;
 }) {
   return (
     <span
