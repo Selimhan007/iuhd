@@ -160,30 +160,46 @@ function SettingsPage() {
         </Card>
 
         {shareOpen ? (
-          <div className="animate-dialog-backdrop fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 p-4 sm:items-center">
-            <div role="dialog" aria-modal="true" aria-labelledby="share-dialog-title" className="animate-dialog-enter w-full max-w-md rounded-2xl bg-card p-5 shadow-xl">
-              <div className="flex items-center justify-between gap-4">
-                <h2 id="share-dialog-title" className="text-lg font-semibold">Поделиться приложением</h2>
-                <button type="button" onClick={() => setShareOpen(false)} aria-label={t("close")} className="tap-target text-muted-foreground">×</button>
+          <div className="animate-dialog-backdrop fixed inset-0 z-50 flex items-end justify-center bg-foreground/40 p-4 backdrop-blur-sm sm:items-center">
+            <div role="dialog" aria-modal="true" aria-labelledby="share-dialog-title" className="animate-dialog-enter relative w-full max-w-lg overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-2xl">
+              <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-br from-primary/25 via-primary/5 to-transparent" aria-hidden="true" />
+              <div className="relative p-6 sm:p-7">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+                      <Share2 className="h-5 w-5" aria-hidden="true" />
+                    </div>
+                    <h2 id="share-dialog-title" className="text-xl font-bold tracking-tight">Поделиться приложением</h2>
+                    <p className="mt-1.5 max-w-sm text-sm leading-5 text-muted-foreground">Пригласите одногруппников в Student TM одним сканированием.</p>
+                  </div>
+                  <button type="button" onClick={() => setShareOpen(false)} aria-label={t("close")} className="tap-target rounded-full text-2xl leading-none text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">×</button>
+                </div>
+
+                <div className="mt-6 grid gap-5 rounded-3xl border border-border/70 bg-muted/40 p-4 sm:grid-cols-[auto_1fr] sm:items-center sm:p-5">
+                  <div className="mx-auto rounded-2xl bg-white p-3 shadow-lg shadow-primary/10 ring-4 ring-white/10">
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(shareUrl)}`}
+                      alt="QR-код для открытия Student TM"
+                      width="220"
+                      height="220"
+                      className="h-44 w-44 sm:h-[180px] sm:w-[180px]"
+                    />
+                  </div>
+                  <div className="min-w-0 text-center sm:text-left">
+                    <p className="text-sm font-semibold">Сканируйте камерой телефона</p>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">Код откроет приложение сразу, без ручного ввода адреса.</p>
+                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-left">
+                      <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{shareUrl}</span>
+                      <button type="button" onClick={() => void copyShareLink()} className="tap-target shrink-0 rounded-lg bg-primary/10 px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/20">
+                        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        <span className="sr-only">{copied ? "Скопировано" : "Копировать ссылку"}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="button" onClick={() => setShareOpen(false)} className="mt-5 w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-transform hover:scale-[1.01] active:scale-[0.99]">Готово</button>
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">Отсканируйте QR-код камерой телефона</p>
-              <div className="mx-auto mt-5 flex w-fit rounded-2xl bg-white p-3 shadow-sm">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(shareUrl)}`}
-                  alt="QR-код для открытия Student TM"
-                  width="220"
-                  height="220"
-                  className="h-[220px] w-[220px]"
-                />
-              </div>
-              <div className="mt-5 flex items-center gap-2 rounded-xl bg-muted px-3 py-2.5">
-                <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{shareUrl}</span>
-                <button type="button" onClick={() => void copyShareLink()} className="tap-target shrink-0 rounded-lg bg-card px-3 text-xs font-semibold">
-                  {copied ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
-                  <span className="sr-only">{copied ? "Скопировано" : "Копировать ссылку"}</span>
-                </button>
-              </div>
-              <button type="button" onClick={() => setShareOpen(false)} className="mt-5 w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground">{t("close")}</button>
             </div>
           </div>
         ) : null}
