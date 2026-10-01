@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { Check, Clock, FileUp, MapPin, Search, Trash2, Users } from "lucide-react";
+import { Check, Clock, FileText, FileUp, MapPin, Search, Trash2, Users } from "lucide-react";
 import { Card, EmptyState, Pill, ProgressBar } from "@/components/app/ui-kit";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -319,27 +319,47 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
   const [courseId, setCourseId] = useState(courses[0]?.id ?? "");
   const [groupId, setGroupId] = useState(group.id);
   const [title, setTitle] = useState("");
-  const [fileName, setFileName] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [published, setPublished] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isPublishing, setIsPublishing] = useState(false);
 
-  const addMaterial = (event: FormEvent<HTMLFormElement>) => {
+  const addMaterial = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!title.trim() || !fileName || !courseId) return;
+    setError(null);
+    setPublished(null);
+    if (!title.trim() || !file || !courseId) {
+      setError("Enter a title and choose a lecture file.");
+      return;
+    }
+    const allowed = /\\.(pdf|doc|docx|ppt|pptx|mp4)$/i;
+    if (!allowed.test(file.name)) {
+      setError("Use PDF, DOC, DOCX, PPT, PPTX or MP4 files only.");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError("The maximum lecture size is 10 MB.");
+      return;
+    }
+    setIsPublishing(true);
+    await new Promise((resolve) => window.setTimeout(resolve, 250));
+    const selectedGroup = TEACHER_GROUPS.find((item) => item.id === groupId);
     setMaterials((current) => [
       {
         id: `lecture-${Date.now()}`,
         title: title.trim(),
-        fileName,
+        fileName: file.name,
         courseId,
         groupId,
-        groupName: TEACHER_GROUPS.find((item) => item.id === groupId)?.name ?? group.name,
+        groupName: selectedGroup?.name ?? group.name,
         uploadedAt: new Date().toLocaleDateString(),
       },
       ...current,
     ]);
     setTitle("");
-    setFileName("");
-    setPublished("Lecture published for group 1B");
+    setFile(null);
+    setIsPublishing(false);
+    setPublished(`Lecture published for ${selectedGroup?.name ?? group.name}`);
   };
 
   return (
@@ -375,11 +395,13 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
           </label>
           <label className="grid gap-1.5 text-sm font-medium">
             Lecture file
-            <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.mp4" onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")} className="block w-full rounded-xl border border-input bg-background px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-primary-soft file:px-2 file:py-1 file:text-xs file:font-semibold file:text-primary" required />
+            <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.mp4" onChange={(event) => { setError(null); setFile(event.target.files?.[0] ?? null); }} className="block w-full rounded-xl border border-input bg-background px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-primary-soft file:px-2 file:py-1 file:text-xs file:font-semibold file:text-primary" required />
+            <span className="text-xs font-normal text-muted-foreground">PDF, DOC, DOCX, PPT, PPTX or MP4 · max 10 MB</span>
           </label>
-          <button type="submit" className="tap-target flex items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">
-            <FileUp className="h-4 w-4" /> Publish lecture
+          <button type="submit" disabled={isPublishing} className="tap-target flex items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60">
+            <FileUp className="h-4 w-4" /> {isPublishing ? "Publishing…" : "Publish lecture"}
           </button>
+          {error ? <p role="alert" className="text-center text-xs font-medium text-destructive">{error}</p> : null}
           {published ? <p role="status" className="text-center text-xs font-medium text-success">{published}</p> : null}
         </form>
       </Card>
@@ -403,7 +425,7 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
                 <p className="truncate text-xs text-muted-foreground">{material.fileName} · {material.uploadedAt}</p>
                 <p className="mt-1 text-xs font-medium text-primary">{material.groupName}</p>
               </div>
-              <button aria-label={`Delete ${material.title}`} onClick={() => setMaterials((current) => current.filter((item) => item.id !== material.id))} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></button>
+              <button aria-label={`Delete ${material.title}`} onClick={() => { if (window.confirm(`Delete “${material.title}” for group ${material.groupName}?`)) setMaterials((current) => current.filter((item) => item.id !== material.id)); }} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></button>
             </Card>
           ))}
         </div>
