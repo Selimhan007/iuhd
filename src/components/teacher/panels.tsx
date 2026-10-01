@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { Check, Clock, FileText, FileUp, MapPin, Search, Trash2, Users } from "lucide-react";
+import { Check, Clock, FileText, FileUp, Filter, MapPin, Search, Trash2, Users } from "lucide-react";
 import { Card, EmptyState, Pill, ProgressBar } from "@/components/app/ui-kit";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -323,6 +323,17 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
   const [published, setPublished] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [query, setQuery] = useState("");
+  const [filterGroup, setFilterGroup] = useState("all");
+  const [sortBy, setSortBy] = useState<"newest" | "title">("newest");
+
+  const visibleMaterials = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    return materials
+      .filter((material) => filterGroup === "all" || material.groupId === filterGroup)
+      .filter((material) => !normalized || `${material.title} ${material.fileName}`.toLowerCase().includes(normalized))
+      .sort((a, b) => sortBy === "title" ? a.title.localeCompare(b.title) : b.id.localeCompare(a.id));
+  }, [filterGroup, materials, query, sortBy]);
 
   const addMaterial = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -332,8 +343,9 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
       setError("Enter a title and choose a lecture file.");
       return;
     }
-    const allowed = /\\.(pdf|doc|docx|ppt|pptx|mp4)$/i;
-    if (!allowed.test(file.name)) {
+    const allowed = /\.(pdf|doc|docx|ppt|pptx|mp4)$/i;
+    const allowedTypes = new Set(["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation", "video/mp4"]);
+    if (!allowed.test(file.name) || (file.type && !allowedTypes.has(file.type))) {
       setError("Use PDF, DOC, DOCX, PPT, PPTX or MP4 files only.");
       return;
     }
@@ -406,18 +418,37 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
         </form>
       </Card>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h3 className="font-semibold">Published lectures</h3>
-          <p className="text-xs text-muted-foreground">Visible to group {group.name}</p>
+          <p className="text-xs text-muted-foreground">Visible only to the selected student group.</p>
         </div>
-        <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold">{materials.length}</span>
+        <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold">{visibleMaterials.length}/{materials.length}</span>
       </div>
-      {materials.length === 0 ? (
-        <EmptyState message="No lectures uploaded yet." />
+      <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto]">
+        <label className="relative">
+          <span className="sr-only">Search lectures</span>
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search lectures" className="w-full rounded-xl border border-input bg-background py-2.5 pl-9 pr-3 text-sm outline-none focus:border-ring" />
+        </label>
+        <label className="flex items-center gap-2 rounded-xl border border-input bg-background px-3 text-sm">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <span className="sr-only">Filter by group</span>
+          <select value={filterGroup} onChange={(event) => setFilterGroup(event.target.value)} className="bg-transparent py-2.5 outline-none">
+            <option value="all">All groups</option>
+            {TEACHER_GROUPS.map((studentGroup) => <option key={studentGroup.id} value={studentGroup.id}>{studentGroup.name}</option>)}
+          </select>
+        </label>
+        <select aria-label="Sort lectures" value={sortBy} onChange={(event) => setSortBy(event.target.value as "newest" | "title")} className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring">
+          <option value="newest">Newest first</option>
+          <option value="title">Title A–Z</option>
+        </select>
+      </div>
+      {visibleMaterials.length === 0 ? (
+        <EmptyState message={materials.length === 0 ? "No lectures uploaded yet." : "No lectures match your filters."} />
       ) : (
         <div className="space-y-3">
-          {materials.map((material) => (
+          {visibleMaterials.map((material) => (
             <Card key={material.id} className="flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary"><FileText className="h-5 w-5" /></span>
               <div className="min-w-0 flex-1">
