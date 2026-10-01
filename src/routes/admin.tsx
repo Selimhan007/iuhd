@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
+  AlertTriangle,
   BookOpen,
   CalendarDays,
-  AlertTriangle,
   CheckCircle2,
   GraduationCap,
   Presentation,
@@ -42,13 +42,6 @@ export const Route = createFileRoute("/admin")({
 });
 
 type TabId = "students" | "teachers" | "courses" | "schedule";
-
-const TABS: { id: TabId; icon: LucideIcon }[] = [
-  { id: "students", icon: GraduationCap },
-  { id: "teachers", icon: Presentation },
-  { id: "courses", icon: BookOpen },
-  { id: "schedule", icon: CalendarDays },
-];
 
 const DAYS = ["", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -138,26 +131,6 @@ function AdminConsole() {
       </section>
 
       <div className="flex flex-col gap-4 lg:flex-row">
-        <nav
-          aria-label={t("admin.title")}
-          className="flex gap-1 overflow-x-auto rounded-2xl bg-muted p-1 lg:w-52 lg:shrink-0 lg:flex-col lg:self-start"
-        >
-          {TABS.map((x) => (
-            <button
-              key={x.id}
-              onClick={() => setTab(x.id)}
-              aria-current={tab === x.id ? "page" : undefined}
-              className={cn(
-                "tap-target flex items-center gap-2 whitespace-nowrap rounded-xl px-3 text-sm font-semibold transition-colors",
-                tab === x.id ? "bg-card text-primary shadow-soft" : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <x.icon className="h-4 w-4" />
-              {t(`admin.${x.id}`)}
-            </button>
-          ))}
-        </nav>
-
         <div className="min-w-0 flex-1">
           <ResourceManager
             key={tab}

@@ -22,7 +22,7 @@ function GradesPage() {
   const average = Math.round(grades.reduce((s, g) => s + g.total, 0) / grades.length);
 
   return (
-    <AppShell allow={["student"]}>
+    <AppShell allow={["student", "teacher"]}>
       <PageHeader title={t("nav.grades")} />
 
       <Card className="mb-5 bg-primary text-primary-foreground">

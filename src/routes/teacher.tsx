@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { BookOpen, CalendarDays, CheckSquare, ClipboardList, Users, type LucideIcon } from "lucide-react";
+import { useMemo, useState, type FormEvent } from "react";
+import { BookOpen, CalendarDays, CheckSquare, ClipboardList, FileText, Users, type LucideIcon } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { Card, SectionTitle } from "@/components/app/ui-kit";
 import {
   AttendancePanel,
   CourseGrid,
+  LectureMaterialsPanel,
   StudentsPanel,
   SubmissionsPanel,
   TodayClasses,
@@ -29,11 +30,12 @@ export const Route = createFileRoute("/teacher")({
   component: TeacherPage,
 });
 
-const TABS: { id: "myCourses" | "attendance" | "submissions" | "students"; icon: LucideIcon }[] = [
+const TABS: { id: "myCourses" | "attendance" | "submissions" | "students" | "materials"; icon: LucideIcon }[] = [
   { id: "myCourses", icon: BookOpen },
   { id: "attendance", icon: CheckSquare },
   { id: "submissions", icon: ClipboardList },
   { id: "students", icon: Users },
+  { id: "materials", icon: FileText },
 ];
 
 function TeacherPage() {
@@ -167,6 +169,7 @@ function TeacherDashboard() {
           <SubmissionsPanel submissions={submissions} courseName={(id) => courseById(id)?.name ?? ""} />
         ) : null}
         {tab === "students" ? <StudentsPanel /> : null}
+        {tab === "materials" ? <LectureMaterialsPanel courses={myCourses} /> : null}
       </section>
     </div>
   );
