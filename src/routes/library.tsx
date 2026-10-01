@@ -56,4 +56,3 @@ function LibraryPage() {
     </div>
   </AppShell>;
 }
-export default LibraryPage;
