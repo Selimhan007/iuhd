@@ -465,6 +465,30 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
   );
 }
 
+export function TeacherInsightsPanel({ pending, avgAttendance }: { pending: number; avgAttendance: number }) {
+  const [groupFilter, setGroupFilter] = useState("all");
+  const [exported, setExported] = useState(false);
+  const metrics = [
+    { label: "Average group grade", value: "86%", detail: "↑ 4% this month", tone: "text-success" },
+    { label: "Attendance", value: `${avgAttendance}%`, detail: "Across all groups", tone: "text-primary" },
+    { label: "Overdue work", value: pending, detail: "Needs review", tone: "text-warning" },
+  ];
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div><h3 className="font-semibold">Group analytics</h3><p className="text-xs text-muted-foreground">Track progress, attendance and overdue submissions.</p></div>
+        <div className="flex gap-2">
+          <select value={groupFilter} onChange={(event) => setGroupFilter(event.target.value)} aria-label="Filter analytics by group" className="rounded-xl border border-input bg-background px-3 py-2 text-sm"><option value="all">All groups</option>{TEACHER_GROUPS.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>
+          <button onClick={() => { setExported(true); window.setTimeout(() => setExported(false), 1800); }} className="rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">{exported ? "Exported" : "Export grades"}</button>
+        </div>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3">{metrics.map((metric) => <Card key={metric.label}><p className="text-xs text-muted-foreground">{metric.label}</p><p className={cn("mt-2 text-2xl font-bold", metric.tone)}>{metric.value}</p><p className="mt-1 text-xs text-muted-foreground">{metric.detail}</p></Card>)}</div>
+      <Card className="space-y-3"><div className="flex items-center justify-between"><p className="text-sm font-semibold">Completion by group</p><span className="text-xs text-muted-foreground">{groupFilter === "all" ? "All groups" : TEACHER_GROUPS.find((item) => item.id === groupFilter)?.name}</span></div>{TEACHER_GROUPS.filter((item) => groupFilter === "all" || item.id === groupFilter).map((item, index) => { const value = [78, 64, 91][index] ?? 72; return <div key={item.id} className="space-y-1"><div className="flex justify-between text-xs"><span>{item.name}</span><span className="font-semibold">{value}%</span></div><ProgressBar value={value} /></div>; })}</Card>
+      <Card><p className="mb-3 text-sm font-semibold">Recent activity</p><div className="space-y-3 text-sm">{["G. Nurygdyyev published Week 4 — Motion", "D. Allanurov graded 12 submissions", "A. Ashyraliyeva updated group 2A"].map((item, index) => <div key={item} className="flex items-start gap-3"><span className="mt-1 h-2 w-2 rounded-full bg-primary" /><div><p>{item}</p><p className="text-xs text-muted-foreground">{index + 1} hour{index ? "s" : ""} ago</p></div></div>)}</div></Card>
+    </div>
+  );
+}
+
 export function StudentsPanel() {
   const { t } = useI18n();
   const [q, setQ] = useState("");
