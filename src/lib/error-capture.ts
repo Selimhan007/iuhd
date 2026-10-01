@@ -63,10 +63,19 @@ console.error = (...args: unknown[]) => {
 };
 
 if (typeof globalThis.addEventListener === "function") {
-  globalThis.addEventListener("error", (event) => record((event as ErrorEvent).error ?? event));
-  globalThis.addEventListener("unhandledrejection", (event) =>
-    record((event as PromiseRejectionEvent).reason),
-  );
+  globalThis.addEventListener("error", (event) => {
+    const errorEvent = event as ErrorEvent;
+    record(
+      errorEvent.error ??
+        new Error(
+          errorEvent.message ||
+            `Resource failed to load${errorEvent.filename ? `: ${errorEvent.filename}` : ""}`,
+        ),
+    );
+  });
+  globalThis.addEventListener("unhandledrejection", (event) => {
+    record((event as PromiseRejectionEvent).reason ?? new Error("Unhandled promise rejection"));
+  });
 }
 
 export function consumeLastCapturedError(): unknown {

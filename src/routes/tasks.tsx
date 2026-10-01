@@ -25,6 +25,7 @@ function TasksPage() {
   const [open, setOpen] = useState<Assignment | null>(null);
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({});
   const [fileName, setFileName] = useState("");
+  const [fileError, setFileError] = useState("");
 
   const list = demoAssignments
     .filter((a) =>
@@ -124,11 +125,28 @@ function TasksPage() {
                   {fileName || t("tasks.upload")}
                   <input
                     type="file"
+                    accept=".pdf,.docx,.pptx,.zip,.png,.jpg,.jpeg"
                     className="hidden"
-                    onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
+                    onChange={(e) => {
+                    const selected = e.target.files?.[0];
+                    setFileError("");
+                    if (selected && selected.size > 10 * 1024 * 1024) {
+                      setFileName("");
+                      setFileError("The maximum submission size is 10 MB.");
+                      return;
+                    }
+                    if (selected && !/\.(pdf|docx|pptx|zip|png|jpg|jpeg)$/i.test(selected.name)) {
+                      setFileName("");
+                      setFileError("Use PDF, DOCX, PPTX, ZIP or image files only.");
+                      return;
+                    }
+                    setFileName(selected?.name ?? "");
+                  }}
                   />
                 </label>
+                {fileError ? <p role="alert" className="mb-3 text-xs font-medium text-destructive">{fileError}</p> : null}
                 <button
+                  disabled={!fileName}
                   onClick={() => setSubmitted((s) => ({ ...s, [open.id]: true }))}
                   className="tap-target w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground"
                 >

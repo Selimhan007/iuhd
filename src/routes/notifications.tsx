@@ -22,7 +22,9 @@ export const Route = createFileRoute("/notifications")({
 function NotificationsPage() {
   const { t } = useI18n();
   const [items, setItems] = useState(demoNotifications);
+  const [filter, setFilter] = useState<"all" | "unread">("all");
   const unread = items.filter((n) => !n.read).length;
+  const visibleItems = filter === "unread" ? items.filter((n) => !n.read) : items;
 
   return (
     <AppShell>
@@ -40,11 +42,14 @@ function NotificationsPage() {
           ) : undefined
         }
       />
-      {items.length === 0 ? (
+      <div className="mb-4 inline-flex rounded-xl bg-muted p-1">
+        {([['all', 'All'], ['unread', 'Unread']] as const).map(([value, label]) => <button key={value} onClick={() => setFilter(value)} className={`rounded-lg px-3 py-2 text-xs font-semibold ${filter === value ? "bg-card shadow-soft" : "text-muted-foreground"}`}>{label}{value === "unread" ? ` (${unread})` : ""}</button>)}
+      </div>
+      {visibleItems.length === 0 ? (
         <EmptyState message={t("empty.notifications")} icon={<Bell className="h-6 w-6" />} />
       ) : (
         <div className="space-y-3">
-          {items.map((n) => (
+          {visibleItems.map((n) => (
             <NotificationItem
               key={n.id}
               n={n}

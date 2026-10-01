@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, type FormEvent } from "react";
-import { BookOpen, CalendarDays, CheckSquare, ClipboardList, FileText, Users, type LucideIcon } from "lucide-react";
+import { BookOpen, CalendarDays, CheckSquare, ClipboardList, FileText, Users, BarChart3, type LucideIcon } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { Card, SectionTitle } from "@/components/app/ui-kit";
 import {
@@ -9,6 +9,7 @@ import {
   LectureMaterialsPanel,
   StudentsPanel,
   SubmissionsPanel,
+  TeacherInsightsPanel,
   TodayClasses,
   studentAttendance,
   type Submission,
@@ -30,12 +31,13 @@ export const Route = createFileRoute("/teacher")({
   component: TeacherPage,
 });
 
-const TABS: { id: "myCourses" | "attendance" | "submissions" | "students" | "materials"; icon: LucideIcon }[] = [
+const TABS: { id: "myCourses" | "attendance" | "submissions" | "students" | "materials" | "analytics"; icon: LucideIcon }[] = [
   { id: "myCourses", icon: BookOpen },
   { id: "attendance", icon: CheckSquare },
   { id: "submissions", icon: ClipboardList },
   { id: "students", icon: Users },
   { id: "materials", icon: FileText },
+  { id: "analytics", icon: BarChart3 },
 ];
 
 function TeacherPage() {
@@ -170,6 +172,7 @@ function TeacherDashboard() {
         ) : null}
         {tab === "students" ? <StudentsPanel /> : null}
         {tab === "materials" ? <LectureMaterialsPanel courses={myCourses} /> : null}
+        {tab === "analytics" ? <TeacherInsightsPanel pending={pending} avgAttendance={avgAttendance} /> : null}
       </section>
     </div>
   );
