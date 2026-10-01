@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   AlertTriangle,
   Archive,
+  Bell,
   BookOpen,
   CalendarDays,
   CheckCircle2,
@@ -10,6 +11,7 @@ import {
   FileWarning,
   GraduationCap,
   History,
+  Mail,
   Presentation,
   Settings2,
   Shield,
@@ -219,6 +221,7 @@ const adminSections = [
   { id: "groups", label: "Groups & subjects", icon: Users },
   { id: "audit", label: "Audit & moderation", icon: History },
   { id: "bulk", label: "Bulk operations", icon: SlidersHorizontal },
+  { id: "integrations", label: "Integrations", icon: Bell },
   { id: "settings", label: "System settings", icon: Settings2 },
 ] as const;
 
@@ -228,6 +231,7 @@ function AdminOperations() {
   const [saved, setSaved] = useState(false);
   const [fileLimit, setFileLimit] = useState("25");
   const [theme, setTheme] = useState("system");
+  const [integrations, setIntegrations] = useState({ calendar: false, email: true, push: true });
   const users = [
     { name: "M. Atayev", role: "Student", group: "1B", status: "Active" },
     { name: "G. Nurygdyyev", role: "Teacher", group: "Software", status: "Active" },
@@ -416,6 +420,33 @@ function AdminOperations() {
             "Download activity log",
           ]}
         />
+      ) : section === "integrations" ? (
+        <div className="grid gap-3 p-4 sm:grid-cols-3 sm:p-5">
+          <IntegrationCard
+            icon={CalendarDays}
+            title="Calendar"
+            description="Sync lessons, deadlines and campus events."
+            enabled={integrations.calendar}
+            actionLabel={integrations.calendar ? "Connected" : "Connect calendar"}
+            onToggle={() => setIntegrations((current) => ({ ...current, calendar: !current.calendar }))}
+          />
+          <IntegrationCard
+            icon={Mail}
+            title="Email notifications"
+            description="Send digest emails for new content and grades."
+            enabled={integrations.email}
+            actionLabel={integrations.email ? "Enabled" : "Enable email"}
+            onToggle={() => setIntegrations((current) => ({ ...current, email: !current.email }))}
+          />
+          <IntegrationCard
+            icon={Bell}
+            title="Push notifications"
+            description="Notify students instantly about important changes."
+            enabled={integrations.push}
+            actionLabel={integrations.push ? "Enabled" : "Enable push"}
+            onToggle={() => setIntegrations((current) => ({ ...current, push: !current.push }))}
+          />
+        </div>
       ) : (
         <div className="grid gap-4 p-4 sm:grid-cols-3 sm:p-5">
           <label className="text-sm font-medium">
@@ -454,6 +485,47 @@ function AdminOperations() {
         </div>
       )}
     </section>
+  );
+}
+
+function IntegrationCard({
+  icon: Icon,
+  title,
+  description,
+  enabled,
+  actionLabel,
+  onToggle,
+}: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  enabled: boolean;
+  actionLabel: string;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="rounded-2xl border border-border bg-background p-4">
+      <div className="flex items-start justify-between gap-3">
+        <span className={cn("flex h-10 w-10 items-center justify-center rounded-xl", enabled ? "bg-primary-soft text-primary" : "bg-muted text-muted-foreground")}>
+          <Icon className="h-5 w-5" />
+        </span>
+        <span className={cn("rounded-full px-2 py-1 text-[11px] font-semibold", enabled ? "bg-success/10 text-success" : "bg-muted text-muted-foreground")}>
+          {enabled ? "Active" : "Off"}
+        </span>
+      </div>
+      <h3 className="mt-4 text-sm font-semibold">{title}</h3>
+      <p className="mt-1 min-h-10 text-xs leading-5 text-muted-foreground">{description}</p>
+      <button
+        type="button"
+        onClick={onToggle}
+        className={cn(
+          "mt-4 w-full rounded-xl px-3 py-2.5 text-xs font-semibold transition-colors",
+          enabled ? "bg-muted text-foreground hover:bg-muted/70" : "bg-primary text-primary-foreground hover:bg-primary/90",
+        )}
+      >
+        {actionLabel}
+      </button>
+    </div>
   );
 }
 
