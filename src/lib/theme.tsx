@@ -10,7 +10,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("stm.theme");
-    const isDark = saved ? saved === "dark" : false;
+    const isDark = saved === "dark" || (!saved && document.documentElement.classList.contains("dark"));
     setDark(isDark);
     document.documentElement.classList.toggle("dark", isDark);
   }, []);
