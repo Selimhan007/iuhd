@@ -1,4 +1,4 @@
-const CACHE = "student-tm-v2";
+const CACHE = "student-tm-v3";
 const PRECACHE = ["/", "/schedule", "/courses", "/announcements", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
@@ -15,15 +15,24 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
-  if (req.method !== "GET" || new URL(req.url).origin !== self.location.origin) return;
+  const url = new URL(req.url);
+  if (req.method !== "GET" || url.origin !== self.location.origin) return;
+
+  // Always fetch document and route requests so published deployments receive the same HTML as Preview.
+  if (req.mode === "navigate" || req.destination === "document") {
+    event.respondWith(fetch(req).catch(() => caches.match("/")));
+    return;
+  }
 
   event.respondWith(
     fetch(req)
       .then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+        if (res.ok && (req.destination === "style" || req.destination === "script" || req.destination === "font" || req.destination === "image")) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+        }
         return res;
       })
-      .catch(() => caches.match(req).then((hit) => hit || caches.match("/"))),
+      .catch(() => caches.match(req)),
   );
 });
