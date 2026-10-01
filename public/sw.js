@@ -1,4 +1,4 @@
-const CACHE = "student-tm-v1";
+const CACHE = "student-tm-v2";
 const PRECACHE = ["/", "/schedule", "/courses", "/announcements", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {

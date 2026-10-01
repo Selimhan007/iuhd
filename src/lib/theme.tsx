@@ -4,7 +4,9 @@ type Ctx = { dark: boolean; toggle: () => void };
 const ThemeCtx = createContext<Ctx>({ dark: false, toggle: () => {} });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(() =>
+    typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
+  );
 
   useEffect(() => {
     const saved = localStorage.getItem("stm.theme");
