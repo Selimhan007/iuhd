@@ -112,6 +112,11 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="tk">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try { const theme = localStorage.getItem("stm.theme"); if (theme === "dark") document.documentElement.classList.add("dark"); else if (theme === "light") document.documentElement.classList.remove("dark"); } catch {} })();`,
+          }}
+        />
       </head>
       <body>
         {children}
