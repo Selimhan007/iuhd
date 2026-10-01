@@ -5,7 +5,7 @@ import { Card, PageHeader } from "@/components/app/ui-kit";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
-import { Download, LogOut, ChevronRight } from "lucide-react";
+import { Download, LogOut, ChevronRight, Share2, Copy, Check } from "lucide-react";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -31,6 +31,31 @@ function SettingsPage() {
   const [notifs, setNotifs] = useState(true);
   const [installEvent, setInstallEvent] = useState<InstallPrompt | null>(null);
   const [openInfo, setOpenInfo] = useState<string | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const shareUrl = typeof window === "undefined" ? "https://student-tm.app" : window.location.origin;
+
+  const copyShareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  const shareApp = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Student TM", text: "Присоединяйтесь к Student TM", url: shareUrl });
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+      }
+    }
+    setShareOpen(true);
+  };
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -101,6 +126,16 @@ function SettingsPage() {
           </button>
         ) : null}
 
+        <Card>
+          <button type="button" onClick={() => void shareApp()} className="flex w-full items-center justify-between text-left">
+            <span>
+              <span className="block text-sm font-semibold">Поделиться приложением</span>
+              <span className="mt-1 block text-xs text-muted-foreground">Отправьте ссылку или покажите QR-код</span>
+            </span>
+            <Share2 className="h-5 w-5 text-primary" />
+          </button>
+        </Card>
+
         <Card className="divide-y divide-border p-0">
           <Link to="/profile" className="flex items-center justify-between px-4 py-3.5 text-sm font-medium">
             {t("nav.profile")} <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -123,6 +158,35 @@ function SettingsPage() {
             </button>
           ))}
         </Card>
+
+        {shareOpen ? (
+          <div className="animate-dialog-backdrop fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 p-4 sm:items-center">
+            <div role="dialog" aria-modal="true" aria-labelledby="share-dialog-title" className="animate-dialog-enter w-full max-w-md rounded-2xl bg-card p-5 shadow-xl">
+              <div className="flex items-center justify-between gap-4">
+                <h2 id="share-dialog-title" className="text-lg font-semibold">Поделиться приложением</h2>
+                <button type="button" onClick={() => setShareOpen(false)} aria-label={t("close")} className="tap-target text-muted-foreground">×</button>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">Отсканируйте QR-код камерой телефона</p>
+              <div className="mx-auto mt-5 flex w-fit rounded-2xl bg-white p-3 shadow-sm">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(shareUrl)}`}
+                  alt="QR-код для открытия Student TM"
+                  width="220"
+                  height="220"
+                  className="h-[220px] w-[220px]"
+                />
+              </div>
+              <div className="mt-5 flex items-center gap-2 rounded-xl bg-muted px-3 py-2.5">
+                <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{shareUrl}</span>
+                <button type="button" onClick={() => void copyShareLink()} className="tap-target shrink-0 rounded-lg bg-card px-3 text-xs font-semibold">
+                  {copied ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
+                  <span className="sr-only">{copied ? "Скопировано" : "Копировать ссылку"}</span>
+                </button>
+              </div>
+              <button type="button" onClick={() => setShareOpen(false)} className="mt-5 w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground">{t("close")}</button>
+            </div>
+          </div>
+        ) : null}
 
         {openInfo ? (
           <div className="animate-dialog-backdrop fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 p-4 sm:items-center">
