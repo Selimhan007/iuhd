@@ -164,7 +164,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
         {/* Sticky header */}
         <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-md">
           <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
-            <Link to={home} className="flex items-center gap-2">
+            <Link to={home} preload="intent" className="flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <BrandIcon className="h-4 w-4" />
               </span>

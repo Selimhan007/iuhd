@@ -66,6 +66,7 @@ export function RoleNav({ kind, main, more, isActive, userName, initials, onLogo
               <Link
                 key={item.to}
                 to={item.to}
+                preload="intent"
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "tap-target flex flex-1 flex-col items-center justify-center gap-1 py-1.5 text-[11px] font-medium transition-colors",
@@ -105,6 +106,7 @@ export function RoleNav({ kind, main, more, isActive, userName, initials, onLogo
               <Link
                 key={item.to}
                 to={item.to}
+                preload="intent"
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium transition-colors",
