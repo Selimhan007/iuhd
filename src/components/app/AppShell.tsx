@@ -205,7 +205,11 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
           </div>
         </header>
 
-        <main className="mx-auto max-w-6xl px-4 pb-28 pt-5 md:pb-32">{children}</main>
+        <main className="mx-auto max-w-6xl px-4 pb-28 pt-5 md:pb-32">
+          <div key={pathname} className="page-transition-blur">
+            {children}
+          </div>
+        </main>
       </div>
 
       <RoleNav
