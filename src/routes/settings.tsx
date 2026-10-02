@@ -30,6 +30,7 @@ function SettingsPage() {
   const navigate = useNavigate();
   const [notifs, setNotifs] = useState(true);
   const [installEvent, setInstallEvent] = useState<InstallPrompt | null>(null);
+  const [installed, setInstalled] = useState(false);
   const [openInfo, setOpenInfo] = useState<string | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -62,8 +63,13 @@ function SettingsPage() {
       e.preventDefault();
       setInstallEvent(e as InstallPrompt);
     };
+    const installedHandler = () => setInstalled(true);
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    window.addEventListener("appinstalled", installedHandler);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("appinstalled", installedHandler);
+    };
   }, []);
 
   return (
@@ -114,10 +120,14 @@ function SettingsPage() {
           </button>
         </Card>
 
-        {installEvent ? (
+        {installed ? (
+          <Card className="border-primary/20 bg-primary/5 text-sm font-semibold text-primary">
+            Student TM was added to your device.
+          </Card>
+        ) : installEvent ? (
           <button
-            onClick={() => {
-              void installEvent.prompt();
+            onClick={async () => {
+              await installEvent.prompt();
               setInstallEvent(null);
             }}
             className="tap-target flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground"

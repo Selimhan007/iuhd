@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -126,6 +126,44 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+interface InstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+}
+
+function InstallPromptBanner() {
+  const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      event.preventDefault();
+      setInstallEvent(event as InstallPromptEvent);
+      setVisible(true);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  if (!visible || !installEvent) return null;
+
+  return (
+    <div className="fixed inset-x-4 bottom-4 z-[60] mx-auto max-w-md rounded-2xl border border-border bg-card/95 p-4 shadow-2xl backdrop-blur-xl sm:inset-x-auto sm:right-6 sm:w-[28rem]">
+      <div className="flex items-start gap-3">
+        <img src="/icons/icon-512.png" alt="Student TM" className="h-12 w-12 rounded-xl" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold text-foreground">Use it like an app on your phone.</p>
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">Install availability depends on your browser. Offline mode keeps the demo interface available; no university account data is synchronized.</p>
+          <div className="mt-3 flex gap-2">
+            <button type="button" onClick={() => { void installEvent.prompt(); setInstallEvent(null); setVisible(false); }} className="rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">Install app</button>
+            <button type="button" onClick={() => setVisible(false)} className="rounded-xl px-3 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted">Not now</button>
+          </div>
+        </div>
+        <button type="button" onClick={() => setVisible(false)} aria-label="Close" className="text-lg leading-none text-muted-foreground">×</button>
+      </div>
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -142,6 +180,7 @@ function RootComponent() {
           <AuthProvider>
             {/* Required: nested routes render here. */}
             <Outlet />
+            <InstallPromptBanner />
           </AuthProvider>
         </I18nProvider>
       </ThemeProvider>
