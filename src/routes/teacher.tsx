@@ -140,7 +140,7 @@ function TeacherDashboard() {
       </section>
 
       <section>
-        <div role="tablist" className="mb-5 flex gap-1 overflow-x-auto rounded-2xl bg-muted p-1">
+        <div role="tablist" className="mb-5 flex max-w-full gap-1 overflow-x-auto rounded-2xl bg-muted p-1">
           {TABS.map((x) => (
             <button
               key={x.id}
@@ -148,7 +148,7 @@ function TeacherDashboard() {
               aria-selected={tab === x.id}
               onClick={() => setTab(x.id)}
               className={cn(
-                "tap-target flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-colors",
+                "tap-target flex min-w-max shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-colors sm:flex-1",
                 tab === x.id ? "bg-card text-primary shadow-soft" : "text-muted-foreground hover:text-foreground",
               )}
             >
