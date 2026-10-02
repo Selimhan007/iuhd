@@ -63,11 +63,19 @@ function SettingsPage() {
       e.preventDefault();
       setInstallEvent(e as InstallPrompt);
     };
-    const installedHandler = () => setInstalled(true);
+    const availableHandler = (e: Event) => {
+      setInstallEvent((e as CustomEvent<InstallPrompt>).detail);
+    };
+    const installedHandler = () => {
+      setInstalled(true);
+      setInstallEvent(null);
+    };
     window.addEventListener("beforeinstallprompt", handler);
+    window.addEventListener("student-tm-install-available", availableHandler);
     window.addEventListener("appinstalled", installedHandler);
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("student-tm-install-available", availableHandler);
       window.removeEventListener("appinstalled", installedHandler);
     };
   }, []);
@@ -124,17 +132,30 @@ function SettingsPage() {
           <Card className="border-primary/20 bg-primary/5 text-sm font-semibold text-primary">
             Student TM was added to your device.
           </Card>
-        ) : installEvent ? (
-          <button
-            onClick={async () => {
-              await installEvent.prompt();
-              setInstallEvent(null);
-            }}
-            className="tap-target flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground"
-          >
-            <Download className="h-4 w-4" /> {t("settings.install")}
-          </button>
-        ) : null}
+        ) : (
+          <Card className="border-primary/15 bg-primary/5">
+            <div className="flex items-start gap-3">
+              <Download className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold">Use it like an app on your phone.</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">Install availability depends on your browser. Offline mode keeps the demo interface available; no university account data is synchronized.</p>
+                {installEvent ? (
+                  <button
+                    onClick={async () => {
+                      await installEvent.prompt();
+                      setInstallEvent(null);
+                    }}
+                    className="mt-3 inline-flex items-center gap-2 rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
+                  >
+                    <Download className="h-4 w-4" /> Install app
+                  </button>
+                ) : (
+                  <p className="mt-3 text-xs font-medium text-primary">Install app will appear here when your browser supports it.</p>
+                )}
+              </div>
+            </div>
+          </Card>
+        )}
 
         <Card>
           <button type="button" onClick={() => void shareApp()} className="flex w-full items-center justify-between text-left">

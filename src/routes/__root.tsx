@@ -137,7 +137,9 @@ function InstallPromptBanner() {
   useEffect(() => {
     const handler = (event: Event) => {
       event.preventDefault();
-      setInstallEvent(event as InstallPromptEvent);
+      const installEvent = event as InstallPromptEvent;
+      setInstallEvent(installEvent);
+      window.dispatchEvent(new CustomEvent("student-tm-install-available", { detail: installEvent }));
       setVisible(true);
     };
     window.addEventListener("beforeinstallprompt", handler);
