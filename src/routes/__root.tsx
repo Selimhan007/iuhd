@@ -139,6 +139,7 @@ function InstallPromptBanner() {
       event.preventDefault();
       const installEvent = event as InstallPromptEvent;
       setInstallEvent(installEvent);
+      (window as Window & { studentTmInstallEvent?: InstallPromptEvent }).studentTmInstallEvent = installEvent;
       window.dispatchEvent(new CustomEvent("student-tm-install-available", { detail: installEvent }));
       setVisible(true);
     };

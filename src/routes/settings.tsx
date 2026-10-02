@@ -6,6 +6,7 @@ import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { Download, LogOut, ChevronRight, Share2, Copy, Check } from "lucide-react";
+import QRCode from "qrcode";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -34,7 +35,22 @@ function SettingsPage() {
   const [openInfo, setOpenInfo] = useState<string | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [qrCode, setQrCode] = useState("");
   const shareUrl = typeof window === "undefined" ? "https://student-tm.app" : window.location.origin;
+
+  useEffect(() => {
+    let active = true;
+    void QRCode.toDataURL(shareUrl, { width: 220, margin: 2, errorCorrectionLevel: "M" })
+      .then((dataUrl) => {
+        if (active) setQrCode(dataUrl);
+      })
+      .catch(() => {
+        if (active) setQrCode("");
+      });
+    return () => {
+      active = false;
+    };
+  }, [shareUrl]);
 
   const copyShareLink = async () => {
     try {
@@ -66,6 +82,8 @@ function SettingsPage() {
     const availableHandler = (e: Event) => {
       setInstallEvent((e as CustomEvent<InstallPrompt>).detail);
     };
+    const pendingInstallEvent = (window as Window & { studentTmInstallEvent?: InstallPrompt }).studentTmInstallEvent;
+    if (pendingInstallEvent) setInstallEvent(pendingInstallEvent);
     const installedHandler = () => {
       setInstalled(true);
       setInstallEvent(null);
@@ -208,13 +226,13 @@ function SettingsPage() {
 
                 <div className="mt-6 grid gap-5 rounded-3xl border border-border/70 bg-muted/40 p-4 sm:grid-cols-[auto_1fr] sm:items-center sm:p-5">
                   <div className="mx-auto rounded-2xl bg-white p-3 shadow-lg shadow-primary/10 ring-4 ring-white/10">
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(shareUrl)}`}
-                      alt="QR-код для открытия Student TM"
-                      width="220"
-                      height="220"
-                      className="h-44 w-44 sm:h-[180px] sm:w-[180px]"
-                    />
+                    {qrCode ? (
+                      <img src={qrCode} alt="QR-код для открытия Student TM" width="220" height="220" className="h-44 w-44 sm:h-[180px] sm:w-[180px]" />
+                    ) : (
+                      <div className="flex h-44 w-44 items-center justify-center text-center text-xs text-muted-foreground sm:h-[180px] sm:w-[180px]">
+                        Формируем QR-код…
+                      </div>
+                    )}
                   </div>
                   <div className="min-w-0 text-center sm:text-left">
                     <p className="text-sm font-semibold">Сканируйте камерой телефона</p>
