@@ -6,7 +6,6 @@ import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { Download, LogOut, ChevronRight, Share2, Copy, Check } from "lucide-react";
-import QRCode from "qrcode";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -34,22 +33,7 @@ function SettingsPage() {
   const [openInfo, setOpenInfo] = useState<string | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [qrCode, setQrCode] = useState("");
   const shareUrl = typeof window === "undefined" ? "https://student-tm.app" : window.location.origin;
-
-  useEffect(() => {
-    let active = true;
-    QRCode.toDataURL(shareUrl, { width: 220, margin: 2, errorCorrectionLevel: "M" })
-      .then((dataUrl) => {
-        if (active) setQrCode(dataUrl);
-      })
-      .catch(() => {
-        if (active) setQrCode("");
-      });
-    return () => {
-      active = false;
-    };
-  }, [shareUrl]);
 
   const copyShareLink = async () => {
     try {
@@ -193,27 +177,18 @@ function SettingsPage() {
 
                 <div className="mt-6 grid gap-5 rounded-3xl border border-border/70 bg-muted/40 p-4 sm:grid-cols-[auto_1fr] sm:items-center sm:p-5">
                   <div className="mx-auto rounded-2xl bg-white p-3 shadow-lg shadow-primary/10 ring-4 ring-white/10">
-                    {qrCode ? (
-                      <img
-                        src={qrCode}
-                        alt="QR-код для открытия Student TM"
-                        width="220"
-                        height="220"
-                        className="h-44 w-44 sm:h-[180px] sm:w-[180px]"
-                      />
-                    ) : (
-                      <div className="flex h-44 w-44 items-center justify-center text-center text-xs text-muted-foreground sm:h-[180px] sm:w-[180px]">
-                        Формируем QR-код…
-                      </div>
-                    )}
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(shareUrl)}`}
+                      alt="QR-код для открытия Student TM"
+                      width="220"
+                      height="220"
+                      className="h-44 w-44 sm:h-[180px] sm:w-[180px]"
+                    />
                   </div>
                   <div className="min-w-0 text-center sm:text-left">
                     <p className="text-sm font-semibold">Сканируйте камерой телефона</p>
-                    <p className="mt-1 text-xs leading-5 text-muted-foreground">Код содержит ссылку на приложение и откроет его сразу, без ручного ввода адреса.</p>
-                    <a href={shareUrl} target="_blank" rel="noreferrer" className="mt-3 block truncate text-xs font-semibold text-primary underline-offset-4 hover:underline">
-                      Открыть ссылку приложения
-                    </a>
-                    <div className="mt-3 flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-left">
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">Код откроет приложение сразу, без ручного ввода адреса.</p>
+                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-left">
                       <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{shareUrl}</span>
                       <button type="button" onClick={() => void copyShareLink()} className="tap-target shrink-0 rounded-lg bg-primary/10 px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/20">
                         {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
