@@ -18,6 +18,9 @@ import { cn } from "@/lib/utils";
 import { assignments, courseById, courses, group, lessons, students } from "@/lib/demo-data";
 
 export const Route = createFileRoute("/teacher")({
+  validateSearch: (s: Record<string, unknown>): { tab?: string | undefined } => ({
+    tab: typeof s["tab"] === "string" ? s["tab"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Teacher dashboard — Student TM" },
@@ -47,7 +50,10 @@ function TeacherPage() {
 function TeacherDashboard() {
   const { t } = useI18n();
   const { user } = useAuth();
-  const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("myCourses");
+  const search = Route.useSearch();
+  const navigateTab = Route.useNavigate();
+  const tab: (typeof TABS)[number]["id"] = TABS.some((x) => x.id === search.tab) ? (search.tab as (typeof TABS)[number]["id"]) : "myCourses";
+  const setTab = (id: (typeof TABS)[number]["id"]) => navigateTab({ search: { tab: id }, replace: true });
   const [now] = useState(() => new Date());
 
   const myCourses = useMemo(() => courses.filter((c) => c.teacherId === user?.id), [user?.id]);
