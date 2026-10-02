@@ -143,6 +143,17 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
+
+  button,
+  [role="button"] {
+    transition: transform 150ms ease, filter 150ms ease;
+  }
+
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.97);
+    filter: brightness(0.96);
+  }
 }
 
 @utility card-surface {

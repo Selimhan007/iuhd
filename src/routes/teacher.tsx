@@ -140,7 +140,7 @@ function TeacherDashboard() {
       </section>
 
       <section>
-        <div role="tablist" className="mb-5 flex max-w-full gap-1 overflow-x-auto rounded-2xl bg-muted p-1">
+        <div role="tablist" className="mb-5 flex max-w-full gap-1 overflow-x-auto rounded-2xl bg-muted p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {TABS.map((x) => (
             <button
               key={x.id}
@@ -148,11 +148,11 @@ function TeacherDashboard() {
               aria-selected={tab === x.id}
               onClick={() => setTab(x.id)}
               className={cn(
-                "tap-target flex min-w-max shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-colors sm:flex-1",
+                "tap-target flex min-w-max shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-3 text-xs font-semibold transition-colors sm:flex-1 sm:gap-2 sm:px-4 sm:text-sm",
                 tab === x.id ? "bg-card text-primary shadow-soft" : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <x.icon className="h-4 w-4" />
+              <x.icon className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
               {t(`teacher.${x.id}`)}
             </button>
           ))}
