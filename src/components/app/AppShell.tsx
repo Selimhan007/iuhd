@@ -18,6 +18,8 @@ import {
   Shield,
   Presentation,
   Search,
+  Moon,
+  Sun,
   X,
   LogOut,
   type LucideIcon,
@@ -25,6 +27,7 @@ import {
 import { RoleNav, type NavItem, type RoleKind } from "./role-nav";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme";
 import type { Role } from "@/lib/demo-data";
 import {
   announcements,
@@ -113,6 +116,7 @@ const ROLE_CONFIG: Record<
 
 export function AppShell({ children, allow }: { children: ReactNode; allow?: Role[] }) {
   const { t } = useI18n();
+  const { dark, toggle } = useTheme();
   const { user, ready, logout } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -169,6 +173,15 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
             <span className="hidden rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary sm:inline-flex">
               {t(`role.${kind}`)}
             </span>
+            <button
+              type="button"
+              onClick={toggle}
+              aria-label={dark ? "Включить светлую тему" : "Включить ночную тему"}
+              title={dark ? "Светлая тема" : "Ночная тема"}
+              className="tap-target rounded-xl border border-border p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <button
               onClick={() => setSearchOpen(true)}
               aria-label={t("search.placeholder")}
