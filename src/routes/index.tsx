@@ -168,7 +168,7 @@ function HomePage() {
               <p className="font-semibold">{t("nav.ai")}</p>
               <p className="mt-1 text-xs text-muted-foreground">{t("ai.desc")}</p>
             </div>
-            <Pill tone="primary">{t("ai.soon")}</Pill>
+            <Pill tone="primary">AI</Pill>
           </Card>
         </Link>
       </div>
