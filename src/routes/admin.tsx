@@ -28,6 +28,9 @@ import {
 } from "@/lib/demo-data";
 
 export const Route = createFileRoute("/admin")({
+  validateSearch: (s: Record<string, unknown>): { tab?: string | undefined } => ({
+    tab: typeof s["tab"] === "string" ? s["tab"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Admin panel — Student TM" },
@@ -62,7 +65,10 @@ function AdminPage() {
 
 function AdminConsole() {
   const { t } = useI18n();
-  const [tab, setTab] = useState<TabId>("students");
+  const search = Route.useSearch();
+  const navigateTab = Route.useNavigate();
+  const tab: TabId = TABS.some((x) => x.id === search.tab) ? (search.tab as TabId) : "students";
+  const setTab = (id: TabId) => navigateTab({ search: { tab: id }, replace: true });
 
   const [data, setData] = useState<Record<TabId, ResourceItem[]>>(() => ({
     students: demoStudents.map((s) => ({ id: s.id, label: s.name, sub: `${s.studentCode} · ${group.name}` })),

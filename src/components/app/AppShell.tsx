@@ -17,6 +17,7 @@ import {
   Shield,
   Presentation,
   Search,
+  Users,
   X,
   LogOut,
   type LucideIcon,
@@ -36,7 +37,7 @@ import {
   courseById,
 } from "@/lib/demo-data";
 
-type NavItem = { to: string; icon: LucideIcon; key: string };
+type NavItem = { to: string; icon: LucideIcon; key: string; tab?: string };
 
 type RoleKind = "student" | "teacher" | "admin";
 
@@ -50,7 +51,7 @@ export const roleHome = (role: Role) => {
 
 const ROLE_CONFIG: Record<
   RoleKind,
-  { brand: string; icon: LucideIcon; main: NavItem[]; more: NavItem[] }
+  { brand: string; icon: LucideIcon; main: NavItem[]; manage?: NavItem[]; more: NavItem[] }
 > = {
   student: {
     brand: "Student TM",
@@ -84,6 +85,12 @@ const ROLE_CONFIG: Record<
       { to: "/announcements", icon: Megaphone, key: "nav.announcements" },
       { to: "/profile", icon: User, key: "nav.profile" },
     ],
+    manage: [
+      { to: "/teacher", tab: "myCourses", icon: BookOpen, key: "teacher.myCourses" },
+      { to: "/teacher", tab: "attendance", icon: CheckSquare, key: "teacher.attendance" },
+      { to: "/teacher", tab: "submissions", icon: ClipboardList, key: "teacher.submissions" },
+      { to: "/teacher", tab: "students", icon: Users, key: "teacher.students" },
+    ],
     more: [
       { to: "/materials", icon: FileText, key: "nav.materials" },
       { to: "/events", icon: CalendarHeart, key: "nav.events" },
@@ -102,6 +109,14 @@ const ROLE_CONFIG: Record<
       { to: "/notifications", icon: Bell, key: "nav.notifications" },
       { to: "/profile", icon: User, key: "nav.profile" },
     ],
+    manage: [
+      { to: "/admin", tab: "students", icon: GraduationCap, key: "admin.students" },
+      { to: "/admin", tab: "teachers", icon: Presentation, key: "admin.teachers" },
+      { to: "/admin", tab: "courses", icon: BookOpen, key: "admin.courses" },
+      { to: "/admin", tab: "schedule", icon: CalendarDays, key: "admin.schedule" },
+      { to: "/admin", tab: "announcements", icon: Megaphone, key: "admin.announcements" },
+      { to: "/admin", tab: "events", icon: CalendarHeart, key: "admin.events" },
+    ],
     more: [
       { to: "/schedule", icon: CalendarDays, key: "nav.schedule" },
       { to: "/courses", icon: BookOpen, key: "nav.courses" },
@@ -115,6 +130,9 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
   const { user, ready, logout } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const currentTab = useRouterState({
+    select: (s) => (s.location.search as Record<string, unknown>)["tab"] as string | undefined,
+  });
   const [searchOpen, setSearchOpen] = useState(false);
 
   const allowed = !user || !allow || allow.includes(user.role);
@@ -148,11 +166,12 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
 
   const navLink = (item: NavItem) => (
     <Link
-      key={item.to}
+      key={item.to + (item.tab ?? "")}
       to={item.to}
+      search={item.tab ? { tab: item.tab } : {}}
       className={cn(
         "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-        isActive(item.to)
+        (item.tab ? pathname === item.to && currentTab === item.tab : isActive(item.to) && !(config.manage && currentTab && pathname === item.to))
           ? "bg-primary-soft text-primary"
           : "text-muted-foreground hover:bg-muted hover:text-foreground",
       )}
@@ -180,6 +199,14 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
 
         <nav className="flex-1 space-y-1 overflow-y-auto" aria-label={t(`role.${kind}`)}>
           {config.main.map(navLink)}
+          {config.manage ? (
+            <>
+              <p className="px-3 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {t("nav.manage")}
+              </p>
+              {config.manage.map(navLink)}
+            </>
+          ) : null}
           <p className="px-3 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             {t("nav.more")}
           </p>
