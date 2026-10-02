@@ -187,8 +187,11 @@ function SettingsPage() {
                   </div>
                   <div className="min-w-0 text-center sm:text-left">
                     <p className="text-sm font-semibold">Сканируйте камерой телефона</p>
-                    <p className="mt-1 text-xs leading-5 text-muted-foreground">Код откроет приложение сразу, без ручного ввода адреса.</p>
-                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-left">
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">Код содержит ссылку на приложение и откроет его сразу, без ручного ввода адреса.</p>
+                    <a href={shareUrl} target="_blank" rel="noreferrer" className="mt-3 block truncate text-xs font-semibold text-primary underline-offset-4 hover:underline">
+                      Открыть ссылку приложения
+                    </a>
+                    <div className="mt-3 flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-left">
                       <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{shareUrl}</span>
                       <button type="button" onClick={() => void copyShareLink()} className="tap-target shrink-0 rounded-lg bg-primary/10 px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/20">
                         {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
