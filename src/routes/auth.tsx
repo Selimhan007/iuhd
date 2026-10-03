@@ -62,9 +62,7 @@ function AuthPage() {
     <div className="flex min-h-screen flex-col bg-muted/40 px-4 py-8">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
         <div className="mb-6 text-center">
-          <span className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-            <GraduationCap className="h-7 w-7" />
-          </span>
+          <img src={logoAsset.url} alt="Student TM" className="mx-auto mb-3 h-16 w-16 rounded-2xl object-cover" />
           <h1 className="text-2xl font-bold tracking-tight">Student TM</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("tagline")}</p>
         </div>
