@@ -58,7 +58,7 @@ const ROLE_CONFIG: Record<
       { to: "/", icon: Home, key: "nav.home" },
       { to: "/schedule", icon: CalendarDays, key: "nav.schedule" },
       { to: "/courses", icon: BookOpen, key: "nav.courses" },
-          { to: "/tasks", icon: ClipboardList, key: "nav.tasks" },
+      { to: "/tasks", icon: ClipboardList, key: "nav.tasks" },
       { to: "/profile", icon: User, key: "nav.profile" },
     ],
     more: [
@@ -178,7 +178,9 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
               title={dark ? "Светлая тема" : "Ночная тема"}
               className="tap-target rounded-xl border border-border p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              <span key={dark ? "sun" : "moon"} className="block animate-rise">
+                {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </span>
             </button>
             <button
               onClick={() => setSearchOpen(true)}
@@ -203,7 +205,12 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
           </div>
         </header>
 
-        <main className="mx-auto max-w-6xl px-4 pb-28 pt-5 md:pb-32">{children}</main>
+        <main
+          key={pathname}
+          className="mx-auto max-w-6xl animate-page-enter px-4 pb-28 pt-5 md:pb-32"
+        >
+          {children}
+        </main>
       </div>
 
       <RoleNav
@@ -280,7 +287,7 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="mx-auto mt-16 w-[min(40rem,92vw)] overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
+      <div className="mx-auto mt-16 w-[min(40rem,92vw)] animate-modal-enter overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
         <div className="flex items-center gap-2 border-b border-border px-4">
           <Search className="h-4 w-4 text-muted-foreground" />
           <input

@@ -80,20 +80,29 @@ function SchedulePage() {
           <EmptyState message={t("home.noClasses")} />
         ) : (
           <div className="space-y-3">
-            {todays.map((l) => (
-              <ScheduleCard
+            {todays.map((l, index) => (
+              <div
                 key={l.id}
-                lesson={l}
-                status={lessonStatus(l, now)}
-                onClick={() => setSelected(l)}
-              />
+                className="animate-schedule-card"
+                style={{ animationDelay: `${index * 45}ms` }}
+              >
+                <ScheduleCard
+                  lesson={l}
+                  status={lessonStatus(l, now)}
+                  onClick={() => setSelected(l)}
+                />
+              </div>
             ))}
           </div>
         )
       ) : (
         <div className="space-y-6">
           {[1, 2, 3, 4, 5, 6].map((d) => (
-            <section key={d}>
+            <section
+              key={d}
+              className="animate-schedule-card"
+              style={{ animationDelay: `${(d - 1) * 45}ms` }}
+            >
               <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 {DAY_KEYS[d - 1]}
               </h2>
@@ -116,7 +125,7 @@ function SchedulePage() {
 
       {selected ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 p-0 sm:items-center sm:p-4">
-          <div className="w-full max-w-md rounded-t-3xl border border-border bg-card p-5 sm:rounded-3xl">
+          <div className="w-full animate-sheet-enter max-w-md rounded-t-3xl border border-border bg-card p-5 sm:rounded-3xl">
             <div className="mb-4 flex items-start justify-between">
               <h3 className="text-lg font-bold">{t("schedule.details")}</h3>
               <button
