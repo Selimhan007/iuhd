@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import logoAsset from "@/assets/logo.png.asset.json";
+import { GraduationCap } from "lucide-react";
 import { useI18n, LANGUAGES } from "@/lib/i18n";
 import { DEMO_ACCOUNTS, useAuth } from "@/lib/auth";
 import { roleHome } from "@/components/app/AppShell";
@@ -62,7 +62,9 @@ function AuthPage() {
     <div className="flex min-h-screen flex-col bg-muted/40 px-4 py-8">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
         <div className="mb-6 text-center">
-          <img src={logoAsset.url} alt="Student TM" className="mx-auto mb-3 h-16 w-16 rounded-2xl object-cover" />
+          <span className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+            <GraduationCap className="h-8 w-8" />
+          </span>
           <h1 className="text-2xl font-bold tracking-tight">Student TM</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("tagline")}</p>
         </div>
