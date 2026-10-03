@@ -28,6 +28,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import type { Role } from "@/lib/demo-data";
+import LatticeLoader from "@/components/ui/LatticeLoader";
 import {
   announcements,
   assignments,
@@ -132,8 +133,8 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
 
   if (!ready || !user || !allowed) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
-        {t("loading")}
+      <div className="flex min-h-screen items-center justify-center text-muted-foreground">
+        <LatticeLoader label={t("loading")} pattern="orbit" color="currentColor" cellSize={7} gap={2} fontSize={14} step={90} showTimer={false} />
       </div>
     );
   }
