@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
+import { announceInstallAvailability, type InstallPromptEvent } from "../hooks/use-install-prompt";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -126,10 +127,6 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-interface InstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-}
-
 function InstallPromptBanner() {
   const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
@@ -139,8 +136,7 @@ function InstallPromptBanner() {
       event.preventDefault();
       const installEvent = event as InstallPromptEvent;
       setInstallEvent(installEvent);
-      (window as Window & { studentTmInstallEvent?: InstallPromptEvent }).studentTmInstallEvent = installEvent;
-      window.dispatchEvent(new CustomEvent("student-tm-install-available", { detail: installEvent }));
+      announceInstallAvailability(installEvent);
       setVisible(true);
     };
     window.addEventListener("beforeinstallprompt", handler);

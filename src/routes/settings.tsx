@@ -5,6 +5,7 @@ import { Card, PageHeader } from "@/components/app/ui-kit";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
+import { useInstallPrompt } from "@/hooks/use-install-prompt";
 import { Download, LogOut, ChevronRight, Share2, Copy, Check } from "lucide-react";
 import QRCode from "qrcode";
 
@@ -20,18 +21,13 @@ export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
 
-interface InstallPrompt extends Event {
-  prompt: () => Promise<void>;
-}
-
 function SettingsPage() {
   const { t, lang, setLang } = useI18n();
   const { dark, toggle } = useTheme();
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [notifs, setNotifs] = useState(true);
-  const [installEvent, setInstallEvent] = useState<InstallPrompt | null>(null);
-  const [installed, setInstalled] = useState(false);
+  const { installEvent, installed, install } = useInstallPrompt();
   const [openInfo, setOpenInfo] = useState<string | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -39,6 +35,7 @@ function SettingsPage() {
   const shareUrl = typeof window === "undefined" ? "https://student-tm.app" : window.location.origin;
 
   useEffect(() => {
+    if (!shareOpen) return;
     let active = true;
     void QRCode.toDataURL(shareUrl, { width: 220, margin: 2, errorCorrectionLevel: "M" })
       .then((dataUrl) => {
@@ -50,7 +47,7 @@ function SettingsPage() {
     return () => {
       active = false;
     };
-  }, [shareUrl]);
+  }, [shareOpen, shareUrl]);
 
   const copyShareLink = async () => {
     try {
@@ -74,29 +71,6 @@ function SettingsPage() {
     setShareOpen(true);
   };
 
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setInstallEvent(e as InstallPrompt);
-    };
-    const availableHandler = (e: Event) => {
-      setInstallEvent((e as CustomEvent<InstallPrompt>).detail);
-    };
-    const pendingInstallEvent = (window as Window & { studentTmInstallEvent?: InstallPrompt }).studentTmInstallEvent;
-    if (pendingInstallEvent) setInstallEvent(pendingInstallEvent);
-    const installedHandler = () => {
-      setInstalled(true);
-      setInstallEvent(null);
-    };
-    window.addEventListener("beforeinstallprompt", handler);
-    window.addEventListener("student-tm-install-available", availableHandler);
-    window.addEventListener("appinstalled", installedHandler);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
-      window.removeEventListener("student-tm-install-available", availableHandler);
-      window.removeEventListener("appinstalled", installedHandler);
-    };
-  }, []);
 
   return (
     <AppShell>
@@ -160,8 +134,7 @@ function SettingsPage() {
                 {installEvent ? (
                   <button
                     onClick={async () => {
-                      await installEvent.prompt();
-                      setInstallEvent(null);
+                      await install();
                     }}
                     className="mt-3 inline-flex items-center gap-2 rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
                   >

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { AppShell } from "@/components/app/AppShell";
 import { PageHeader } from "@/components/app/ui-kit";
 import { BookOpen, Bookmark, Check, Clock3, Download, FileText, Filter, History, LibraryBig, Play, Search, Send, Star, Upload, X } from "lucide-react";
@@ -20,6 +20,7 @@ const categories = ["Все", "IT и технологии", "Языки", "Эк�
 
 function LibraryPage() {
   const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
   const [category, setCategory] = useState("Все");
   const [faculty, setFaculty] = useState("Все факультеты");
   const [format, setFormat] = useState("Все форматы");
@@ -32,8 +33,8 @@ function LibraryPage() {
 
   const filtered = useMemo(() => resources.filter((item) => {
     const text = `${item.title} ${item.author}`.toLowerCase();
-    return text.includes(query.toLowerCase()) && (category === "Все" || item.category === category) && (faculty === "Все факультеты" || item.faculty === faculty) && (format === "Все форматы" || item.format === format);
-  }).sort((a, b) => sort === "Название" ? a.title.localeCompare(b.title) : sort === "Новизна" ? b.year - a.year : b.views - a.views), [query, category, faculty, format, sort]);
+    return text.includes(deferredQuery.toLowerCase()) && (category === "Все" || item.category === category) && (faculty === "Все факультеты" || item.faculty === faculty) && (format === "Все форматы" || item.format === format);
+  }).sort((a, b) => sort === "Название" ? a.title.localeCompare(b.title) : sort === "Новизна" ? b.year - a.year : b.views - a.views), [deferredQuery, category, faculty, format, sort]);
 
   const toggleSaved = (id: number) => setSaved((items) => items.includes(id) ? items.filter((item) => item !== id) : [...items, id]);
   const openPreview = (item: Resource) => { setPreview(item); setHistory((items) => [item.id, ...items.filter((id) => id !== item.id)]); };
