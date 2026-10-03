@@ -35,7 +35,15 @@ const ACTIVE_STYLES: Record<RoleKind, { phone: string; dock: string; indicator: 
   },
 };
 
-export function RoleNav({ kind, main, more, isActive, userName, initials, onLogout }: RoleNavProps) {
+export function RoleNav({
+  kind,
+  main,
+  more,
+  isActive,
+  userName,
+  initials,
+  onLogout,
+}: RoleNavProps) {
   const { t } = useI18n();
   const [sheetOpen, setSheetOpen] = useState(false);
   const styles = ACTIVE_STYLES[kind];
@@ -71,10 +79,10 @@ export function RoleNav({ kind, main, more, isActive, userName, initials, onLogo
                 className={cn(
                   "tap-target flex flex-1 flex-col items-center justify-center gap-1 py-1.5 text-[11px] font-medium transition-colors",
                   styles.indicator,
-                  active ? styles.phone : "text-muted-foreground",
+                  active ? `${styles.phone} animate-nav-active` : "text-muted-foreground",
                 )}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="h-5 w-5 transition-transform duration-150 group-active:scale-95" />
                 <span className="max-w-full truncate px-1">{t(item.key)}</span>
               </Link>
             );
@@ -111,7 +119,9 @@ export function RoleNav({ kind, main, more, isActive, userName, initials, onLogo
                 className={cn(
                   "flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium transition-colors",
                   styles.indicator,
-                  active ? styles.dock : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  active
+                    ? styles.dock
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
                 <item.icon className="h-4.5 w-4.5" />
@@ -126,7 +136,9 @@ export function RoleNav({ kind, main, more, isActive, userName, initials, onLogo
             className={cn(
               "flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium transition-colors",
               styles.indicator,
-              moreActive ? styles.dock : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              moreActive
+                ? styles.dock
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
             <LayoutGrid className="h-4.5 w-4.5" />
@@ -145,7 +157,9 @@ export function RoleNav({ kind, main, more, isActive, userName, initials, onLogo
             const active = isActive(item.to);
             return (
               <div key={item.to} className="flex items-center">
-                {i === main.length ? <span className="mx-1.5 h-7 w-px bg-border" aria-hidden /> : null}
+                {i === main.length ? (
+                  <span className="mx-1.5 h-7 w-px bg-border" aria-hidden />
+                ) : null}
                 <Link
                   to={item.to}
                   title={t(item.key)}
@@ -153,7 +167,9 @@ export function RoleNav({ kind, main, more, isActive, userName, initials, onLogo
                   className={cn(
                     "group flex items-center gap-2 px-3 py-2.5 text-sm font-medium transition-colors",
                     styles.indicator,
-                    active ? styles.dock : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    active
+                      ? styles.dock
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
                   <item.icon className="h-4.5 w-4.5 shrink-0" />
@@ -181,13 +197,18 @@ export function RoleNav({ kind, main, more, isActive, userName, initials, onLogo
       </nav>
 
       {sheetOpen ? (
-        <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label={t("nav.more")}>
+        <div
+          className="fixed inset-0 z-40 lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label={t("nav.more")}
+        >
           <button
             aria-label={t("close")}
             onClick={() => setSheetOpen(false)}
             className="absolute inset-0 bg-background/70 backdrop-blur-sm"
           />
-          <div className="absolute inset-x-0 bottom-0 rounded-t-3xl border-t border-white/25 bg-background/70 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-[0_-18px_60px_rgb(15_23_42/0.2)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/55 dark:border-white/10 dark:shadow-[0_-18px_60px_rgb(0_0_0/0.4)] md:inset-x-auto md:bottom-24 md:left-1/2 md:w-[32rem] md:-translate-x-1/2 md:rounded-3xl md:border">
+          <div className="absolute inset-x-0 bottom-0 animate-sheet-enter rounded-t-3xl border-t border-white/25 bg-background/70 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-[0_-18px_60px_rgb(15_23_42/0.2)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/55 dark:border-white/10 dark:shadow-[0_-18px_60px_rgb(0_0_0/0.4)] md:inset-x-auto md:bottom-24 md:left-1/2 md:w-[32rem] md:-translate-x-1/2 md:rounded-3xl md:border">
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary">
