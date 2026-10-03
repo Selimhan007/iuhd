@@ -147,13 +147,12 @@
   button,
   [role="button"] {
     -webkit-tap-highlight-color: transparent;
-    transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1), filter 120ms ease;
+    transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   button:active,
   [role="button"]:active {
     transform: translate3d(0, 1px, 0) scale(0.975);
-    filter: brightness(0.96);
   }
 }
 
@@ -168,6 +167,19 @@
 @utility tap-target {
   min-height: 44px;
   min-width: 44px;
+}
+
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 420px;
+}
+
+@media (max-width: 640px) {
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 }
 
 @keyframes rise {
