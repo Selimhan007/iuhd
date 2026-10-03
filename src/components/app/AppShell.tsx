@@ -4,7 +4,6 @@ import {
   Home,
   CalendarDays,
   BookOpen,
-  LibraryBig,
   ClipboardList,
   User,
   GraduationCap,
@@ -59,8 +58,7 @@ const ROLE_CONFIG: Record<
       { to: "/", icon: Home, key: "nav.home" },
       { to: "/schedule", icon: CalendarDays, key: "nav.schedule" },
       { to: "/courses", icon: BookOpen, key: "nav.courses" },
-      { to: "/library", icon: LibraryBig, key: "nav.library" },
-      { to: "/tasks", icon: ClipboardList, key: "nav.tasks" },
+          { to: "/tasks", icon: ClipboardList, key: "nav.tasks" },
       { to: "/profile", icon: User, key: "nav.profile" },
     ],
     more: [

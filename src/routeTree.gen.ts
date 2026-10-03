@@ -19,7 +19,6 @@ import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as ExamsRouteImport } from './routes/exams'
 import { Route as GradesRouteImport } from './routes/grades'
-import { Route as LibraryRouteImport } from './routes/library'
 import { Route as MaterialsRouteImport } from './routes/materials'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -80,11 +79,6 @@ const GradesRoute = GradesRouteImport.update({
   path: '/grades',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LibraryRoute = LibraryRouteImport.update({
-  id: '/library',
-  path: '/library',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MaterialsRoute = MaterialsRouteImport.update({
   id: '/materials',
   path: '/materials',
@@ -142,7 +136,6 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/exams': typeof ExamsRoute
   '/grades': typeof GradesRoute
-  '/library': typeof LibraryRoute
   '/materials': typeof MaterialsRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
@@ -163,7 +156,6 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/exams': typeof ExamsRoute
   '/grades': typeof GradesRoute
-  '/library': typeof LibraryRoute
   '/materials': typeof MaterialsRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
@@ -186,7 +178,6 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/exams': typeof ExamsRoute
   '/grades': typeof GradesRoute
-  '/library': typeof LibraryRoute
   '/materials': typeof MaterialsRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
@@ -210,7 +201,6 @@ export interface FileRouteTypes {
     | '/events'
     | '/exams'
     | '/grades'
-    | '/library'
     | '/materials'
     | '/notifications'
     | '/profile'
@@ -231,7 +221,6 @@ export interface FileRouteTypes {
     | '/events'
     | '/exams'
     | '/grades'
-    | '/library'
     | '/materials'
     | '/notifications'
     | '/profile'
@@ -253,7 +242,6 @@ export interface FileRouteTypes {
     | '/events'
     | '/exams'
     | '/grades'
-    | '/library'
     | '/materials'
     | '/notifications'
     | '/profile'
@@ -276,7 +264,6 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   ExamsRoute: typeof ExamsRoute
   GradesRoute: typeof GradesRoute
-  LibraryRoute: typeof LibraryRoute
   MaterialsRoute: typeof MaterialsRoute
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRoute
@@ -356,13 +343,6 @@ declare module '@tanstack/react-router' {
       path: '/grades'
       fullPath: '/grades'
       preLoaderRoute: typeof GradesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/library': {
-      id: '/library'
-      path: '/library'
-      fullPath: '/library'
-      preLoaderRoute: typeof LibraryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/materials': {
@@ -455,7 +435,6 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   ExamsRoute: ExamsRoute,
   GradesRoute: GradesRoute,
-  LibraryRoute: LibraryRoute,
   MaterialsRoute: MaterialsRoute,
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRoute,
