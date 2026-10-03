@@ -134,7 +134,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
   if (!ready || !user || !allowed) {
     return (
       <div className="flex min-h-screen items-center justify-center text-muted-foreground">
-        <LatticeLoader label={t("loading")} pattern="orbit" color="currentColor" cellSize={7} gap={2} fontSize={14} step={90} />
+        <LatticeLoader label={t("loading")} pattern="orbit" color="currentColor" cellSize={7} gap={2} fontSize={14} step={90} showTimer={false} />
       </div>
     );
   }
