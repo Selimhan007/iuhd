@@ -184,8 +184,8 @@
 
 @keyframes rise {
   from {
-    opacity: 0;
-    transform: translateY(8px);
+    opacity: 0.96;
+    transform: translate3d(0, 3px, 0);
   }
   to {
     opacity: 1;
@@ -205,5 +205,5 @@
 }
 
 @utility animate-rise {
-  animation: rise 0.35s ease-out both;
+  animation: rise 0.12s ease-out both;
 }
