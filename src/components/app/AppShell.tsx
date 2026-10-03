@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import logoAsset from "@/assets/logo.png.asset.json";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Home,
@@ -153,7 +154,6 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
 
   const kind = roleKind(user.role);
   const config = ROLE_CONFIG[kind];
-  const BrandIcon = config.icon;
   const home = roleHome(user.role);
   const initials = user.name
     .split(" ")

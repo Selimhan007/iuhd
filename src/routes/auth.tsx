@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { GraduationCap } from "lucide-react";
+import logoAsset from "@/assets/logo.png.asset.json";
 import { useI18n, LANGUAGES } from "@/lib/i18n";
 import { DEMO_ACCOUNTS, useAuth } from "@/lib/auth";
 import { roleHome } from "@/components/app/AppShell";
