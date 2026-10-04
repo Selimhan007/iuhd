@@ -4,7 +4,11 @@ import { AppShell } from "@/components/app/AppShell";
 import { Card, PageHeader } from "@/components/app/ui-kit";
 import { useI18n } from "@/lib/i18n";
 import { askAssistant, type AiMode } from "@/lib/ai.functions";
-import { BookOpen, FileText, Languages, ListChecks, Loader2, MessageSquare, RotateCcw, Send, Sparkles, Target } from "lucide-react";
+import { BookOpen, FileText, GraduationCap, Languages, ListChecks, MessageSquare, RotateCcw, Sparkles, Target } from "lucide-react";
+// @ts-expect-error JS component
+import PromptBar from "@/components/reactbits/PromptBar";
+// @ts-expect-error JS component
+import ThoughtLine from "@/components/reactbits/ThoughtLine";
 
 export const Route = createFileRoute("/assistant")({
   head: () => ({
@@ -78,8 +82,8 @@ function AssistantPage() {
   const [error, setError] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  async function send() {
-    const text = input.trim();
+  async function send(raw?: string) {
+    const text = (raw ?? input).trim();
     if (!text || busy) return;
     setInput("");
     setError(false);
@@ -129,7 +133,7 @@ function AssistantPage() {
         {messages.length === 0 ? (
           <div className="flex h-[280px] flex-col items-center justify-center gap-3 text-center">
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-              <Sparkles className="h-7 w-7" />
+              <GraduationCap className="h-7 w-7" />
             </span>
             <p className="max-w-sm text-sm text-muted-foreground">{t("ai.empty")}</p>
           </div>
@@ -149,9 +153,8 @@ function AssistantPage() {
               </div>
             ))}
             {busy && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {t("ai.thinking")}
+              <div className="text-muted-foreground">
+                <ThoughtLine working label={t("ai.thinking")} fontSize={14} showTimer={false} collapsible={false} steps={[]} />
               </div>
             )}
             {error && <p className="text-sm text-destructive">{t("ai.error")}</p>}
@@ -160,39 +163,33 @@ function AssistantPage() {
         )}
       </Card>
 
-      <div className="sticky bottom-20 flex gap-2 md:bottom-4">
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              void send();
-            }
-          }}
-          placeholder={t("ai.placeholder")}
-          rows={2}
-          className="flex-1 resize-none rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
-        />
-        <div className="flex flex-col gap-2">
-          <button
-            onClick={() => void send()}
-            disabled={busy || !input.trim()}
-            className="tap-target flex items-center justify-center rounded-xl bg-primary px-4 text-primary-foreground disabled:opacity-50"
-            aria-label={t("ai.send")}
-          >
-            <Send className="h-5 w-5" />
-          </button>
-          {messages.length > 0 && (
-            <button
-              onClick={() => setMessages([])}
-              className="tap-target flex items-center justify-center rounded-xl border border-border bg-card px-4 text-muted-foreground"
-              aria-label={t("ai.newChat")}
-            >
-              <RotateCcw className="h-5 w-5" />
-            </button>
-          )}
+      <div className="sticky bottom-20 flex items-end gap-2 md:bottom-4">
+        <div className="min-w-0 flex-1">
+          <PromptBar
+            placeholder={t("ai.placeholder")}
+            sources={[]}
+            commands={[]}
+            models={[]}
+            efforts={[]}
+            busy={busy}
+            onSend={(text: string) => void send(text)}
+            background="var(--card)"
+            color="var(--foreground)"
+            menuBackground="var(--popover)"
+            sparkColor="var(--primary)"
+            width={2000}
+            radius={16}
+          />
         </div>
+        {messages.length > 0 && (
+          <button
+            onClick={() => setMessages([])}
+            className="tap-target flex items-center justify-center rounded-xl border border-border bg-card px-3 text-muted-foreground"
+            aria-label={t("ai.newChat")}
+          >
+            <RotateCcw className="h-5 w-5" />
+          </button>
+        )}
       </div>
     </AppShell>
   );
