@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         name: "description",
         content: "Schedule, grades, attendance, assignments and announcements for university students in Turkmenistan.",
       },
-      { name: "theme-color", content: "#1e3a8a" },
+      { name: "theme-color", content: "#0f172a" },
       { property: "og:title", content: "Student TM" },
       { property: "og:description", content: "Your university, in one app." },
       { property: "og:type", content: "website" },
