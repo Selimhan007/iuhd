@@ -161,7 +161,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
     <div data-role={kind} className="min-h-screen bg-background text-foreground">
       <div>
         {/* Sticky header */}
-        <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-md">
+        <header className="sticky top-0 z-30 border-b border-border/80 bg-background/95 shadow-[0_2px_14px_rgb(15_23_42/0.06)] backdrop-blur-xl dark:shadow-[0_2px_14px_rgb(0_0_0/0.18)]">
           <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
             <Link to={home} preload="intent" className="flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">

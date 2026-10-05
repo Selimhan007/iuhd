@@ -68,10 +68,10 @@ export function RoleNav({
       {/* Phone: full-width tab bar */}
       <nav
         aria-label={t(`role.${kind}`)}
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-border/80 bg-background/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_28px_rgb(15_23_42/0.10)] backdrop-blur-xl dark:shadow-[0_-8px_28px_rgb(0_0_0/0.28)] md:hidden"
       >
         {kind === "teacher" ? <div className="h-0.5 w-full bg-primary/60" aria-hidden /> : null}
-        <div className="flex items-stretch justify-between gap-1 px-2 py-1.5">
+        <div className="flex items-stretch justify-between gap-1 px-2.5 py-2">
           {phoneItems.map((item) => {
             const active = isActive(item.to);
             return (
