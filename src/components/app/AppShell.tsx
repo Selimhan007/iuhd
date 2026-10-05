@@ -206,10 +206,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
           </div>
         </header>
 
-        <main
-          key={pathname}
-          className="mx-auto max-w-6xl animate-page-enter px-4 pb-28 pt-5 md:pb-32"
-        >
+        <main className="mx-auto max-w-6xl px-4 pb-28 pt-5 md:pb-32">
           {children}
         </main>
       </div>
