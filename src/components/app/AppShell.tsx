@@ -105,11 +105,7 @@ const ROLE_CONFIG: Record<
       { to: "/notifications", icon: Bell, key: "nav.notifications" },
       { to: "/profile", icon: User, key: "nav.profile" },
     ],
-    more: [
-      { to: "/schedule", icon: CalendarDays, key: "nav.schedule" },
-      { to: "/courses", icon: BookOpen, key: "nav.courses" },
-      { to: "/settings", icon: Settings, key: "nav.settings" },
-    ],
+    more: [{ to: "/settings", icon: Settings, key: "nav.settings" }],
   },
 };
 

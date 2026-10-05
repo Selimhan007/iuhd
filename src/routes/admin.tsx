@@ -1,11 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  AlertTriangle,
   Archive,
   Bell,
-  BookOpen,
-  CalendarDays,
   CheckCircle2,
   Download,
   FileWarning,
@@ -16,7 +13,6 @@ import {
   Settings2,
   Shield,
   SlidersHorizontal,
-  TrendingUp,
   Upload,
   UserRoundCog,
   Users,
@@ -28,12 +24,9 @@ import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import {
   announcements as demoAnnouncements,
-  courseById,
-  courses as demoCourses,
   events as demoEvents,
   faculty,
   group,
-  lessons,
   students as demoStudents,
   teachers as demoTeachers,
   university,
@@ -45,18 +38,16 @@ export const Route = createFileRoute("/admin")({
       { title: "Admin panel — Student TM" },
       {
         name: "description",
-        content: "Manage students, teachers, courses, schedule, announcements and events.",
+        content: "Manage students, teachers, announcements and events.",
       },
       { property: "og:title", content: "Admin panel — Student TM" },
-      { property: "og:description", content: "Manage students, teachers, courses and schedule." },
+      { property: "og:description", content: "Manage students, teachers, announcements and events." },
     ],
   }),
   component: AdminPage,
 });
 
-type TabId = "students" | "teachers" | "courses" | "schedule";
-
-const DAYS = ["", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+type TabId = "students" | "teachers";
 
 function AdminPage() {
   return (
@@ -81,16 +72,6 @@ function AdminConsole() {
       label: x.name,
       sub: `${x.title} · ${x.email}`,
     })),
-    courses: demoCourses.map((c) => ({
-      id: c.id,
-      label: c.name,
-      sub: `${c.code} · ${c.credits} ECTS`,
-    })),
-    schedule: lessons.map((l) => ({
-      id: l.id,
-      label: `${DAYS[l.weekday]} ${l.start}–${l.end} · ${courseById(l.courseId)?.name ?? ""}`,
-      sub: `${group.name} · ${l.room} · ${l.type}`,
-    })),
   }));
 
   const stats: { id: TabId; value: number; icon: LucideIcon; label: string }[] = [
@@ -101,13 +82,6 @@ function AdminConsole() {
       label: t("admin.students"),
     },
     { id: "teachers", value: data.teachers.length, icon: Presentation, label: t("admin.teachers") },
-    { id: "courses", value: data.courses.length, icon: BookOpen, label: t("admin.courses") },
-    {
-      id: "schedule",
-      value: data.schedule.length,
-      icon: CalendarDays,
-      label: t("admin.lessonsWeek"),
-    },
   ];
 
   const monitoring = [
@@ -124,20 +98,6 @@ function AdminConsole() {
       detail: "Announcements and events",
       icon: CheckCircle2,
       tone: "text-success",
-    },
-    {
-      label: "Schedule coverage",
-      value: `${Math.round((data.schedule.length / 16) * 100)}%`,
-      detail: "Lessons configured this week",
-      icon: TrendingUp,
-      tone: "text-primary",
-    },
-    {
-      label: "Attention needed",
-      value: data.schedule.filter((item) => item.sub.includes("—")).length,
-      detail: "Lessons without room",
-      icon: AlertTriangle,
-      tone: "text-warning",
     },
   ];
 
