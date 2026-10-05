@@ -100,7 +100,7 @@ const ROLE_CONFIG: Record<
     icon: Shield,
     main: [{ to: "/admin", icon: Shield, key: "nav.controlCenter" }],
     more: [
-      { to: "/announcements", icon: Megaphone, key: "nav.announcements" },
+      { to: "/announcements", icon: Megaphone, key: "nav.announcementsEvents" },
       { to: "/events", icon: CalendarHeart, key: "nav.events" },
       { to: "/notifications", icon: Bell, key: "nav.notifications" },
       { to: "/profile", icon: User, key: "nav.profile" },
