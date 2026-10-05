@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import {
   Archive,
@@ -65,6 +65,7 @@ function AdminPage() {
 
 function AdminConsole() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<TabId>("students");
   const [panel, setPanel] = useState<AdminPanel>("overview");
   const [publishedAnnouncements, setPublishedAnnouncements] = useState(() => [...demoAnnouncements]);
@@ -136,13 +137,13 @@ function AdminConsole() {
       <nav aria-label="Admin dashboard sections" className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-card p-2 shadow-card">
         {[
           ["overview", "Overview"],
-          ["content", "Announcements & events"],
+          ["content", "Bildirişler · Çäreler"],
           ["control", "Control center"],
         ].map(([id, label]) => (
           <button
             key={id}
             type="button"
-            onClick={() => setPanel(id as AdminPanel)}
+            onClick={() => id === "content" ? navigate({ to: "/announcements" }) : setPanel(id as AdminPanel)}
             className={cn(
               "shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors",
               panel === id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground",
