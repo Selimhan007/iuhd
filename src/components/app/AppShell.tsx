@@ -163,10 +163,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <BrandIcon className="h-4 w-4" />
               </span>
-              <span className="flex items-center gap-1.5">
-                <span className="font-bold">{config.brand}</span>
-                <span className="text-[10px] font-medium text-muted-foreground">v31.69</span>
-              </span>
+              <span className="font-bold">{config.brand}</span>
             </Link>
             <span className="hidden rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary sm:inline-flex">
               {t(`role.${kind}`)}
