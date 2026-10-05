@@ -418,7 +418,7 @@ function SettingsPage() {
           <LogOut className="h-4 w-4" /> {t("settings.logout")}
         </button>
 
-        <p className="pb-4 text-center text-xs text-muted-foreground">Student TM · v1.0.0</p>
+        <p className="pb-4 text-center text-xs text-muted-foreground">Student TM · v31.69</p>
       </div>
     </AppShell>
   );
