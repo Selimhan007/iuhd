@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import * as Dialog from "@radix-ui/react-dialog";
+import { Button } from "@/components/ui/button";
 import {
   Home,
   CalendarDays,
@@ -20,6 +22,7 @@ import {
   Users,
   X,
   LogOut,
+  Ellipsis,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -61,9 +64,9 @@ const ROLE_CONFIG: Record<
       { to: "/schedule", icon: CalendarDays, key: "nav.schedule" },
       { to: "/courses", icon: BookOpen, key: "nav.courses" },
       { to: "/tasks", icon: ClipboardList, key: "nav.tasks" },
-      { to: "/profile", icon: User, key: "nav.profile" },
     ],
     more: [
+      { to: "/profile", icon: User, key: "nav.profile" },
       { to: "/grades", icon: GraduationCap, key: "nav.grades" },
       { to: "/attendance", icon: CheckSquare, key: "nav.attendance" },
       { to: "/exams", icon: FileText, key: "nav.exams" },
@@ -83,7 +86,6 @@ const ROLE_CONFIG: Record<
       { to: "/schedule", icon: CalendarDays, key: "nav.schedule" },
       { to: "/courses", icon: BookOpen, key: "nav.courses" },
       { to: "/announcements", icon: Megaphone, key: "nav.announcements" },
-      { to: "/profile", icon: User, key: "nav.profile" },
     ],
     manage: [
       { to: "/teacher", tab: "myCourses", icon: BookOpen, key: "teacher.myCourses" },
@@ -92,6 +94,7 @@ const ROLE_CONFIG: Record<
       { to: "/teacher", tab: "students", icon: Users, key: "teacher.students" },
     ],
     more: [
+      { to: "/profile", icon: User, key: "nav.profile" },
       { to: "/materials", icon: FileText, key: "nav.materials" },
       { to: "/events", icon: CalendarHeart, key: "nav.events" },
       { to: "/notifications", icon: Bell, key: "nav.notifications" },
@@ -106,8 +109,6 @@ const ROLE_CONFIG: Record<
       { to: "/admin", icon: Shield, key: "nav.dashboard" },
       { to: "/announcements", icon: Megaphone, key: "nav.announcements" },
       { to: "/events", icon: CalendarHeart, key: "nav.events" },
-      { to: "/notifications", icon: Bell, key: "nav.notifications" },
-      { to: "/profile", icon: User, key: "nav.profile" },
     ],
     manage: [
       { to: "/admin", tab: "students", icon: GraduationCap, key: "admin.students" },
@@ -118,23 +119,15 @@ const ROLE_CONFIG: Record<
       { to: "/admin", tab: "events", icon: CalendarHeart, key: "admin.events" },
     ],
     more: [
+      { to: "/profile", icon: User, key: "nav.profile" },
+      { to: "/notifications", icon: Bell, key: "nav.notifications" },
+      { to: "/assistant", icon: Sparkles, key: "nav.ai" },
       { to: "/schedule", icon: CalendarDays, key: "nav.schedule" },
       { to: "/courses", icon: BookOpen, key: "nav.courses" },
       { to: "/settings", icon: Settings, key: "nav.settings" },
     ],
   },
 };
-
-export function getRoleNavigation(role: Role): NavItem[] {
-  const config = ROLE_CONFIG[roleKind(role)];
-  const seen = new Set<string>();
-  return [...config.main, ...(config.manage ?? []), ...config.more].filter((item) => {
-    const key = `${item.to}:${item.tab ?? ""}`;
-    if (item.to === "/profile" || seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
 
 export function AppShell({ children, allow }: { children: ReactNode; allow?: Role[] }) {
   const { t } = useI18n();
@@ -145,6 +138,9 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
     select: (s) => (s.location.search as Record<string, unknown>)["tab"] as string | undefined,
   });
   const [searchOpen, setSearchOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  useEffect(() => { setMoreOpen(false); }, [pathname, currentTab]);
 
   const allowed = !user || !allow || allow.includes(user.role);
 
@@ -173,6 +169,10 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
     .toUpperCase();
 
   const isActive = (to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
+  const itemActive = (item: NavItem) => item.tab
+    ? pathname === item.to && currentTab === item.tab
+    : isActive(item.to) && !(config.manage && currentTab && pathname === item.to);
+  const moreActive = config.more.some(itemActive) || (config.manage ?? []).some(itemActive);
 
   const navLink = (item: NavItem) => (
     <Link
@@ -290,15 +290,41 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
             <Link
               key={item.to}
               to={item.to}
+              aria-current={itemActive(item) ? "page" : undefined}
               className={cn(
                 "tap-target flex flex-1 flex-col items-center gap-1 py-2 text-[11px] font-medium transition-colors",
-                isActive(item.to) ? "text-primary" : "text-muted-foreground",
+                itemActive(item) ? "text-primary" : "text-muted-foreground",
               )}
             >
               <item.icon className="h-5 w-5" />
               {t(item.key)}
             </Link>
           ))}
+          <Dialog.Root open={moreOpen} onOpenChange={setMoreOpen}>
+            <Dialog.Trigger asChild>
+              <Button variant="ghost" aria-label={t("nav.more")} className={cn("tap-target h-auto flex-1 flex-col gap-1 rounded-none px-1 py-2 text-[11px]", moreActive || moreOpen ? "text-primary" : "text-muted-foreground")}>
+                <Ellipsis className="size-5" />
+                {t("nav.more")}
+              </Button>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" />
+              <Dialog.Content aria-describedby={undefined} className="fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] overflow-y-auto rounded-t-lg border border-border bg-card p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-xl sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-[min(28rem,90vw)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-lg">
+                <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+                  <Dialog.Title className="min-w-0 text-lg font-semibold">{t("nav.more")}</Dialog.Title>
+                  <Dialog.Close asChild><Button variant="ghost" size="icon" aria-label={t("close")}><X /></Button></Dialog.Close>
+                </div>
+                <nav aria-label={t("nav.more")} className="space-y-1">
+                  {config.manage ? <p className="px-3 py-2 text-xs font-semibold text-muted-foreground">{t("nav.manage")}</p> : null}
+                  {[...(config.manage ?? []), ...config.more].map(item => (
+                    <Link key={item.to + (item.tab ?? "")} to={item.to} search={item.tab ? { tab: item.tab } : {}} onClick={() => setMoreOpen(false)} aria-current={itemActive(item) ? "page" : undefined} className={cn("flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium", itemActive(item) ? "bg-primary-soft text-primary" : "text-foreground hover:bg-muted")}>
+                      <item.icon className="h-5 w-5 shrink-0" /><span className="min-w-0 break-words">{t(item.key)}</span>
+                    </Link>
+                  ))}
+                </nav>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
         </div>
       </nav>
 

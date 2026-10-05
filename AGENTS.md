@@ -9,4 +9,4 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Profile navigation uses the same role menu configuration as AppShell to keep available sections and management tabs consistent.
+- The More dialog and desktop sidebar share AppShell's role menu configuration; Radix Dialog handles focus, backdrop dismissal and Escape consistently.
