@@ -173,23 +173,23 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
               {t(`role.${kind}`)}
             </span>
             <button
-              type="button"
-              onClick={toggle}
-              aria-label={dark ? "Включить светлую тему" : "Включить ночную тему"}
-              title={dark ? "Светлая тема" : "Ночная тема"}
-              className="tap-target rounded-xl border border-border p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              <span key={dark ? "sun" : "moon"} className="block animate-rise">
-                {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </span>
-            </button>
-            <button
               onClick={() => setSearchOpen(true)}
               aria-label={t("search.placeholder")}
               className="tap-target ml-auto flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted"
             >
               <Search className="h-4 w-4" />
               <span className="hidden sm:inline">{t("search.placeholder")}</span>
+            </button>
+            <button
+              type="button"
+              onClick={toggle}
+              aria-label={dark ? "Включить светлую тему" : "Включить ночную тему"}
+              title={dark ? "Светлая тема" : "Ночная тема"}
+              className="tap-target hidden rounded-xl border border-border p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:flex"
+            >
+              <span key={dark ? "sun" : "moon"} className="block animate-rise">
+                {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </span>
             </button>
             <Link
               to="/notifications"
@@ -219,6 +219,8 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
         userName={user.name}
         initials={initials}
         onLogout={handleLogout}
+        dark={dark}
+        onToggleTheme={toggle}
       />
 
       {searchOpen ? <SearchOverlay onClose={() => setSearchOpen(false)} /> : null}

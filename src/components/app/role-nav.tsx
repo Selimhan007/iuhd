@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { LayoutGrid, LogOut, X, type LucideIcon } from "lucide-react";
+import { LayoutGrid, LogOut, Moon, Sun, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 
@@ -15,6 +15,8 @@ interface RoleNavProps {
   userName: string;
   initials: string;
   onLogout: () => void;
+  dark: boolean;
+  onToggleTheme: () => void;
 }
 
 const ACTIVE_STYLES: Record<RoleKind, { phone: string; dock: string; indicator: string }> = {
@@ -43,6 +45,8 @@ export function RoleNav({
   userName,
   initials,
   onLogout,
+  dark,
+  onToggleTheme,
 }: RoleNavProps) {
   const { t } = useI18n();
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -248,6 +252,15 @@ export function RoleNav({
                 );
               })}
             </div>
+            <button
+              type="button"
+              onClick={onToggleTheme}
+              aria-label={dark ? "Включить светлую тему" : "Включить ночную тему"}
+              className="tap-target mb-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {dark ? "Светлая тема" : "Ночная тема"}
+            </button>
             <button
               onClick={() => {
                 setSheetOpen(false);
