@@ -11,6 +11,8 @@ export const getRouter = () => {
     scrollRestoration: true,
     defaultPreload: "intent",
     defaultPreloadStaleTime: 30_000,
+    // Do not keep the previous route in a pending state after navigation.
+    defaultPendingMinMs: 0,
   });
 
   return router;
