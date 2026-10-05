@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Profile navigation uses the same role menu configuration as AppShell to keep available sections and management tabs consistent.

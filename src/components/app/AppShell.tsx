@@ -125,6 +125,17 @@ const ROLE_CONFIG: Record<
   },
 };
 
+export function getRoleNavigation(role: Role): NavItem[] {
+  const config = ROLE_CONFIG[roleKind(role)];
+  const seen = new Set<string>();
+  return [...config.main, ...(config.manage ?? []), ...config.more].filter((item) => {
+    const key = `${item.to}:${item.tab ?? ""}`;
+    if (item.to === "/profile" || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 export function AppShell({ children, allow }: { children: ReactNode; allow?: Role[] }) {
   const { t } = useI18n();
   const { user, ready, logout } = useAuth();

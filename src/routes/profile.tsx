@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { AppShell } from "@/components/app/AppShell";
+import { AppShell, getRoleNavigation } from "@/components/app/AppShell";
 import { Card, PageHeader } from "@/components/app/ui-kit";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { currentStudent, department, faculty, group, program, university } from "@/lib/demo-data";
-import { Settings } from "lucide-react";
+import { ChevronRight, Settings } from "lucide-react";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -14,6 +14,8 @@ export const Route = createFileRoute("/profile")({
       { name: "description", content: "Student profile with university, faculty, program, group and contact details." },
       { property: "og:title", content: "Profile — Student TM" },
       { property: "og:description", content: "Student profile and academic details." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ProfilePage,
@@ -112,6 +114,25 @@ function ProfilePage() {
           </button>
         </>
       )}
+      <section className="mt-8" aria-labelledby="profile-all-title">
+        <h2 id="profile-all-title" className="mb-3 text-lg font-semibold">{t("profile.all")}</h2>
+        <nav aria-label={t("profile.all")} className="grid gap-x-6 sm:grid-cols-2">
+          {user ? getRoleNavigation(user.role).map((item) => (
+            <Link
+              key={`${item.to}:${item.tab ?? ""}`}
+              to={item.to}
+              search={item.tab ? { tab: item.tab } : {}}
+              className="flex min-h-14 items-center gap-3 border-b border-border py-3 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary">
+                <item.icon className="h-5 w-5" />
+              </span>
+              <span className="min-w-0 flex-1 break-words">{t(item.key)}</span>
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+            </Link>
+          )) : null}
+        </nav>
+      </section>
     </AppShell>
   );
 }
