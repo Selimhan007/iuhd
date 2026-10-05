@@ -52,8 +52,9 @@ export function RoleNav({
   const [sheetOpen, setSheetOpen] = useState(false);
   const styles = ACTIVE_STYLES[kind];
 
-  const phoneItems = [main[0], main[1], main[2], main[4]].filter(Boolean) as NavItem[];
-  const phoneSheet = [main[3], ...more].filter(Boolean) as NavItem[];
+  // Admin actions belong directly in the mobile bottom menu; secondary sections stay in More.
+  const phoneItems = (kind === "admin" ? main : [main[0], main[1], main[2], main[4]]).filter(Boolean) as NavItem[];
+  const phoneSheet = (kind === "admin" ? more : [main[3], ...more]).filter(Boolean) as NavItem[];
   const moreActive = more.some((m) => isActive(m.to));
 
   useEffect(() => {
