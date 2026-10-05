@@ -49,7 +49,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Bir zat nädogry boldy. Gaýtadan synanyşyň.
+          Bir zat nädogry gitdi. Gaýtadan synanyşyň.
         </h1>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -65,7 +65,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Öýe dolan
+            Başa dolan
           </a>
         </div>
       </div>

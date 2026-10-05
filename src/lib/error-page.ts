@@ -22,7 +22,7 @@ export function renderErrorPage(): string {
       <p>Biziň tarapymyzda bir zat nädogry boldy. Sahypany täzeläp ýa-da baş sahypa dolanyp bilersiňiz.</p>
       <div class="actions">
         <button class="primary" onclick="location.reload()">Gaýtadan synanyş</button>
-        <a class="secondary" href="/">Öýe dolan</a>
+        <a class="secondary" href="/">Başa dolan</a>
       </div>
     </div>
   </body>
