@@ -6,7 +6,7 @@ import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { useInstallPrompt } from "@/hooks/use-install-prompt";
-import { Download, LogOut, ChevronRight, Share2, Copy, Check } from "lucide-react";
+import { Download, LogOut, ChevronRight, Share2, Copy, Check, Bell } from "lucide-react";
 import QRCode from "qrcode";
 
 export const Route = createFileRoute("/settings")({
@@ -33,6 +33,7 @@ function SettingsPage() {
   const [notificationPermission, setNotificationPermission] = useState<
     NotificationPermission | "unsupported"
   >("default");
+  const [notificationTested, setNotificationTested] = useState(false);
   const { installEvent, installed, install } = useInstallPrompt();
   const [openInfo, setOpenInfo] = useState<string | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
@@ -54,6 +55,7 @@ function SettingsPage() {
   const toggleNotifications = async () => {
     if (notifs) {
       setNotifs(false);
+      setNotificationTested(false);
       return;
     }
 
@@ -62,9 +64,25 @@ function SettingsPage() {
       return;
     }
 
-    const permission = await Notification.requestPermission();
+    const permission =
+      Notification.permission === "default"
+        ? await Notification.requestPermission()
+        : Notification.permission;
     setNotificationPermission(permission);
     setNotifs(permission === "granted");
+  };
+
+  const sendTestNotification = () => {
+    if (notificationPermission !== "granted") return;
+    const notification = new Notification("Student TM", {
+      body: "Уведомления работают корректно.",
+      tag: "student-tm-test",
+    });
+    notification.onclick = () => {
+      window.focus();
+      notification.close();
+    };
+    setNotificationTested(true);
   };
 
   useEffect(() => {
@@ -153,10 +171,22 @@ function SettingsPage() {
             <p className="mt-1 text-xs text-muted-foreground">
               {notificationPermission === "unsupported"
                 ? "Браузер не поддерживает уведомления"
-                : notifs
-                  ? "Уведомления разрешены"
-                  : "Разрешите уведомления, чтобы получать важные обновления"}
+                : notificationPermission === "denied"
+                  ? "Разрешение заблокировано. Разрешите его в настройках браузера"
+                  : notifs
+                    ? "Уведомления разрешены"
+                    : "Разрешите уведомления, чтобы получать важные обновления"}
             </p>
+            {notifs ? (
+              <button
+                type="button"
+                onClick={sendTestNotification}
+                className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-primary transition-opacity hover:opacity-80"
+              >
+                <Bell className="h-3.5 w-3.5" aria-hidden="true" />
+                {notificationTested ? "Тест отправлен" : "Отправить тестовое уведомление"}
+              </button>
+            ) : null}
           </div>
           <button
             onClick={() => void toggleNotifications()}
