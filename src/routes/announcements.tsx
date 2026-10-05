@@ -31,7 +31,7 @@ function AnnouncementsPage() {
     .sort((a, b) => Number(!!b.important) - Number(!!a.important) || b.date.localeCompare(a.date));
 
   return (
-    <AppShell>
+    <AppShell allow={["student", "teacher", "admin", "superadmin"]}>
       <PageHeader title={t("nav.announcements")} />
 
       <div className="mb-5 flex gap-2 overflow-x-auto pb-1">

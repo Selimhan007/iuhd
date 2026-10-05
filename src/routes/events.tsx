@@ -24,7 +24,7 @@ function EventsPage() {
   const [registered, setRegistered] = useState<Record<string, boolean>>({});
 
   return (
-    <AppShell>
+    <AppShell allow={["student", "teacher", "admin", "superadmin"]}>
       <PageHeader title={t("nav.events")} />
       {events.length === 0 ? (
         <EmptyState message={t("empty.events")} icon={<CalendarHeart className="h-6 w-6" />} />

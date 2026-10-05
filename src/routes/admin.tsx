@@ -10,6 +10,7 @@ import {
   GraduationCap,
   History,
   Mail,
+  Megaphone,
   Presentation,
   Settings2,
   Shield,
