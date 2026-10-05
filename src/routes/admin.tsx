@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import {
   Archive,
   Bell,
+  CalendarPlus,
   CheckCircle2,
   Download,
   FileWarning,
@@ -30,6 +31,8 @@ import {
   students as demoStudents,
   teachers as demoTeachers,
   university,
+  type Announcement,
+  type UniEvent,
 } from "@/lib/demo-data";
 
 export const Route = createFileRoute("/admin")({
@@ -48,6 +51,8 @@ export const Route = createFileRoute("/admin")({
 });
 
 type TabId = "students" | "teachers";
+type AdminPanel = "overview" | "content" | "control";
+type ContentKind = "announcement" | "event";
 
 function AdminPage() {
   return (
@@ -60,6 +65,9 @@ function AdminPage() {
 function AdminConsole() {
   const { t } = useI18n();
   const [tab, setTab] = useState<TabId>("students");
+  const [panel, setPanel] = useState<AdminPanel>("overview");
+  const [publishedAnnouncements, setPublishedAnnouncements] = useState(() => [...demoAnnouncements]);
+  const [publishedEvents, setPublishedEvents] = useState(() => [...demoEvents]);
 
   const [data, setData] = useState<Record<TabId, ResourceItem[]>>(() => ({
     students: demoStudents.map((s) => ({
@@ -124,6 +132,27 @@ function AdminConsole() {
         </div>
       </section>
 
+      <nav aria-label="Admin dashboard sections" className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-card p-2 shadow-card">
+        {[
+          ["overview", "Overview"],
+          ["content", "Announcements & events"],
+          ["control", "Control center"],
+        ].map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setPanel(id as AdminPanel)}
+            className={cn(
+              "shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors",
+              panel === id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+
+      {panel === "overview" ? <>
       <section
         aria-label={t("admin.overview")}
         className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"
@@ -170,9 +199,97 @@ function AdminConsole() {
           />
         </div>
       </div>
+      </> : null}
 
-      <AdminOperations />
+      {panel === "content" ? (
+        <ContentPublisher
+          announcements={publishedAnnouncements}
+          events={publishedEvents}
+          onAnnouncement={(item) => setPublishedAnnouncements((current) => [item, ...current])}
+          onEvent={(item) => setPublishedEvents((current) => [item, ...current])}
+        />
+      ) : null}
+
+      {panel === "control" ? <AdminOperations /> : null}
     </div>
+  );
+}
+
+function ContentPublisher({
+  announcements,
+  events,
+  onAnnouncement,
+  onEvent,
+}: {
+  announcements: Announcement[];
+  events: UniEvent[];
+  onAnnouncement: (item: Announcement) => void;
+  onEvent: (item: UniEvent) => void;
+}) {
+  const [kind, setKind] = useState<ContentKind>("announcement");
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [date, setDate] = useState("");
+  const [place, setPlace] = useState("");
+  const [published, setPublished] = useState(false);
+
+  const reset = () => {
+    setTitle("");
+    setBody("");
+    setDate("");
+    setPlace("");
+    setPublished(true);
+  };
+
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!title.trim() || !body.trim()) return;
+    const id = `admin-${Date.now()}`;
+    if (kind === "announcement") {
+      onAnnouncement({ id, title: title.trim(), body: body.trim(), author: "Administration", date: date || new Date().toISOString().slice(0, 10), category: "university" });
+    } else {
+      onEvent({ id, title: title.trim(), description: body.trim(), date: date || new Date().toISOString().slice(0, 10), place: place.trim() || "Campus" });
+    }
+    reset();
+  };
+
+  return (
+    <section className="space-y-4">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+        <form onSubmit={submit} className="rounded-3xl border border-border bg-card p-5 shadow-card">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
+              {kind === "announcement" ? <Bell className="h-5 w-5" /> : <CalendarPlus className="h-5 w-5" />}
+            </span>
+            <div>
+              <h2 className="font-bold">Publish content</h2>
+              <p className="text-xs text-muted-foreground">Share updates with students and teachers.</p>
+            </div>
+          </div>
+          <div className="mt-5 grid grid-cols-2 gap-2">
+            {([['announcement', 'Announcement'], ['event', 'Event']] as const).map(([value, label]) => (
+              <button key={value} type="button" onClick={() => setKind(value)} className={cn("rounded-xl px-3 py-2.5 text-sm font-semibold", kind === value ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>{label}</button>
+            ))}
+          </div>
+          <label className="mt-4 block text-sm font-medium">Title<input required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+          <label className="mt-3 block text-sm font-medium">{kind === "announcement" ? "Message" : "Description"}<textarea required value={body} onChange={(e) => setBody(e.target.value)} rows={4} className="mt-1.5 w-full resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <label className="text-sm font-medium">Date<input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+            {kind === "event" ? <label className="text-sm font-medium">Place<input value={place} onChange={(e) => setPlace(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label> : null}
+          </div>
+          <button type="submit" className="mt-4 flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"><Megaphone className="h-4 w-4" /> Publish</button>
+          {published ? <p className="mt-3 text-xs font-medium text-success">Published successfully.</p> : null}
+        </form>
+        <div className="rounded-3xl border border-border bg-card p-5 shadow-card">
+          <h2 className="font-bold">Published content</h2>
+          <div className="mt-4 space-y-2">
+            {[...announcements.slice(0, 4).map((item) => ({ ...item, kind: "Announcement" })), ...events.slice(0, 4).map((item) => ({ ...item, kind: "Event", body: item.description }))].map((item) => (
+              <article key={item.id} className="rounded-2xl bg-muted/50 p-3"><div className="flex items-center justify-between gap-3"><p className="font-semibold">{item.title}</p><span className="text-[11px] text-primary">{item.kind}</span></div><p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.body}</p></article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
