@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import {
   Archive,
   Bell,
+  CalendarDays,
   CalendarPlus,
   CheckCircle2,
   Download,
   FileWarning,
   GraduationCap,
+  LayoutDashboard,
   History,
   Mail,
   Megaphone,
@@ -95,16 +97,16 @@ function AdminConsole() {
 
   const monitoring = [
     {
-      label: "Active students",
+      label: t("admin.activeStudents"),
       value: data.students.length,
-      detail: "Registered in the group",
+      detail: t("admin.registeredGroup"),
       icon: Users,
       tone: "text-primary",
     },
     {
-      label: "Published content",
+      label: t("admin.publishedContent"),
       value: demoAnnouncements.length + demoEvents.length,
-      detail: "Announcements and events",
+      detail: t("admin.announcementsEvents"),
       icon: CheckCircle2,
       tone: "text-success",
     },
@@ -133,24 +135,31 @@ function AdminConsole() {
         </div>
       </section>
 
-      <nav aria-label="Admin dashboard sections" className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-card p-2 shadow-card">
+      <nav aria-label={t("admin.dashboardSections")} className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-card p-2 shadow-card">
         {[
-          ["overview", "Overview"],
-          ["content", "Announcements & events"],
-          ["control", "Control center"],
-        ].map(([id, label]) => (
+          ["overview", t("admin.panelOverview"), LayoutDashboard],
+          ["content", t("admin.panelContent"), Megaphone],
+          ["control", t("admin.panelControl"), Settings2],
+        ].map(([id, label, Icon]) => {
+          const IconComponent = Icon as LucideIcon;
+          return (
           <button
-            key={id}
+            key={id as string}
             type="button"
             onClick={() => setPanel(id as AdminPanel)}
+            aria-current={panel === id ? "page" : undefined}
             className={cn(
-              "shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors",
-              panel === id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              "flex min-w-[9.5rem] flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold transition-all",
+              panel === id
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
-            {label}
+            <IconComponent className="h-4 w-4" />
+            <span className="truncate">{label as string}</span>
           </button>
-        ))}
+          );
+        })}
       </nav>
 
       {panel === "overview" ? <>
@@ -175,7 +184,7 @@ function AdminConsole() {
         ))}
       </section>
 
-      <section aria-label="System monitoring" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <section aria-label={t("admin.systemMonitoring")} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {monitoring.map((item) => (
           <div key={item.label} className="card-surface p-4">
             <div className="flex items-center justify-between">
@@ -227,6 +236,7 @@ function ContentPublisher({
   onAnnouncement: (item: Announcement) => void;
   onEvent: (item: UniEvent) => void;
 }) {
+  const { t } = useI18n();
   const [kind, setKind] = useState<ContentKind>("announcement");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -247,7 +257,7 @@ function ContentPublisher({
     if (!title.trim() || !body.trim()) return;
     const id = `admin-${Date.now()}`;
     if (kind === "announcement") {
-      onAnnouncement({ id, title: title.trim(), body: body.trim(), author: "Administration", date: date || new Date().toISOString().slice(0, 10), category: "university" });
+      onAnnouncement({ id, title: title.trim(), body: body.trim(), author: t("admin.management"), date: date || new Date().toISOString().slice(0, 10), category: "university" });
     } else {
       onEvent({ id, title: title.trim(), description: body.trim(), date: date || new Date().toISOString().slice(0, 10), place: place.trim() || "Campus" });
     }
@@ -263,28 +273,28 @@ function ContentPublisher({
               {kind === "announcement" ? <Bell className="h-5 w-5" /> : <CalendarPlus className="h-5 w-5" />}
             </span>
             <div>
-              <h2 className="font-bold">Publish content</h2>
-              <p className="text-xs text-muted-foreground">Share updates with students and teachers.</p>
+              <h2 className="font-bold">{t("admin.publishContent")}</h2>
+              <p className="text-xs text-muted-foreground">{t("admin.shareUpdates")}</p>
             </div>
           </div>
           <div className="mt-5 grid grid-cols-2 gap-2">
-            {([['announcement', 'Announcement'], ['event', 'Event']] as const).map(([value, label]) => (
+            {([['announcement', t("admin.announcement")], ['event', t("admin.event")]] as const).map(([value, label]) => (
               <button key={value} type="button" onClick={() => setKind(value)} className={cn("rounded-xl px-3 py-2.5 text-sm font-semibold", kind === value ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>{label}</button>
             ))}
           </div>
-          <label className="mt-4 block text-sm font-medium">Title<input required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
-          <label className="mt-3 block text-sm font-medium">{kind === "announcement" ? "Message" : "Description"}<textarea required value={body} onChange={(e) => setBody(e.target.value)} rows={4} className="mt-1.5 w-full resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+          <label className="mt-4 block text-sm font-medium">{t("admin.titleField")}<input required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+          <label className="mt-3 block text-sm font-medium">{kind === "announcement" ? t("admin.message") : t("admin.description")}<textarea required value={body} onChange={(e) => setBody(e.target.value)} rows={4} className="mt-1.5 w-full resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <label className="text-sm font-medium">Date<input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
-            {kind === "event" ? <label className="text-sm font-medium">Place<input value={place} onChange={(e) => setPlace(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label> : null}
+            <label className="text-sm font-medium">{t("admin.date")}<input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+            {kind === "event" ? <label className="text-sm font-medium">{t("admin.place")}<input value={place} onChange={(e) => setPlace(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label> : null}
           </div>
-          <button type="submit" className="mt-4 flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"><Megaphone className="h-4 w-4" /> Publish</button>
-          {published ? <p className="mt-3 text-xs font-medium text-success">Published successfully.</p> : null}
+          <button type="submit" className="mt-4 flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"><Megaphone className="h-4 w-4" /> {t("admin.publish")}</button>
+          {published ? <p className="mt-3 text-xs font-medium text-success">{t("admin.publishedSuccessfully")}</p> : null}
         </form>
         <div className="rounded-3xl border border-border bg-card p-5 shadow-card">
-          <h2 className="font-bold">Published content</h2>
+          <h2 className="font-bold">{t("admin.publishedContent")}</h2>
           <div className="mt-4 space-y-2">
-            {[...announcements.slice(0, 4).map((item) => ({ ...item, kind: "Announcement" })), ...events.slice(0, 4).map((item) => ({ ...item, kind: "Event", body: item.description }))].map((item) => (
+            {[...announcements.slice(0, 4).map((item) => ({ ...item, kind: t("admin.announcement") })), ...events.slice(0, 4).map((item) => ({ ...item, kind: t("admin.event"), body: item.description }))].map((item) => (
               <article key={item.id} className="rounded-2xl bg-muted/50 p-3"><div className="flex items-center justify-between gap-3"><p className="font-semibold">{item.title}</p><span className="text-[11px] text-primary">{item.kind}</span></div><p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.body}</p></article>
             ))}
           </div>
@@ -295,26 +305,68 @@ function ContentPublisher({
 }
 
 const adminSections = [
-  { id: "users", label: "Users", icon: UserRoundCog },
-  { id: "groups", label: "Groups & subjects", icon: Users },
-  { id: "audit", label: "Audit & moderation", icon: History },
-  { id: "bulk", label: "Bulk operations", icon: SlidersHorizontal },
-  { id: "integrations", label: "Integrations", icon: Bell },
-  { id: "settings", label: "System settings", icon: Settings2 },
+  { id: "users", key: "admin.users", icon: UserRoundCog },
+  { id: "groups", key: "admin.groupsSubjects", icon: Users },
+  { id: "audit", key: "admin.auditModeration", icon: History },
+  { id: "bulk", key: "admin.bulkOperations", icon: SlidersHorizontal },
+  { id: "integrations", key: "admin.integrations", icon: Bell },
+  { id: "settings", key: "admin.systemSettings", icon: Settings2 },
 ] as const;
 
 function AdminOperations() {
+  const { t } = useI18n();
   const [section, setSection] = useState<(typeof adminSections)[number]["id"]>("users");
   const [search, setSearch] = useState("");
   const [saved, setSaved] = useState(false);
   const [fileLimit, setFileLimit] = useState("25");
   const [theme, setTheme] = useState("system");
   const [integrations, setIntegrations] = useState({ calendar: false, email: true, push: true });
-  const users = [
-    { name: "M. Atayev", role: "Student", group: "1B", status: "Active" },
-    { name: "G. Nurygdyyev", role: "Teacher", group: "Software", status: "Active" },
-    { name: "S. Ovezova", role: "Student", group: "1B", status: "Blocked" },
-  ];
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
+  const [users, setUsers] = useState([
+    { id: "m-atayev", name: "M. Atayev", role: "Student", group: "1B", status: "Active" },
+    { id: "g-nurygdyyev", name: "G. Nurygdyyev", role: "Teacher", group: "Software", status: "Active" },
+    { id: "s-ovezova", name: "S. Ovezova", role: "Student", group: "1B", status: "Blocked" },
+  ]);
+
+  const downloadCsv = () => {
+    const csv = ["Name,Role,Group,Status", ...users.map((user) => [user.name, user.role, user.group, user.status].join(","))].join("\\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "users.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importUsers = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setActionMessage(`${file.name} (${file.size} bytes)`);
+    setSaved(true);
+    event.target.value = "";
+  };
+
+  const runAction = async (action: string) => {
+    const target = users.find((user) => action.endsWith(user.name));
+    const nextRole = target?.role === "Student" ? "Teacher" : "Student";
+    if (target) {
+      setUsers((current) => current.map((user) => user.name === target.name ? { ...user, role: nextRole } : user));
+    }
+    if (action === t("admin.exportCsv")) downloadCsv();
+    try {
+      await fetch("/api/admin", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(target ? { action: "change-role", userId: target.id, role: nextRole } : { action }),
+      });
+      setActionMessage(action);
+      setSaved(true);
+    } catch (error) {
+      console.error("[v0] Control center action failed", error);
+      setActionMessage("Action failed");
+    }
+  };
   const events = [
     "G. Nurygdyyev uploaded lecture-04.pdf",
     "Admin changed S. Ovezova role to Student",
@@ -328,11 +380,11 @@ function AdminOperations() {
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-              Administration
+              {t("admin.management")}
             </p>
-            <h2 className="mt-1 text-xl font-bold tracking-tight">Control center</h2>
+            <h2 className="mt-1 text-xl font-bold tracking-tight">{t("admin.managementTitle")}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Manage access, content, operations and system policy from one place.
+              {t("admin.managementDescription")}
             </p>
           </div>
           {section === "users" ? (
@@ -340,8 +392,8 @@ function AdminOperations() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search users"
-                aria-label="Search users"
+                placeholder={t("admin.searchUsers")}
+                aria-label={t("admin.searchUsers")}
                 className="w-full rounded-xl border border-input bg-background px-3 py-2.5 pl-9 text-sm outline-none focus:border-ring"
               />
               <SlidersHorizontal className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -349,7 +401,7 @@ function AdminOperations() {
           ) : null}
         </div>
         <nav
-          aria-label="Admin management sections"
+          aria-label={t("admin.managementTitle")}
           className="mt-4 flex gap-2 overflow-x-auto pb-1"
         >
           {adminSections.map((item) => (
@@ -363,21 +415,26 @@ function AdminOperations() {
                   : "bg-muted text-muted-foreground hover:text-foreground",
               )}
             >
-              <item.icon className="h-4 w-4" /> {item.label}
+              <item.icon className="h-4 w-4" /> {t(item.key)}
             </button>
           ))}
         </nav>
+        {actionMessage ? (
+          <p className="mt-3 rounded-xl bg-success/10 px-3 py-2 text-xs font-medium text-success" role="status">
+            {actionMessage}: {t("admin.actionQueued")}
+          </p>
+        ) : null}
       </div>
 
       {section === "users" ? (
         <div className="divide-y divide-border">
           <div className="grid gap-3 p-4 sm:grid-cols-3 sm:p-5">
-            {["1,248 users", "42 teachers", "18 blocked"].map((label, index) => (
-              <div key={label} className="rounded-2xl bg-muted/60 p-3">
-                <p className="text-lg font-bold">{label.split(" ")[0]}</p>
+            {[["1,248", "admin.usersCount"], ["42", "admin.teachersCount"], ["18", "admin.blockedCount"]].map(([value, key], index) => (
+              <div key={key} className="rounded-2xl bg-muted/60 p-3">
+                <p className="text-lg font-bold">{value}</p>
                 <p className="text-xs text-muted-foreground">
-                  {label.slice(label.indexOf(" ") + 1)}
-                  {index === 2 ? " · review needed" : ""}
+                  {t(key)}
+                  {index === 2 ? ` · ${t("admin.reviewNeeded")}` : ""}
                 </p>
               </div>
             ))}
@@ -386,11 +443,11 @@ function AdminOperations() {
             <table className="w-full min-w-[620px] text-left text-sm">
               <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th className="px-5 py-3">User</th>
-                  <th className="px-5 py-3">Role</th>
-                  <th className="px-5 py-3">Group</th>
-                  <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3">Actions</th>
+                  <th className="px-5 py-3">Ulanyjy</th>
+                  <th className="px-5 py-3">Rol</th>
+                  <th className="px-5 py-3">Topar</th>
+                  <th className="px-5 py-3">Ýagdaý</th>
+                  <th className="px-5 py-3">Hereketler</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -414,15 +471,15 @@ function AdminOperations() {
                               : "bg-success/10 text-success",
                           )}
                         >
-                          {user.status}
+                          {user.status === "Blocked" ? t("admin.blocked") : t("admin.active")}
                         </span>
                       </td>
                       <td className="px-5 py-3">
                         <button
-                          onClick={() => setSaved(true)}
+              onClick={() => runAction(`${t("admin.changeRole")}: ${user.name}`)}
                           className="rounded-lg bg-muted px-3 py-1.5 text-xs font-semibold hover:bg-primary-soft"
                         >
-                          Change role
+                          {t("admin.changeRole")}
                         </button>
                       </td>
                     </tr>
@@ -431,21 +488,22 @@ function AdminOperations() {
             </table>
           </div>
           <div className="flex flex-wrap gap-2 p-4 sm:p-5">
+            <input ref={importInputRef} type="file" accept=".csv,.xlsx" onChange={importUsers} className="sr-only" />
             <button
-              onClick={() => setSaved(true)}
+              onClick={() => importInputRef.current?.click()}
               className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
             >
-              <Upload className="h-4 w-4" /> Import users
+              <Upload className="h-4 w-4" /> {t("admin.importUsers")}
             </button>
             <button
-              onClick={() => setSaved(true)}
+              onClick={() => runAction(t("admin.exportCsv"))}
               className="flex items-center gap-2 rounded-xl bg-muted px-4 py-2.5 text-sm font-semibold"
             >
-              <Download className="h-4 w-4" /> Export CSV
+              <Download className="h-4 w-4" /> {t("admin.exportCsv")}
             </button>
             {saved ? (
               <span className="self-center text-xs font-medium text-success">
-                Action queued successfully.
+                {t("admin.actionQueued")}
               </span>
             ) : null}
           </div>
@@ -453,13 +511,15 @@ function AdminOperations() {
       ) : section === "groups" ? (
         <ActionGrid
           items={[
-            "Create group",
-            "Archive group",
-            "Move students",
-            "Assign teacher",
-            "Create subject",
-            "Export roster",
+            t("admin.createGroup"),
+            t("admin.archiveGroup"),
+            t("admin.moveStudents"),
+            t("admin.assignTeacher"),
+            t("admin.createSubject"),
+            t("admin.exportRoster"),
           ]}
+          onAction={runAction}
+          workflowLabel={t("admin.openWorkflow")}
         />
       ) : section === "audit" ? (
         <div className="grid gap-4 p-4 sm:grid-cols-[1fr_auto] sm:p-5">
@@ -470,7 +530,7 @@ function AdminOperations() {
                 <div>
                   <p className="text-sm font-medium">{event}</p>
                   <p className="text-xs text-muted-foreground">
-                    {index + 1} hour{index ? "s" : ""} ago · system audit
+                    {index + 1} {t("admin.hoursAgo")} · {t("admin.systemAudit")}
                   </p>
                 </div>
               </div>
@@ -478,69 +538,75 @@ function AdminOperations() {
           </div>
           <div className="rounded-2xl border border-warning/30 bg-warning/5 p-4">
             <FileWarning className="h-5 w-5 text-warning" />
-            <p className="mt-3 text-sm font-semibold">3 items need moderation</p>
+            <p className="mt-3 text-sm font-semibold">3 {t("admin.moderationNeeded")}</p>
             <button
-              onClick={() => setSaved(true)}
+              onClick={() => runAction(t("admin.reviewQueue"))}
               className="mt-3 rounded-lg bg-warning px-3 py-2 text-xs font-semibold text-warning-foreground"
             >
-              Review queue
+              {t("admin.reviewQueue")}
             </button>
           </div>
         </div>
       ) : section === "bulk" ? (
         <ActionGrid
           items={[
-            "Notify selected groups",
-            "Export grades XLSX",
-            "Archive old groups",
-            "Bulk file review",
-            "Send deadline reminder",
-            "Download activity log",
+            t("admin.notifyGroups"),
+            t("admin.exportGrades"),
+            t("admin.archiveOldGroups"),
+            t("admin.bulkFileReview"),
+            t("admin.sendDeadline"),
+            t("admin.downloadActivity"),
           ]}
+          onAction={runAction}
+          workflowLabel={t("admin.openWorkflow")}
         />
       ) : section === "integrations" ? (
         <div className="grid gap-3 p-4 sm:grid-cols-3 sm:p-5">
           <IntegrationCard
             icon={CalendarDays}
-            title="Calendar"
-            description="Sync lessons, deadlines and campus events."
+            title={t("admin.calendar")}
+            description={t("admin.calendarDescription")}
             enabled={integrations.calendar}
-            actionLabel={integrations.calendar ? "Connected" : "Connect calendar"}
+            actionLabel={integrations.calendar ? t("admin.connected") : t("admin.connectCalendar")}
             onToggle={() => setIntegrations((current) => ({ ...current, calendar: !current.calendar }))}
           />
           <IntegrationCard
             icon={Mail}
-            title="Email notifications"
-            description="Send digest emails for new content and grades."
+            title={t("admin.emailNotifications")}
+            description={t("admin.emailDescription")}
             enabled={integrations.email}
-            actionLabel={integrations.email ? "Enabled" : "Enable email"}
+            actionLabel={integrations.email ? t("admin.enabled") : t("admin.enableEmail")}
             onToggle={() => setIntegrations((current) => ({ ...current, email: !current.email }))}
           />
           <IntegrationCard
             icon={Bell}
-            title="Push notifications"
-            description="Notify students instantly about important changes."
+            title={t("admin.pushNotifications")}
+            description={t("admin.pushDescription")}
             enabled={integrations.push}
-            actionLabel={integrations.push ? "Enabled" : "Enable push"}
+            actionLabel={integrations.push ? t("admin.enabled") : t("admin.enablePush")}
             onToggle={() => setIntegrations((current) => ({ ...current, push: !current.push }))}
           />
         </div>
       ) : (
         <div className="grid gap-4 p-4 sm:grid-cols-3 sm:p-5">
           <label className="text-sm font-medium">
-            Theme
+            {t("admin.theme")}
             <select
               value={theme}
-              onChange={(e) => setTheme(e.target.value)}
+              onChange={(e) => {
+                const nextTheme = e.target.value;
+                setTheme(nextTheme);
+                document.documentElement.classList.toggle("dark", nextTheme === "dark" || (nextTheme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches));
+              }}
               className="mt-2 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal"
             >
-              <option value="system">System</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
+              <option value="system">{t("admin.system")}</option>
+              <option value="light">{t("admin.light")}</option>
+              <option value="dark">{t("admin.dark")}</option>
             </select>
           </label>
           <label className="text-sm font-medium">
-            Max file size (MB)
+            {t("admin.maxFileSize")}
             <input
               value={fileLimit}
               onChange={(e) => setFileLimit(e.target.value.replace(/[^0-9]/g, ""))}
@@ -549,15 +615,19 @@ function AdminOperations() {
           </label>
           <div className="flex items-end">
             <button
-              onClick={() => setSaved(true)}
+              onClick={async () => {
+                await fetch("/api/admin", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "save-setting", key: "admin-policy", value: { theme, fileLimit, integrations } }) });
+                setActionMessage(t("admin.savePolicy"));
+                setSaved(true);
+              }}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
             >
-              <Settings2 className="h-4 w-4" /> Save policy
+              <Settings2 className="h-4 w-4" /> {t("admin.savePolicy")}
             </button>
           </div>
           {saved ? (
             <p className="text-xs font-medium text-success sm:col-span-3">
-              Settings saved. Changes will apply to new uploads.
+              {t("admin.policySaved")}
             </p>
           ) : null}
         </div>
@@ -581,6 +651,7 @@ function IntegrationCard({
   actionLabel: string;
   onToggle: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="rounded-2xl border border-border bg-background p-4">
       <div className="flex items-start justify-between gap-3">
@@ -588,7 +659,7 @@ function IntegrationCard({
           <Icon className="h-5 w-5" />
         </span>
         <span className={cn("rounded-full px-2 py-1 text-[11px] font-semibold", enabled ? "bg-success/10 text-success" : "bg-muted text-muted-foreground")}>
-          {enabled ? "Active" : "Off"}
+          {enabled ? t("admin.enabled") : t("admin.off")}
         </span>
       </div>
       <h3 className="mt-4 text-sm font-semibold">{title}</h3>
@@ -607,19 +678,19 @@ function IntegrationCard({
   );
 }
 
-function ActionGrid({ items }: { items: string[] }) {
+function ActionGrid({ items, onAction, workflowLabel }: { items: string[]; onAction: (item: string) => void; workflowLabel: string }) {
   return (
     <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3">
       {items.map((item, index) => (
         <button
           key={item}
-          onClick={() => window.alert(`${item} is ready to configure.`)}
+          onClick={() => onAction(item)}
           className="group flex items-center justify-between rounded-2xl border border-border bg-background p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-card"
         >
           <span>
             <span className="block text-sm font-semibold">{item}</span>
             <span className="mt-1 block text-xs text-muted-foreground">
-              Open workflow and review changes
+              {workflowLabel}
             </span>
           </span>
           {index % 2 ? (

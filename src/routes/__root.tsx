@@ -12,7 +12,7 @@ import { announceInstallAvailability, type InstallPromptEvent } from "../hooks/u
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { I18nProvider } from "../lib/i18n";
+import { I18nProvider, useI18n } from "../lib/i18n";
 import { AuthProvider } from "../lib/auth";
 import { ThemeProvider } from "../lib/theme";
 
@@ -38,11 +38,12 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
+function ErrorComponent({ error, reset }: { error: unknown; reset: () => void }) {
+  const normalizedError = error instanceof Error ? error : new Error(String(error));
+  console.error(normalizedError);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    reportLovableError(normalizedError, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
@@ -128,6 +129,7 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function InstallPromptBanner() {
+  const { t } = useI18n();
   const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
 
@@ -150,11 +152,11 @@ function InstallPromptBanner() {
       <div className="flex items-start gap-3">
         <img src="/icons/icon-512.png" alt="Student TM" className="h-12 w-12 rounded-xl" />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold text-foreground">Use it like an app on your phone.</p>
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">Install availability depends on your browser. Offline mode keeps the demo interface available; no university account data is synchronized.</p>
+          <p className="text-sm font-bold text-foreground">{t("pwa.title")}</p>
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">{t("pwa.description")}</p>
           <div className="mt-3 flex gap-2">
-            <button type="button" onClick={() => { void installEvent.prompt(); setInstallEvent(null); setVisible(false); }} className="rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">Install app</button>
-            <button type="button" onClick={() => setVisible(false)} className="rounded-xl px-3 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted">Not now</button>
+            <button type="button" onClick={() => { void installEvent.prompt(); setInstallEvent(null); setVisible(false); }} className="rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">{t("pwa.install")}</button>
+            <button type="button" onClick={() => setVisible(false)} className="rounded-xl px-3 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted">{t("pwa.notNow")}</button>
           </div>
         </div>
         <button type="button" onClick={() => setVisible(false)} aria-label="Close" className="text-lg leading-none text-muted-foreground">×</button>

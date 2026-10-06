@@ -23,7 +23,7 @@ const PATTERNS: Record<string, Record<number, Pattern>> = {
 const MARKS = { 3: { done: [2, 3, 5, 7], error: [0, 2, 4, 6, 8] }, 4: { done: [7, 8, 10, 13], error: [0, 3, 5, 6, 9, 10, 12, 15] } };
 
 function resolvePattern(pattern: PatternName | Pattern, grid: number) {
-  if (typeof pattern === "string") return PATTERNS[pattern]?.[grid] ?? PATTERNS[grid === 4 ? "sweep" : "orbit"][grid];
+  if (typeof pattern === "string") return PATTERNS[pattern]?.[grid] ?? PATTERNS[grid === 4 ? "sweep" : "orbit"]![grid]!;
   const cells = Array.from({ length: grid * grid }, (_, index) => pattern.cells[index] ?? null);
   const max = Math.max(0, ...cells.filter((value): value is number => value != null));
   return { cells, loop: pattern.loop ?? max + 4.2, scale: pattern.scale ?? 1, lit: pattern.lit ?? 0.62 };
@@ -37,8 +37,8 @@ export interface LatticeLoaderProps {
 
 export default function LatticeLoader({ label = "Thinking", doneLabel = "Done in", errorLabel = "Failed after", status = "working", pattern = "orbit", grid = 3, shape = "round", color = "currentColor", doneColor = "#22c55e", errorColor = "#ef4444", cellSize = 6, gap = 2, fontSize = 14, step = 90, idleOpacity = 0.15, glow = false, glowColor = "", showTimer = true, elapsed, className = "", style }: LatticeLoaderProps) {
   const n = grid === 4 ? 4 : 3;
-  const pat = resolvePattern(pattern, n);
-  const marks = MARKS[n];
+  const pat = resolvePattern(pattern, n)!;
+  const marks = MARKS[n]!;
   const delay = step * (pat.scale ?? 1);
   const cycle = Math.round((pat.loop ?? 1) * delay);
   const timerRef = useRef<HTMLSpanElement>(null);
