@@ -324,9 +324,9 @@ function AdminOperations() {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const [users, setUsers] = useState([
-    { name: "M. Atayev", role: "Student", group: "1B", status: "Active" },
-    { name: "G. Nurygdyyev", role: "Teacher", group: "Software", status: "Active" },
-    { name: "S. Ovezova", role: "Student", group: "1B", status: "Blocked" },
+    { id: "m-atayev", name: "M. Atayev", role: "Student", group: "1B", status: "Active" },
+    { id: "g-nurygdyyev", name: "G. Nurygdyyev", role: "Teacher", group: "Software", status: "Active" },
+    { id: "s-ovezova", name: "S. Ovezova", role: "Student", group: "1B", status: "Blocked" },
   ]);
 
   const downloadCsv = () => {
@@ -347,14 +347,25 @@ function AdminOperations() {
     event.target.value = "";
   };
 
-  const runAction = (action: string) => {
+  const runAction = async (action: string) => {
     const target = users.find((user) => action.endsWith(user.name));
+    const nextRole = target?.role === "Student" ? "Teacher" : "Student";
     if (target) {
-      setUsers((current) => current.map((user) => user.name === target.name ? { ...user, role: user.role === "Student" ? "Teacher" : "Student" } : user));
+      setUsers((current) => current.map((user) => user.name === target.name ? { ...user, role: nextRole } : user));
     }
     if (action === t("admin.exportCsv")) downloadCsv();
-    setActionMessage(action);
-    setSaved(true);
+    try {
+      await fetch("/api/admin", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(target ? { action: "change-role", userId: target.id, role: nextRole } : { action }),
+      });
+      setActionMessage(action);
+      setSaved(true);
+    } catch (error) {
+      console.error("[v0] Control center action failed", error);
+      setActionMessage("Action failed");
+    }
   };
   const events = [
     "G. Nurygdyyev uploaded lecture-04.pdf",
@@ -604,7 +615,11 @@ function AdminOperations() {
           </label>
           <div className="flex items-end">
             <button
-              onClick={() => runAction(t("admin.savePolicy"))}
+              onClick={async () => {
+                await fetch("/api/admin", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "save-setting", key: "admin-policy", value: { theme, fileLimit, integrations } }) });
+                setActionMessage(t("admin.savePolicy"));
+                setSaved(true);
+              }}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
             >
               <Settings2 className="h-4 w-4" /> {t("admin.savePolicy")}
