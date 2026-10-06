@@ -50,7 +50,7 @@ export function ScheduleCard({
   const s = status ?? "upcoming";
   return (
     <button onClick={onClick} className="w-full text-left">
-      <Card className="flex items-start gap-3 transition-transform active:scale-[0.99]">
+      <Card className="motion-card flex items-start gap-3 transition-transform active:scale-[0.99]">
         <div className="w-16 shrink-0">
           <p className="text-sm font-bold">{lesson.start}</p>
           <p className="text-xs text-muted-foreground">{lesson.end}</p>
@@ -73,7 +73,7 @@ export function CourseCard({ course }: { course: Course }) {
   const teacher = teacherOfCourse(course.id);
   return (
     <Link to="/courses/$courseId" params={{ courseId: course.id }}>
-      <Card className="h-full transition-transform hover:-translate-y-0.5">
+      <Card className="motion-card h-full transition-transform hover:-translate-y-0.5">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="font-semibold">{course.name}</p>
@@ -112,7 +112,7 @@ export function AssignmentCard({ a, onClick }: { a: Assignment; onClick?: () => 
       : `${t("tasks.due")}: ${new Date(Date.now() + a.dueInDays * 86400000).toLocaleDateString()}`;
   return (
     <button onClick={onClick} className="w-full text-left">
-      <Card className="flex items-start gap-3 transition-transform active:scale-[0.99]">
+      <Card className="motion-card flex items-start gap-3 transition-transform active:scale-[0.99]">
         <span className="mt-1 h-9 w-1 shrink-0 rounded-full" style={{ backgroundColor: course?.color }} />
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{a.title}</p>

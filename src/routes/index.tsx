@@ -110,12 +110,12 @@ function HomePage() {
           </button>
         ) : null}
 
-        <section>
+        <section className="animate-schedule-card" style={{ animationDelay: "60ms" }}>
           <SectionTitle title={t("home.today")} to="/schedule" label={t("home.viewAll")} />
           {todays.length === 0 ? (
             <EmptyState message={t("home.noClasses")} />
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 motion-card">
               {todays.map((l) => (
                 <ScheduleCard key={l.id} lesson={l} status={lessonStatus(l, now)} onClick={() => setSelectedLesson(l)} />
               ))}
@@ -124,8 +124,8 @@ function HomePage() {
         </section>
 
         {selectedLesson ? (
-          <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title">
-            <div className="w-full max-w-md rounded-t-3xl border border-border bg-card p-5 shadow-2xl sm:rounded-3xl">
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/35 p-0 backdrop-blur-lg sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title">
+            <div className="animate-sheet-enter w-full max-w-md rounded-t-3xl border border-border bg-card/95 p-5 shadow-2xl backdrop-blur-xl sm:rounded-3xl">
               <div className="mb-4 flex items-start justify-between">
                 <h2 id="lesson-details-title" className="text-lg font-bold">{t("schedule.details")}</h2>
                 <button type="button" onClick={() => setSelectedLesson(null)} aria-label={t("close")} className="tap-target">
@@ -145,7 +145,7 @@ function HomePage() {
           </div>
         ) : null}
 
-        <section>
+        <section className="animate-schedule-card" style={{ animationDelay: "120ms" }}>
           <SectionTitle title={t("home.tasks")} to="/tasks" label={t("home.viewAll")} />
           {upcomingTasks.length === 0 ? (
             <EmptyState message={t("empty.tasks")} />
@@ -158,7 +158,7 @@ function HomePage() {
           )}
         </section>
 
-        <section>
+        <section className="animate-schedule-card" style={{ animationDelay: "180ms" }}>
           <SectionTitle title={t("home.announcements")} to="/announcements" label={t("home.viewAll")} />
           <div className="space-y-3">
             {announcements
@@ -180,7 +180,7 @@ function HomePage() {
               <Link
                 key={q.to}
                 to={q.to}
-                className="card-surface flex flex-col items-center gap-2 px-2 py-4 text-center transition-transform hover:-translate-y-0.5"
+                className="card-surface motion-card flex flex-col items-center gap-2 px-2 py-4 text-center transition-transform hover:-translate-y-0.5"
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
                   <q.icon className="h-5 w-5" />

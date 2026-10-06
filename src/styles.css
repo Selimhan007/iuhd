@@ -165,6 +165,18 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-card);
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms ease, border-color 180ms ease;
+}
+
+@utility motion-card {
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms ease;
+}
+
+@media (hover: hover) {
+  .motion-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover, var(--shadow-card));
+  }
 }
 
 @utility tap-target {
