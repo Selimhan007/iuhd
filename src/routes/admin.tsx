@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import {
   Archive,
   Bell,
+  CalendarDays,
   CalendarPlus,
   CheckCircle2,
   Download,
@@ -139,7 +140,9 @@ function AdminConsole() {
           ["overview", t("admin.panelOverview"), LayoutDashboard],
           ["content", t("admin.panelContent"), Megaphone],
           ["control", t("admin.panelControl"), Settings2],
-        ].map(([id, label, Icon]) => (
+        ].map(([id, label, Icon]) => {
+          const IconComponent = Icon as LucideIcon;
+          return (
           <button
             key={id as string}
             type="button"
@@ -152,10 +155,11 @@ function AdminConsole() {
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
-            <Icon className="h-4 w-4" />
+            <IconComponent className="h-4 w-4" />
             <span className="truncate">{label as string}</span>
           </button>
-        ))}
+          );
+        })}
       </nav>
 
       {panel === "overview" ? <>
@@ -232,6 +236,7 @@ function ContentPublisher({
   onAnnouncement: (item: Announcement) => void;
   onEvent: (item: UniEvent) => void;
 }) {
+  const { t } = useI18n();
   const [kind, setKind] = useState<ContentKind>("announcement");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
