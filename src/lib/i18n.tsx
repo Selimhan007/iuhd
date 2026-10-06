@@ -639,7 +639,7 @@ const tk: Dict = {
   "empty.events": "Çäre ýok",
   "empty.notifications": "Habarnama ýok",
   "empty.generic": "Häzirlikçe boş",
-  "error.generic": "Bir zat nädogry gitdi. Gaýtadan synanyşyň.",
+  "error.generic": "Bir näsazlyk boldy. Gaýtadan synanyşyň.",
   "ai.soon": "Ýakynda",
   "ai.desc": "Temalary düşündirmek, PDF gysgaltmak, test we okuw meýilnamasy.",
   loading: "Ýüklenýär…",

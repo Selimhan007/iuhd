@@ -18,11 +18,11 @@ export function renderErrorPage(): string {
   </head>
   <body>
     <div class="card">
-      <h1>Bu sahypa ýüklenmedi</h1>
-      <p>Biziň tarapymyzda bir zat nädogry boldy. Sahypany täzeläp ýa-da baş sahypa dolanyp bilersiňiz.</p>
+      <h1>This page didn't load</h1>
+      <p>Something went wrong on our end. You can try refreshing or head back home.</p>
       <div class="actions">
-        <button class="primary" onclick="location.reload()">Gaýtadan synanyş</button>
-        <a class="secondary" href="/">Başa dolan</a>
+        <button class="primary" onclick="location.reload()">Try again</button>
+        <a class="secondary" href="/">Go home</a>
       </div>
     </div>
   </body>
