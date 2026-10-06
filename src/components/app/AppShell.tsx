@@ -98,11 +98,14 @@ const ROLE_CONFIG: Record<
   admin: {
     brand: "Admin TM",
     icon: Shield,
-    main: [],
-    more: [
+    main: [
       { to: "/admin", icon: Shield, key: "nav.controlCenter" },
       { to: "/announcements", icon: Megaphone, key: "nav.announcements" },
       { to: "/events", icon: CalendarHeart, key: "nav.events" },
+    ],
+    more: [
+      { to: "/notifications", icon: Bell, key: "nav.notifications" },
+      { to: "/profile", icon: User, key: "nav.profile" },
       { to: "/notifications", icon: Bell, key: "nav.notifications" },
       { to: "/profile", icon: User, key: "nav.profile" },
       { to: "/settings", icon: Settings, key: "nav.settings" },
