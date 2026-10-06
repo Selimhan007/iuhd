@@ -65,7 +65,6 @@ function AdminPage() {
 
 function AdminConsole() {
   const { t } = useI18n();
-  const navigate = useNavigate();
   const [tab, setTab] = useState<TabId>("students");
   const [panel, setPanel] = useState<AdminPanel>("overview");
   const [publishedAnnouncements, setPublishedAnnouncements] = useState(() => [...demoAnnouncements]);
@@ -137,6 +136,7 @@ function AdminConsole() {
       <nav aria-label="Admin dashboard sections" className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-card p-2 shadow-card">
         {[
           ["overview", "Overview"],
+          ["content", "Announcements & events"],
           ["control", "Control center"],
         ].map(([id, label]) => (
           <button
