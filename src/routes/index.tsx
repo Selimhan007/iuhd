@@ -47,6 +47,15 @@ function HomePage() {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
   useEffect(() => {
+    if (!selectedLesson) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedLesson(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedLesson]);
+
+  useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 30000);
     return () => clearInterval(id);
   }, []);
@@ -124,7 +133,7 @@ function HomePage() {
         </section>
 
         {selectedLesson ? (
-          <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/35 p-0 backdrop-blur-lg sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title">
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/35 p-0 backdrop-blur-lg sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedLesson(null); }}>
             <div className="animate-sheet-enter w-full max-w-md rounded-t-3xl border border-border bg-card/95 p-5 shadow-2xl backdrop-blur-xl sm:rounded-3xl">
               <div className="mb-4 flex items-start justify-between">
                 <h2 id="lesson-details-title" className="text-lg font-bold">{t("schedule.details")}</h2>

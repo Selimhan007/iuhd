@@ -109,7 +109,7 @@ export function RoleNav({
 
       {/* Tablet: floating dock with labels */}
       <nav
-        aria-label={t(`role.${kind}`)}
+        aria-label={t("nav.main")}
         className="fixed inset-x-0 bottom-4 z-30 hidden justify-center px-4 md:flex lg:hidden"
       >
         <div className="flex items-center gap-1 rounded-2xl border border-white/25 bg-background/55 p-1.5 shadow-[0_16px_45px_rgb(15_23_42/0.16)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/45 dark:border-white/10 dark:shadow-[0_16px_45px_rgb(0_0_0/0.35)]">
