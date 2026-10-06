@@ -213,7 +213,7 @@ export function RoleNav({
             onClick={() => setSheetOpen(false)}
             className="absolute inset-0 bg-background/70 backdrop-blur-sm"
           />
-          <div className="absolute inset-x-0 bottom-0 animate-sheet-enter rounded-t-3xl border-t border-white/25 bg-background/70 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-[0_-18px_60px_rgb(15_23_42/0.2)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/55 dark:border-white/10 dark:shadow-[0_-18px_60px_rgb(0_0_0/0.4)] md:inset-x-auto md:bottom-24 md:left-1/2 md:w-[32rem] md:-translate-x-1/2 md:rounded-3xl md:border">
+          <div className="absolute inset-x-0 bottom-0 animate-sheet-enter overscroll-contain rounded-t-3xl border-t border-white/25 bg-background/70 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-[0_-18px_60px_rgb(15_23_42/0.2)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/55 dark:border-white/10 dark:shadow-[0_-18px_60px_rgb(0_0_0/0.4)] md:inset-x-auto md:bottom-24 md:left-1/2 md:w-[32rem] md:-translate-x-1/2 md:rounded-3xl md:border">
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary">

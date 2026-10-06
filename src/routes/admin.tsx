@@ -413,7 +413,7 @@ function AdminOperations() {
         </div>
         <nav
           aria-label={t("admin.managementTitle")}
-          className="mt-4 flex gap-2 overflow-x-auto pb-1"
+          className="mobile-scroll-x mt-4 flex gap-2 overflow-x-auto pb-1"
         >
           {adminSections.map((item) => (
             <button

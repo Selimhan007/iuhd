@@ -140,7 +140,7 @@ function TeacherDashboard() {
       </section>
 
       <section>
-        <div role="tablist" className="mb-5 flex max-w-full gap-1 overflow-x-auto rounded-2xl bg-muted p-1">
+        <div role="tablist" className="mobile-scroll-x mb-5 flex max-w-full gap-1 overflow-x-auto rounded-2xl bg-muted p-1">
           {TABS.map((x) => (
             <button
               key={x.id}

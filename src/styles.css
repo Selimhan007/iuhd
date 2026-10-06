@@ -195,6 +195,15 @@
   min-width: 44px;
 }
 
+@utility mobile-scroll-x {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.mobile-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
 @utility content-auto {
   content-visibility: auto;
   contain-intrinsic-size: 1px 420px;

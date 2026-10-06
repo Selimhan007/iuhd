@@ -21,6 +21,7 @@ import {
   Sun,
   X,
   LogOut,
+  WifiOff,
   type LucideIcon,
 } from "lucide-react";
 import { RoleNav, type NavItem, type RoleKind } from "./role-nav";
@@ -118,6 +119,18 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [searchOpen, setSearchOpen] = useState(false);
+  const [online, setOnline] = useState(() => typeof navigator === "undefined" ? true : navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   const allowed = !user || !allow || allow.includes(user.role);
 
@@ -159,6 +172,12 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
     <div data-role={kind} className="min-h-screen bg-background text-foreground">
       <div>
         {/* Sticky header */}
+        {!online ? (
+          <div role="status" className="flex items-center justify-center gap-2 border-b border-warning/30 bg-warning/10 px-4 py-2 text-center text-xs font-semibold text-warning-foreground">
+            <WifiOff className="h-3.5 w-3.5" aria-hidden="true" />
+            Интерфейс доступен офлайн. Данные синхронизируются после подключения.
+          </div>
+        ) : null}
         <header className="sticky top-0 z-30 border-b border-border/80 bg-background/95 shadow-[0_2px_14px_rgb(15_23_42/0.06)] backdrop-blur-xl dark:shadow-[0_2px_14px_rgb(0_0_0/0.18)]">
           <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
             <Link to={home} preload="intent" className="flex items-center gap-2">
@@ -204,7 +223,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
           </div>
         </header>
 
-        <main id="main-content" tabIndex={-1} className="mx-auto max-w-6xl animate-page-enter px-4 pb-28 pt-5 md:pb-32">
+        <main id="main-content" tabIndex={-1} className="mx-auto max-w-6xl animate-page-enter px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-5 md:pb-32">
           {children}
         </main>
       </div>
