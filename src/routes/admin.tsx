@@ -96,16 +96,16 @@ function AdminConsole() {
 
   const monitoring = [
     {
-      label: "Active students",
+      label: "Işjeň talyplar",
       value: data.students.length,
-      detail: "Registered in the group",
+      detail: "Toparda hasaba alnan",
       icon: Users,
       tone: "text-primary",
     },
     {
-      label: "Published content",
+      label: "Çap edilen mazmun",
       value: demoAnnouncements.length + demoEvents.length,
-      detail: "Announcements and events",
+      detail: "Bildirişler we çäreler",
       icon: CheckCircle2,
       tone: "text-success",
     },
@@ -136,9 +136,9 @@ function AdminConsole() {
 
       <nav aria-label="Admin dashboard sections" className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-card p-2 shadow-card">
         {[
-          ["overview", "Overview", LayoutDashboard],
-          ["content", "Announcements & events", Megaphone],
-          ["control", "Control center", Settings2],
+          ["overview", "Gysgaça syn", LayoutDashboard],
+          ["content", "Bildirişler we çäreler", Megaphone],
+          ["control", "Dolandyryş merkezi", Settings2],
         ].map(([id, label, Icon]) => (
           <button
             key={id as string}
@@ -252,7 +252,7 @@ function ContentPublisher({
     if (!title.trim() || !body.trim()) return;
     const id = `admin-${Date.now()}`;
     if (kind === "announcement") {
-      onAnnouncement({ id, title: title.trim(), body: body.trim(), author: "Administration", date: date || new Date().toISOString().slice(0, 10), category: "university" });
+      onAnnouncement({ id, title: title.trim(), body: body.trim(), author: "Dolandyryş", date: date || new Date().toISOString().slice(0, 10), category: "university" });
     } else {
       onEvent({ id, title: title.trim(), description: body.trim(), date: date || new Date().toISOString().slice(0, 10), place: place.trim() || "Campus" });
     }
@@ -268,26 +268,26 @@ function ContentPublisher({
               {kind === "announcement" ? <Bell className="h-5 w-5" /> : <CalendarPlus className="h-5 w-5" />}
             </span>
             <div>
-              <h2 className="font-bold">Publish content</h2>
-              <p className="text-xs text-muted-foreground">Share updates with students and teachers.</p>
+              <h2 className="font-bold">Mazmun çap et</h2>
+              <p className="text-xs text-muted-foreground">Täzelikleri talyplar we mugallymlar bilen paýlaşyň.</p>
             </div>
           </div>
           <div className="mt-5 grid grid-cols-2 gap-2">
-            {([['announcement', 'Announcement'], ['event', 'Event']] as const).map(([value, label]) => (
+            {([['announcement', 'Bildiriş'], ['event', 'Çäre']] as const).map(([value, label]) => (
               <button key={value} type="button" onClick={() => setKind(value)} className={cn("rounded-xl px-3 py-2.5 text-sm font-semibold", kind === value ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>{label}</button>
             ))}
           </div>
-          <label className="mt-4 block text-sm font-medium">Title<input required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
-          <label className="mt-3 block text-sm font-medium">{kind === "announcement" ? "Message" : "Description"}<textarea required value={body} onChange={(e) => setBody(e.target.value)} rows={4} className="mt-1.5 w-full resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+          <label className="mt-4 block text-sm font-medium">At<input required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+          <label className="mt-3 block text-sm font-medium">{kind === "announcement" ? "Habar" : "Düşündiriş"}<textarea required value={body} onChange={(e) => setBody(e.target.value)} rows={4} className="mt-1.5 w-full resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <label className="text-sm font-medium">Date<input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
-            {kind === "event" ? <label className="text-sm font-medium">Place<input value={place} onChange={(e) => setPlace(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label> : null}
+            <label className="text-sm font-medium">Sene<input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+            {kind === "event" ? <label className="text-sm font-medium">Ýer<input value={place} onChange={(e) => setPlace(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label> : null}
           </div>
-          <button type="submit" className="mt-4 flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"><Megaphone className="h-4 w-4" /> Publish</button>
-          {published ? <p className="mt-3 text-xs font-medium text-success">Published successfully.</p> : null}
+          <button type="submit" className="mt-4 flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"><Megaphone className="h-4 w-4" /> Çap et</button>
+          {published ? <p className="mt-3 text-xs font-medium text-success">Üstünlikli çap edildi.</p> : null}
         </form>
         <div className="rounded-3xl border border-border bg-card p-5 shadow-card">
-          <h2 className="font-bold">Published content</h2>
+          <h2 className="font-bold">Çap edilen mazmun</h2>
           <div className="mt-4 space-y-2">
             {[...announcements.slice(0, 4).map((item) => ({ ...item, kind: "Announcement" })), ...events.slice(0, 4).map((item) => ({ ...item, kind: "Event", body: item.description }))].map((item) => (
               <article key={item.id} className="rounded-2xl bg-muted/50 p-3"><div className="flex items-center justify-between gap-3"><p className="font-semibold">{item.title}</p><span className="text-[11px] text-primary">{item.kind}</span></div><p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.body}</p></article>
@@ -300,12 +300,12 @@ function ContentPublisher({
 }
 
 const adminSections = [
-  { id: "users", label: "Users", icon: UserRoundCog },
-  { id: "groups", label: "Groups & subjects", icon: Users },
-  { id: "audit", label: "Audit & moderation", icon: History },
-  { id: "bulk", label: "Bulk operations", icon: SlidersHorizontal },
-  { id: "integrations", label: "Integrations", icon: Bell },
-  { id: "settings", label: "System settings", icon: Settings2 },
+  { id: "users", label: "Ulanyjylar", icon: UserRoundCog },
+  { id: "groups", label: "Toparlar we dersler", icon: Users },
+  { id: "audit", label: "Gözegçilik we moderasiýa", icon: History },
+  { id: "bulk", label: "Köpçülikleýin amallar", icon: SlidersHorizontal },
+  { id: "integrations", label: "Integrasiýalar", icon: Bell },
+  { id: "settings", label: "Ulgam sazlamalary", icon: Settings2 },
 ] as const;
 
 function AdminOperations() {
@@ -333,11 +333,11 @@ function AdminOperations() {
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-              Administration
+              Dolandyryş
             </p>
-            <h2 className="mt-1 text-xl font-bold tracking-tight">Control center</h2>
+            <h2 className="mt-1 text-xl font-bold tracking-tight">Dolandyryş merkezi</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Manage access, content, operations and system policy from one place.
+              Girişi, mazmuny, amallary we ulgam düzgünlerini bir ýerden dolandyryň.
             </p>
           </div>
           {section === "users" ? (
@@ -345,8 +345,8 @@ function AdminOperations() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search users"
-                aria-label="Search users"
+                placeholder="Ulanyjylary gözle"
+                aria-label="Ulanyjylary gözle"
                 className="w-full rounded-xl border border-input bg-background px-3 py-2.5 pl-9 text-sm outline-none focus:border-ring"
               />
               <SlidersHorizontal className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -354,7 +354,7 @@ function AdminOperations() {
           ) : null}
         </div>
         <nav
-          aria-label="Admin management sections"
+          aria-label="Dolandyryş bölümleri"
           className="mt-4 flex gap-2 overflow-x-auto pb-1"
         >
           {adminSections.map((item) => (
@@ -382,7 +382,7 @@ function AdminOperations() {
                 <p className="text-lg font-bold">{label.split(" ")[0]}</p>
                 <p className="text-xs text-muted-foreground">
                   {label.slice(label.indexOf(" ") + 1)}
-                  {index === 2 ? " · review needed" : ""}
+                  {index === 2 ? " · barlamak gerek" : ""}
                 </p>
               </div>
             ))}
@@ -391,11 +391,11 @@ function AdminOperations() {
             <table className="w-full min-w-[620px] text-left text-sm">
               <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th className="px-5 py-3">User</th>
-                  <th className="px-5 py-3">Role</th>
-                  <th className="px-5 py-3">Group</th>
-                  <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3">Actions</th>
+                  <th className="px-5 py-3">Ulanyjy</th>
+                  <th className="px-5 py-3">Rol</th>
+                  <th className="px-5 py-3">Topar</th>
+                  <th className="px-5 py-3">Ýagdaý</th>
+                  <th className="px-5 py-3">Hereketler</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -427,7 +427,7 @@ function AdminOperations() {
                           onClick={() => setSaved(true)}
                           className="rounded-lg bg-muted px-3 py-1.5 text-xs font-semibold hover:bg-primary-soft"
                         >
-                          Change role
+                          Roly üýtget
                         </button>
                       </td>
                     </tr>
@@ -440,17 +440,17 @@ function AdminOperations() {
               onClick={() => setSaved(true)}
               className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
             >
-              <Upload className="h-4 w-4" /> Import users
+              <Upload className="h-4 w-4" /> Ulanyjylary import et
             </button>
             <button
               onClick={() => setSaved(true)}
               className="flex items-center gap-2 rounded-xl bg-muted px-4 py-2.5 text-sm font-semibold"
             >
-              <Download className="h-4 w-4" /> Export CSV
+              <Download className="h-4 w-4" /> CSV eksport et
             </button>
             {saved ? (
               <span className="self-center text-xs font-medium text-success">
-                Action queued successfully.
+                Hereket nobata goşuldy.
               </span>
             ) : null}
           </div>
@@ -458,12 +458,12 @@ function AdminOperations() {
       ) : section === "groups" ? (
         <ActionGrid
           items={[
-            "Create group",
-            "Archive group",
-            "Move students",
-            "Assign teacher",
-            "Create subject",
-            "Export roster",
+            "Topar döret",
+            "Topary arhiwle",
+            "Talyplary geçir",
+            "Mugallym belle",
+            "Ders döret",
+            "Sanawy eksport et",
           ]}
         />
       ) : section === "audit" ? (
@@ -475,7 +475,7 @@ function AdminOperations() {
                 <div>
                   <p className="text-sm font-medium">{event}</p>
                   <p className="text-xs text-muted-foreground">
-                    {index + 1} hour{index ? "s" : ""} ago · system audit
+                    {index + 1} sagat öň · ulgam gözegçiligi
                   </p>
                 </div>
               </div>
@@ -483,34 +483,34 @@ function AdminOperations() {
           </div>
           <div className="rounded-2xl border border-warning/30 bg-warning/5 p-4">
             <FileWarning className="h-5 w-5 text-warning" />
-            <p className="mt-3 text-sm font-semibold">3 items need moderation</p>
+            <p className="mt-3 text-sm font-semibold">3 elemente moderasiýa gerek</p>
             <button
               onClick={() => setSaved(true)}
               className="mt-3 rounded-lg bg-warning px-3 py-2 text-xs font-semibold text-warning-foreground"
             >
-              Review queue
+              Barlag nobaty
             </button>
           </div>
         </div>
       ) : section === "bulk" ? (
         <ActionGrid
           items={[
-            "Notify selected groups",
-            "Export grades XLSX",
-            "Archive old groups",
-            "Bulk file review",
-            "Send deadline reminder",
-            "Download activity log",
+            "Saýlanan toparlara habar ber",
+            "Bahalary XLSX eksport et",
+            "Köne toparlary arhiwle",
+            "Faýllary köpçülikleýin barla",
+            "Möhlet ýatlatmasyny iber",
+            "Hereket gündeligini ýükle",
           ]}
         />
       ) : section === "integrations" ? (
         <div className="grid gap-3 p-4 sm:grid-cols-3 sm:p-5">
           <IntegrationCard
             icon={CalendarDays}
-            title="Calendar"
-            description="Sync lessons, deadlines and campus events."
+            title="Senenama"
+            description="Sapaklary, möhletleri we uniwersitet çärelerini sinhronlaň."
             enabled={integrations.calendar}
-            actionLabel={integrations.calendar ? "Connected" : "Connect calendar"}
+            actionLabel={integrations.calendar ? "Birikdirildi" : "Senenamany birikdir"}
             onToggle={() => setIntegrations((current) => ({ ...current, calendar: !current.calendar }))}
           />
           <IntegrationCard
