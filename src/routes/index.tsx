@@ -1,11 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app/AppShell";
 import { Card, EmptyState, Pill, SectionTitle } from "@/components/app/ui-kit";
 import { AnnouncementCard, AssignmentCard, ScheduleCard, lessonStatus } from "@/components/app/cards";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
-import { announcements, assignments, courseById, lessons, teacherOfCourse } from "@/lib/demo-data";
+import { announcements, assignments, courseById, lessons, teacherOfCourse, group, type Lesson } from "@/lib/demo-data";
 import {
   CalendarDays,
   GraduationCap,
@@ -15,6 +15,7 @@ import {
   FileText,
   Clock,
   MapPin,
+  X,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -41,7 +42,18 @@ const quickActions = [
 function HomePage() {
   const { t } = useI18n();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [now, setNow] = useState(() => new Date());
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+
+  useEffect(() => {
+    if (!selectedLesson) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedLesson(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedLesson]);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 30000);
@@ -81,6 +93,7 @@ function HomePage() {
         </header>
 
         {next ? (
+          <button type="button" onClick={() => navigate({ to: "/schedule" })} className="block w-full text-left">
           <Card className="bg-primary text-primary-foreground shadow-card">
             <p className="text-xs font-semibold uppercase tracking-wide opacity-80">{t("home.nextClass")}</p>
             <p className="mt-2 text-xl font-bold">{courseById(next.courseId)?.name}</p>
@@ -103,35 +116,58 @@ function HomePage() {
                 : t("status.inProgress")}
             </p>
           </Card>
+          </button>
         ) : null}
 
-        <section>
+        <section className="animate-schedule-card" style={{ animationDelay: "60ms" }}>
           <SectionTitle title={t("home.today")} to="/schedule" label={t("home.viewAll")} />
           {todays.length === 0 ? (
             <EmptyState message={t("home.noClasses")} />
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 motion-card">
               {todays.map((l) => (
-                <ScheduleCard key={l.id} lesson={l} status={lessonStatus(l, now)} />
+                <ScheduleCard key={l.id} lesson={l} status={lessonStatus(l, now)} onClick={() => setSelectedLesson(l)} />
               ))}
             </div>
           )}
         </section>
 
-        <section>
+        {selectedLesson ? (
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/35 p-0 backdrop-blur-lg sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedLesson(null); }}>
+            <div className="animate-sheet-enter w-full max-w-md rounded-t-3xl border border-border bg-card/95 p-5 shadow-2xl backdrop-blur-xl sm:rounded-3xl">
+              <div className="mb-4 flex items-start justify-between">
+                <h2 id="lesson-details-title" className="text-lg font-bold">{t("schedule.details")}</h2>
+                <button type="button" onClick={() => setSelectedLesson(null)} aria-label={t("close")} className="tap-target">
+                  <X className="h-5 w-5 text-muted-foreground" />
+                </button>
+              </div>
+              <Card className="space-y-2">
+                <p className="text-lg font-semibold">{courseById(selectedLesson.courseId)?.name}</p>
+                <Pill tone="primary">{t(`type.${selectedLesson.type}`)}</Pill>
+                <LessonDetailRow label={t("schedule.teacher")} value={teacherOfCourse(selectedLesson.courseId)?.name ?? "—"} />
+                <LessonDetailRow label={t("schedule.room")} value={selectedLesson.room} />
+                <LessonDetailRow label={t("nav.schedule")} value={`${selectedLesson.start} – ${selectedLesson.end}`} />
+                <LessonDetailRow label={t("schedule.group")} value={group.name} />
+                <LessonDetailRow label={t("schedule.notes")} value={selectedLesson.notes ?? "—"} />
+              </Card>
+            </div>
+          </div>
+        ) : null}
+
+        <section className="animate-schedule-card" style={{ animationDelay: "120ms" }}>
           <SectionTitle title={t("home.tasks")} to="/tasks" label={t("home.viewAll")} />
           {upcomingTasks.length === 0 ? (
             <EmptyState message={t("empty.tasks")} />
           ) : (
             <div className="space-y-3">
               {upcomingTasks.map((a) => (
-                <AssignmentCard key={a.id} a={a} />
+                <AssignmentCard key={a.id} a={a} onClick={() => navigate({ to: "/tasks" })} />
               ))}
             </div>
           )}
         </section>
 
-        <section>
+        <section className="animate-schedule-card" style={{ animationDelay: "180ms" }}>
           <SectionTitle title={t("home.announcements")} to="/announcements" label={t("home.viewAll")} />
           <div className="space-y-3">
             {announcements
@@ -139,7 +175,9 @@ function HomePage() {
               .sort((a, b) => Number(!!b.important) - Number(!!a.important))
               .slice(0, 2)
               .map((a) => (
-                <AnnouncementCard key={a.id} a={a} />
+                <Link key={a.id} to="/announcements" className="block">
+                  <AnnouncementCard a={a} />
+                </Link>
               ))}
           </div>
         </section>
@@ -151,7 +189,7 @@ function HomePage() {
               <Link
                 key={q.to}
                 to={q.to}
-                className="card-surface flex flex-col items-center gap-2 px-2 py-4 text-center transition-transform hover:-translate-y-0.5"
+                className="card-surface motion-card flex flex-col items-center gap-2 px-2 py-4 text-center transition-transform hover:-translate-y-0.5"
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
                   <q.icon className="h-5 w-5" />
@@ -175,3 +213,13 @@ function HomePage() {
     </AppShell>
   );
 }
+
+function LessonDetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-4 text-sm">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="text-right font-medium">{value}</span>
+    </div>
+  );
+}
+

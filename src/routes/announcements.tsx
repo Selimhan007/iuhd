@@ -34,7 +34,7 @@ function AnnouncementsPage() {
     <AppShell allow={["student", "teacher", "admin", "superadmin"]}>
       <PageHeader title={t("nav.announcements")} />
 
-      <div className="mb-5 flex gap-2 overflow-x-auto pb-1">
+      <div className="mobile-scroll-x mb-5 flex gap-2 overflow-x-auto pb-1">
         {CATEGORIES.map((c) => (
           <button
             key={c}

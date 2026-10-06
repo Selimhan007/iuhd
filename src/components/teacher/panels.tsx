@@ -315,6 +315,7 @@ type LectureMaterial = {
 const TEACHER_GROUPS = [group, { id: "g2", programId: "p1", name: "1C", year: 1 }, { id: "g3", programId: "p1", name: "2A", year: 2 }];
 
 export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
+  const { t } = useI18n();
   const [materials, setMaterials] = useState<LectureMaterial[]>([]);
   const [courseId, setCourseId] = useState(courses[0]?.id ?? "");
   const [groupId, setGroupId] = useState(group.id);
@@ -340,17 +341,17 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
     setError(null);
     setPublished(null);
     if (!title.trim() || !file || !courseId) {
-      setError("Enter a title and choose a lecture file.");
+      setError(t("teacher.enterTitle"));
       return;
     }
     const allowed = /\.(pdf|doc|docx|ppt|pptx|mp4)$/i;
     const allowedTypes = new Set(["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation", "video/mp4"]);
     if (!allowed.test(file.name) || (file.type && !allowedTypes.has(file.type))) {
-      setError("Use PDF, DOC, DOCX, PPT, PPTX or MP4 files only.");
+      setError(t("teacher.invalidFile"));
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      setError("The maximum lecture size is 10 MB.");
+      setError(t("teacher.maxLectureSize"));
       return;
     }
     setIsPublishing(true);
@@ -382,23 +383,23 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
             <FileUp className="h-5 w-5" />
           </span>
           <div>
-            <h3 className="font-semibold">Upload lecture</h3>
-            <p className="text-xs text-muted-foreground">Publish a file directly to a selected group.</p>
+            <h3 className="font-semibold">{t("teacher.uploadLecture")}</h3>
+            <p className="text-xs text-muted-foreground">{t("teacher.publishFile")}</p>
           </div>
         </div>
         <form onSubmit={addMaterial} className="grid gap-3">
           <label className="grid gap-1.5 text-sm font-medium">
-            Lecture title
+            {t("teacher.lectureTitle")}
             <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Week 4 — Motion" className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring" required />
           </label>
           <label className="grid gap-1.5 text-sm font-medium">
-            Course
+            {t("teacher.course")}
             <select value={courseId} onChange={(event) => setCourseId(event.target.value)} className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring">
               {courses.map((course) => <option key={course.id} value={course.id}>{course.name}</option>)}
             </select>
           </label>
           <label className="grid gap-1.5 text-sm font-medium">
-            Student group
+            {t("teacher.studentGroup")}
             <select value={groupId} onChange={(event) => setGroupId(event.target.value)} className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring">
               {TEACHER_GROUPS.map((studentGroup) => (
                 <option key={studentGroup.id} value={studentGroup.id}>{studentGroup.name} · Year {studentGroup.year}</option>
@@ -406,12 +407,12 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
             </select>
           </label>
           <label className="grid gap-1.5 text-sm font-medium">
-            Lecture file
+            {t("teacher.lectureFile")}
             <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.mp4" onChange={(event) => { setError(null); setFile(event.target.files?.[0] ?? null); }} className="block w-full rounded-xl border border-input bg-background px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-primary-soft file:px-2 file:py-1 file:text-xs file:font-semibold file:text-primary" required />
-            <span className="text-xs font-normal text-muted-foreground">PDF, DOC, DOCX, PPT, PPTX or MP4 · max 10 MB</span>
+            <span className="text-xs font-normal text-muted-foreground">{t("teacher.fileTypes")}</span>
           </label>
           <button type="submit" disabled={isPublishing} className="tap-target flex items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60">
-            <FileUp className="h-4 w-4" /> {isPublishing ? "Publishing…" : "Publish lecture"}
+            <FileUp className="h-4 w-4" /> {isPublishing ? t("teacher.publishing") : t("teacher.publishLecture")}
           </button>
           {error ? <p role="alert" className="text-center text-xs font-medium text-destructive">{error}</p> : null}
           {published ? <p role="status" className="text-center text-xs font-medium text-success">{published}</p> : null}
@@ -420,32 +421,32 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h3 className="font-semibold">Published lectures</h3>
-          <p className="text-xs text-muted-foreground">Visible only to the selected student group.</p>
+          <h3 className="font-semibold">{t("teacher.publishedLectures")}</h3>
+          <p className="text-xs text-muted-foreground">{t("teacher.visibleSelectedGroup")}</p>
         </div>
         <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold">{visibleMaterials.length}/{materials.length}</span>
       </div>
       <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto]">
         <label className="relative">
-          <span className="sr-only">Search lectures</span>
+          <span className="sr-only">{t("teacher.searchLectures")}</span>
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search lectures" className="w-full rounded-xl border border-input bg-background py-2.5 pl-9 pr-3 text-sm outline-none focus:border-ring" />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("teacher.searchLectures")} className="w-full rounded-xl border border-input bg-background py-2.5 pl-9 pr-3 text-sm outline-none focus:border-ring" />
         </label>
         <label className="flex items-center gap-2 rounded-xl border border-input bg-background px-3 text-sm">
           <Filter className="h-4 w-4 text-muted-foreground" />
-          <span className="sr-only">Filter by group</span>
+          <span className="sr-only">{t("teacher.filterGroup")}</span>
           <select value={filterGroup} onChange={(event) => setFilterGroup(event.target.value)} className="bg-transparent py-2.5 outline-none">
-            <option value="all">All groups</option>
+            <option value="all">{t("teacher.allGroups")}</option>
             {TEACHER_GROUPS.map((studentGroup) => <option key={studentGroup.id} value={studentGroup.id}>{studentGroup.name}</option>)}
           </select>
         </label>
-        <select aria-label="Sort lectures" value={sortBy} onChange={(event) => setSortBy(event.target.value as "newest" | "title")} className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring">
-          <option value="newest">Newest first</option>
-          <option value="title">Title A–Z</option>
+        <select aria-label={t("teacher.sortLectures")} value={sortBy} onChange={(event) => setSortBy(event.target.value as "newest" | "title")} className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring">
+          <option value="newest">{t("teacher.newestFirst")}</option>
+          <option value="title">{t("teacher.titleAZ")}</option>
         </select>
       </div>
       {visibleMaterials.length === 0 ? (
-        <EmptyState message={materials.length === 0 ? "No lectures uploaded yet." : "No lectures match your filters."} />
+        <EmptyState message={materials.length === 0 ? t("teacher.noLectures") : t("teacher.noLecturesMatch")} />
       ) : (
         <div className="space-y-3">
           {visibleMaterials.map((material) => (
@@ -466,25 +467,26 @@ export function LectureMaterialsPanel({ courses }: { courses: Course[] }) {
 }
 
 export function TeacherInsightsPanel({ pending, avgAttendance }: { pending: number; avgAttendance: number }) {
+  const { t } = useI18n();
   const [groupFilter, setGroupFilter] = useState("all");
   const [exported, setExported] = useState(false);
   const metrics = [
-    { label: "Average group grade", value: "86%", detail: "↑ 4% this month", tone: "text-success" },
-    { label: "Attendance", value: `${avgAttendance}%`, detail: "Across all groups", tone: "text-primary" },
-    { label: "Overdue work", value: pending, detail: "Needs review", tone: "text-warning" },
+    { label: t("teacher.averageGroupGrade"), value: "86%", detail: t("teacher.thisMonth"), tone: "text-success" },
+    { label: t("teacher.attendance"), value: `${avgAttendance}%`, detail: t("teacher.acrossGroups"), tone: "text-primary" },
+    { label: t("teacher.overdueWork"), value: pending, detail: t("teacher.needsReview"), tone: "text-warning" },
   ];
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div><h3 className="font-semibold">Group analytics</h3><p className="text-xs text-muted-foreground">Track progress, attendance and overdue submissions.</p></div>
+        <div><h3 className="font-semibold">{t("teacher.groupAnalytics")}</h3><p className="text-xs text-muted-foreground">{t("teacher.trackProgress")}</p></div>
         <div className="flex gap-2">
-          <select value={groupFilter} onChange={(event) => setGroupFilter(event.target.value)} aria-label="Filter analytics by group" className="rounded-xl border border-input bg-background px-3 py-2 text-sm"><option value="all">All groups</option>{TEACHER_GROUPS.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>
-          <button onClick={() => { setExported(true); window.setTimeout(() => setExported(false), 1800); }} className="rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">{exported ? "Exported" : "Export grades"}</button>
+          <select value={groupFilter} onChange={(event) => setGroupFilter(event.target.value)} aria-label={t("teacher.allGroups")} className="rounded-xl border border-input bg-background px-3 py-2 text-sm"><option value="all">{t("teacher.allGroups")}</option>{TEACHER_GROUPS.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>
+          <button onClick={() => { setExported(true); window.setTimeout(() => setExported(false), 1800); }} className="rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">{exported ? t("teacher.exported") : t("teacher.exportGrades")}</button>
         </div>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">{metrics.map((metric) => <Card key={metric.label}><p className="text-xs text-muted-foreground">{metric.label}</p><p className={cn("mt-2 text-2xl font-bold", metric.tone)}>{metric.value}</p><p className="mt-1 text-xs text-muted-foreground">{metric.detail}</p></Card>)}</div>
-      <Card className="space-y-3"><div className="flex items-center justify-between"><p className="text-sm font-semibold">Completion by group</p><span className="text-xs text-muted-foreground">{groupFilter === "all" ? "All groups" : TEACHER_GROUPS.find((item) => item.id === groupFilter)?.name}</span></div>{TEACHER_GROUPS.filter((item) => groupFilter === "all" || item.id === groupFilter).map((item, index) => { const value = [78, 64, 91][index] ?? 72; return <div key={item.id} className="space-y-1"><div className="flex justify-between text-xs"><span>{item.name}</span><span className="font-semibold">{value}%</span></div><ProgressBar value={value} /></div>; })}</Card>
-      <Card><p className="mb-3 text-sm font-semibold">Recent activity</p><div className="space-y-3 text-sm">{["G. Nurygdyyev published Week 4 — Motion", "D. Allanurov graded 12 submissions", "A. Ashyraliyeva updated group 2A"].map((item, index) => <div key={item} className="flex items-start gap-3"><span className="mt-1 h-2 w-2 rounded-full bg-primary" /><div><p>{item}</p><p className="text-xs text-muted-foreground">{index + 1} hour{index ? "s" : ""} ago</p></div></div>)}</div></Card>
+      <Card className="space-y-3"><div className="flex items-center justify-between"><p className="text-sm font-semibold">{t("teacher.completionByGroup")}</p><span className="text-xs text-muted-foreground">{groupFilter === "all" ? t("teacher.allGroups") : TEACHER_GROUPS.find((item) => item.id === groupFilter)?.name}</span></div>{TEACHER_GROUPS.filter((item) => groupFilter === "all" || item.id === groupFilter).map((item, index) => { const value = [78, 64, 91][index] ?? 72; return <div key={item.id} className="space-y-1"><div className="flex justify-between text-xs"><span>{item.name}</span><span className="font-semibold">{value}%</span></div><ProgressBar value={value} /></div>; })}</Card>
+      <Card><p className="mb-3 text-sm font-semibold">{t("admin.recent")}</p><div className="space-y-3 text-sm">{["G. Nurygdyyev published Week 4 — Motion", "D. Allanurov graded 12 submissions", "A. Ashyraliyeva updated group 2A"].map((item, index) => <div key={item} className="flex items-start gap-3"><span className="mt-1 h-2 w-2 rounded-full bg-primary" /><div><p>{item}</p><p className="text-xs text-muted-foreground">{index + 1} {index ? t("teacher.hoursAgo") : t("teacher.hourAgo")}</p></div></div>)}</div></Card>
     </div>
   );
 }

@@ -51,7 +51,7 @@ function CourseDetail() {
     <AppShell>
       <PageHeader title={course.name} subtitle={`${teacherOfCourse(course.id)?.name} · ${course.credits} ${t("courses.credits")}`} />
 
-      <div className="mb-5 flex gap-2 overflow-x-auto pb-1">
+      <div className="mobile-scroll-x mb-5 flex gap-2 overflow-x-auto pb-1">
         {TABS.map((x) => (
           <button
             key={x}

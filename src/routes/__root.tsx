@@ -148,15 +148,15 @@ function InstallPromptBanner() {
   if (!visible || !installEvent) return null;
 
   return (
-    <div className="fixed inset-x-4 bottom-4 z-[60] mx-auto max-w-md rounded-2xl border border-border bg-card/95 p-4 shadow-2xl backdrop-blur-xl sm:inset-x-auto sm:right-6 sm:w-[28rem]">
+    <div className="fixed inset-x-4 bottom-4 z-[60] mx-auto max-w-lg rounded-3xl border border-border bg-card/95 p-5 shadow-2xl backdrop-blur-xl sm:inset-x-auto sm:right-6 sm:w-[32rem]">
       <div className="flex items-start gap-3">
-        <img src="/icons/icon-512.png" alt="Student TM" className="h-12 w-12 rounded-xl" />
+        <img src="/icons/icon-512.png" alt="Student TM" className="h-16 w-16 rounded-2xl" />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold text-foreground">{t("pwa.title")}</p>
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">{t("pwa.description")}</p>
+          <p className="text-lg font-bold text-foreground">{t("pwa.title")}</p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("pwa.description")}</p>
           <div className="mt-3 flex gap-2">
-            <button type="button" onClick={() => { void installEvent.prompt(); setInstallEvent(null); setVisible(false); }} className="rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">{t("pwa.install")}</button>
-            <button type="button" onClick={() => setVisible(false)} className="rounded-xl px-3 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted">{t("pwa.notNow")}</button>
+            <button type="button" onClick={() => { void installEvent.prompt(); setInstallEvent(null); setVisible(false); }} className="rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground">{t("pwa.install")}</button>
+            <button type="button" onClick={() => setVisible(false)} className="rounded-xl px-4 py-3 text-sm font-semibold text-muted-foreground hover:bg-muted">{t("pwa.notNow")}</button>
           </div>
         </div>
         <button type="button" onClick={() => setVisible(false)} aria-label="Close" className="text-lg leading-none text-muted-foreground">×</button>
