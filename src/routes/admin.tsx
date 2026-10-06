@@ -135,7 +135,7 @@ function AdminConsole() {
         </div>
       </section>
 
-      <nav aria-label="Admin dashboard sections" className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-card p-2 shadow-card">
+      <nav aria-label={t("admin.dashboardSections")} className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-card p-2 shadow-card">
         {[
           ["overview", t("admin.panelOverview"), LayoutDashboard],
           ["content", t("admin.panelContent"), Megaphone],
@@ -184,7 +184,7 @@ function AdminConsole() {
         ))}
       </section>
 
-      <section aria-label="System monitoring" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <section aria-label={t("admin.systemMonitoring")} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {monitoring.map((item) => (
           <div key={item.label} className="card-surface p-4">
             <div className="flex items-center justify-between">
@@ -383,12 +383,12 @@ function AdminOperations() {
       {section === "users" ? (
         <div className="divide-y divide-border">
           <div className="grid gap-3 p-4 sm:grid-cols-3 sm:p-5">
-            {["1,248 users", "42 teachers", "18 blocked"].map((label, index) => (
-              <div key={label} className="rounded-2xl bg-muted/60 p-3">
-                <p className="text-lg font-bold">{label.split(" ")[0]}</p>
+            {[["1,248", "admin.usersCount"], ["42", "admin.teachersCount"], ["18", "admin.blockedCount"]].map(([value, key], index) => (
+              <div key={key} className="rounded-2xl bg-muted/60 p-3">
+                <p className="text-lg font-bold">{value}</p>
                 <p className="text-xs text-muted-foreground">
-                  {label.slice(label.indexOf(" ") + 1)}
-                  {index === 2 ? " · barlamak gerek" : ""}
+                  {t(key)}
+                  {index === 2 ? ` · ${t("admin.reviewNeeded")}` : ""}
                 </p>
               </div>
             ))}
@@ -425,7 +425,7 @@ function AdminOperations() {
                               : "bg-success/10 text-success",
                           )}
                         >
-                          {user.status}
+                          {user.status === "Blocked" ? t("admin.blocked") : t("admin.active")}
                         </span>
                       </td>
                       <td className="px-5 py-3">
@@ -433,7 +433,7 @@ function AdminOperations() {
                           onClick={() => setSaved(true)}
                           className="rounded-lg bg-muted px-3 py-1.5 text-xs font-semibold hover:bg-primary-soft"
                         >
-                          Roly üýtget
+                          {t("admin.changeRole")}
                         </button>
                       </td>
                     </tr>
@@ -446,17 +446,17 @@ function AdminOperations() {
               onClick={() => setSaved(true)}
               className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
             >
-              <Upload className="h-4 w-4" /> Ulanyjylary import et
+              <Upload className="h-4 w-4" /> {t("admin.importUsers")}
             </button>
             <button
               onClick={() => setSaved(true)}
               className="flex items-center gap-2 rounded-xl bg-muted px-4 py-2.5 text-sm font-semibold"
             >
-              <Download className="h-4 w-4" /> CSV eksport et
+              <Download className="h-4 w-4" /> {t("admin.exportCsv")}
             </button>
             {saved ? (
               <span className="self-center text-xs font-medium text-success">
-                Hereket nobata goşuldy.
+                {t("admin.actionQueued")}
               </span>
             ) : null}
           </div>
@@ -521,37 +521,37 @@ function AdminOperations() {
           />
           <IntegrationCard
             icon={Mail}
-            title="Email notifications"
-            description="Send digest emails for new content and grades."
+            title={t("admin.emailNotifications")}
+            description={t("admin.emailDescription")}
             enabled={integrations.email}
-            actionLabel={integrations.email ? "Enabled" : "Enable email"}
+            actionLabel={integrations.email ? t("admin.enabled") : t("admin.enableEmail")}
             onToggle={() => setIntegrations((current) => ({ ...current, email: !current.email }))}
           />
           <IntegrationCard
             icon={Bell}
-            title="Push notifications"
-            description="Notify students instantly about important changes."
+            title={t("admin.pushNotifications")}
+            description={t("admin.pushDescription")}
             enabled={integrations.push}
-            actionLabel={integrations.push ? "Enabled" : "Enable push"}
+            actionLabel={integrations.push ? t("admin.enabled") : t("admin.enablePush")}
             onToggle={() => setIntegrations((current) => ({ ...current, push: !current.push }))}
           />
         </div>
       ) : (
         <div className="grid gap-4 p-4 sm:grid-cols-3 sm:p-5">
           <label className="text-sm font-medium">
-            Theme
+            {t("admin.theme")}
             <select
               value={theme}
               onChange={(e) => setTheme(e.target.value)}
               className="mt-2 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal"
             >
-              <option value="system">System</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
+              <option value="system">{t("admin.system")}</option>
+              <option value="light">{t("admin.light")}</option>
+              <option value="dark">{t("admin.dark")}</option>
             </select>
           </label>
           <label className="text-sm font-medium">
-            Max file size (MB)
+            {t("admin.maxFileSize")}
             <input
               value={fileLimit}
               onChange={(e) => setFileLimit(e.target.value.replace(/[^0-9]/g, ""))}
