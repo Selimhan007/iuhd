@@ -339,12 +339,23 @@ function AdminOperations() {
     URL.revokeObjectURL(url);
   };
 
-  const importUsers = (event: ChangeEvent<HTMLInputElement>) => {
+  const importUsers = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    setActionMessage(`${file.name} (${file.size} bytes)`);
-    setSaved(true);
-    event.target.value = "";
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const response = await fetch("/api/upload", { method: "POST", body: formData });
+      const result = (await response.json()) as { filename?: string; size?: number; error?: string };
+      if (!response.ok) throw new Error(result.error ?? "Upload failed");
+      setActionMessage(`${result.filename ?? file.name} (${result.size ?? file.size} bytes)`);
+      setSaved(true);
+    } catch (error) {
+      console.error("[v0] File upload failed", error);
+      setActionMessage(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      event.target.value = "";
+    }
   };
 
   const runAction = async (action: string) => {

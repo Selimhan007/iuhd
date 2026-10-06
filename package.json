@@ -48,6 +48,7 @@
     "@tanstack/react-start": "1.168.60",
     "@tanstack/router-plugin": "1.168.42",
     "@types/pg": "^8.23.1",
+    "@vercel/blob": "^2.8.1",
     "ai": "^7.0.127",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
