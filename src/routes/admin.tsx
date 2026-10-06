@@ -321,6 +321,12 @@ function AdminOperations() {
   const [fileLimit, setFileLimit] = useState("25");
   const [theme, setTheme] = useState("system");
   const [integrations, setIntegrations] = useState({ calendar: false, email: true, push: true });
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
+
+  const runAction = (action: string) => {
+    setActionMessage(action);
+    setSaved(true);
+  };
   const users = [
     { name: "M. Atayev", role: "Student", group: "1B", status: "Active" },
     { name: "G. Nurygdyyev", role: "Teacher", group: "Software", status: "Active" },
@@ -378,6 +384,11 @@ function AdminOperations() {
             </button>
           ))}
         </nav>
+        {actionMessage ? (
+          <p className="mt-3 rounded-xl bg-success/10 px-3 py-2 text-xs font-medium text-success" role="status">
+            {actionMessage}: {t("admin.actionQueued")}
+          </p>
+        ) : null}
       </div>
 
       {section === "users" ? (
@@ -430,7 +441,7 @@ function AdminOperations() {
                       </td>
                       <td className="px-5 py-3">
                         <button
-                          onClick={() => setSaved(true)}
+              onClick={() => runAction(`${t("admin.changeRole")}: ${user.name}`)}
                           className="rounded-lg bg-muted px-3 py-1.5 text-xs font-semibold hover:bg-primary-soft"
                         >
                           {t("admin.changeRole")}
@@ -443,13 +454,13 @@ function AdminOperations() {
           </div>
           <div className="flex flex-wrap gap-2 p-4 sm:p-5">
             <button
-              onClick={() => setSaved(true)}
+              onClick={() => runAction(t("admin.importUsers"))}
               className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
             >
               <Upload className="h-4 w-4" /> {t("admin.importUsers")}
             </button>
             <button
-              onClick={() => setSaved(true)}
+              onClick={() => runAction(t("admin.exportCsv"))}
               className="flex items-center gap-2 rounded-xl bg-muted px-4 py-2.5 text-sm font-semibold"
             >
               <Download className="h-4 w-4" /> {t("admin.exportCsv")}
@@ -471,6 +482,8 @@ function AdminOperations() {
             t("admin.createSubject"),
             t("admin.exportRoster"),
           ]}
+          onAction={runAction}
+          workflowLabel={t("admin.openWorkflow")}
         />
       ) : section === "audit" ? (
         <div className="grid gap-4 p-4 sm:grid-cols-[1fr_auto] sm:p-5">
@@ -491,7 +504,7 @@ function AdminOperations() {
             <FileWarning className="h-5 w-5 text-warning" />
             <p className="mt-3 text-sm font-semibold">3 {t("admin.moderationNeeded")}</p>
             <button
-              onClick={() => setSaved(true)}
+              onClick={() => runAction(t("admin.reviewQueue"))}
               className="mt-3 rounded-lg bg-warning px-3 py-2 text-xs font-semibold text-warning-foreground"
             >
               {t("admin.reviewQueue")}
@@ -508,6 +521,8 @@ function AdminOperations() {
             t("admin.sendDeadline"),
             t("admin.downloadActivity"),
           ]}
+          onAction={runAction}
+          workflowLabel={t("admin.openWorkflow")}
         />
       ) : section === "integrations" ? (
         <div className="grid gap-3 p-4 sm:grid-cols-3 sm:p-5">
@@ -599,7 +614,7 @@ function IntegrationCard({
           <Icon className="h-5 w-5" />
         </span>
         <span className={cn("rounded-full px-2 py-1 text-[11px] font-semibold", enabled ? "bg-success/10 text-success" : "bg-muted text-muted-foreground")}>
-          {enabled ? "Active" : "Off"}
+          {enabled ? "Enabled" : "Off"}
         </span>
       </div>
       <h3 className="mt-4 text-sm font-semibold">{title}</h3>
@@ -618,19 +633,19 @@ function IntegrationCard({
   );
 }
 
-function ActionGrid({ items }: { items: string[] }) {
+function ActionGrid({ items, onAction, workflowLabel }: { items: string[]; onAction: (item: string) => void; workflowLabel: string }) {
   return (
     <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3">
       {items.map((item, index) => (
         <button
           key={item}
-          onClick={() => window.alert(`${item} is ready to configure.`)}
+          onClick={() => onAction(item)}
           className="group flex items-center justify-between rounded-2xl border border-border bg-background p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-card"
         >
           <span>
             <span className="block text-sm font-semibold">{item}</span>
             <span className="mt-1 block text-xs text-muted-foreground">
-              Open workflow and review changes
+              {workflowLabel}
             </span>
           </span>
           {index % 2 ? (
