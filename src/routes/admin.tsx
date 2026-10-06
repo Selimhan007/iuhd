@@ -257,7 +257,7 @@ function ContentPublisher({
     if (!title.trim() || !body.trim()) return;
     const id = `admin-${Date.now()}`;
     if (kind === "announcement") {
-      onAnnouncement({ id, title: title.trim(), body: body.trim(), author: "Dolandyryş", date: date || new Date().toISOString().slice(0, 10), category: "university" });
+      onAnnouncement({ id, title: title.trim(), body: body.trim(), author: t("admin.management"), date: date || new Date().toISOString().slice(0, 10), category: "university" });
     } else {
       onEvent({ id, title: title.trim(), description: body.trim(), date: date || new Date().toISOString().slice(0, 10), place: place.trim() || "Campus" });
     }
@@ -305,15 +305,16 @@ function ContentPublisher({
 }
 
 const adminSections = [
-  { id: "users", label: "Ulanyjylar", icon: UserRoundCog },
-  { id: "groups", label: "Toparlar we dersler", icon: Users },
-  { id: "audit", label: "Gözegçilik we moderasiýa", icon: History },
-  { id: "bulk", label: "Köpçülikleýin amallar", icon: SlidersHorizontal },
-  { id: "integrations", label: "Integrasiýalar", icon: Bell },
-  { id: "settings", label: "Ulgam sazlamalary", icon: Settings2 },
+  { id: "users", key: "admin.users", icon: UserRoundCog },
+  { id: "groups", key: "admin.groupsSubjects", icon: Users },
+  { id: "audit", key: "admin.auditModeration", icon: History },
+  { id: "bulk", key: "admin.bulkOperations", icon: SlidersHorizontal },
+  { id: "integrations", key: "admin.integrations", icon: Bell },
+  { id: "settings", key: "admin.systemSettings", icon: Settings2 },
 ] as const;
 
 function AdminOperations() {
+  const { t } = useI18n();
   const [section, setSection] = useState<(typeof adminSections)[number]["id"]>("users");
   const [search, setSearch] = useState("");
   const [saved, setSaved] = useState(false);
@@ -338,11 +339,11 @@ function AdminOperations() {
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-              Dolandyryş
+              {t("admin.management")}
             </p>
-            <h2 className="mt-1 text-xl font-bold tracking-tight">Dolandyryş merkezi</h2>
+            <h2 className="mt-1 text-xl font-bold tracking-tight">{t("admin.managementTitle")}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Girişi, mazmuny, amallary we ulgam düzgünlerini bir ýerden dolandyryň.
+              {t("admin.managementDescription")}
             </p>
           </div>
           {section === "users" ? (
@@ -350,8 +351,8 @@ function AdminOperations() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Ulanyjylary gözle"
-                aria-label="Ulanyjylary gözle"
+                placeholder={t("admin.searchUsers")}
+                aria-label={t("admin.searchUsers")}
                 className="w-full rounded-xl border border-input bg-background px-3 py-2.5 pl-9 text-sm outline-none focus:border-ring"
               />
               <SlidersHorizontal className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -359,7 +360,7 @@ function AdminOperations() {
           ) : null}
         </div>
         <nav
-          aria-label="Dolandyryş bölümleri"
+          aria-label={t("admin.managementTitle")}
           className="mt-4 flex gap-2 overflow-x-auto pb-1"
         >
           {adminSections.map((item) => (
@@ -373,7 +374,7 @@ function AdminOperations() {
                   : "bg-muted text-muted-foreground hover:text-foreground",
               )}
             >
-              <item.icon className="h-4 w-4" /> {item.label}
+              <item.icon className="h-4 w-4" /> {t(item.key)}
             </button>
           ))}
         </nav>
