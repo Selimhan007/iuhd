@@ -96,16 +96,16 @@ function AdminConsole() {
 
   const monitoring = [
     {
-      label: "Işjeň talyplar",
+      label: t("admin.activeStudents"),
       value: data.students.length,
-      detail: "Toparda hasaba alnan",
+      detail: t("admin.registeredGroup"),
       icon: Users,
       tone: "text-primary",
     },
     {
-      label: "Çap edilen mazmun",
+      label: t("admin.publishedContent"),
       value: demoAnnouncements.length + demoEvents.length,
-      detail: "Bildirişler we çäreler",
+      detail: t("admin.announcementsEvents"),
       icon: CheckCircle2,
       tone: "text-success",
     },
@@ -136,9 +136,9 @@ function AdminConsole() {
 
       <nav aria-label="Admin dashboard sections" className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-card p-2 shadow-card">
         {[
-          ["overview", "Gysgaça syn", LayoutDashboard],
-          ["content", "Bildirişler we çäreler", Megaphone],
-          ["control", "Dolandyryş merkezi", Settings2],
+          ["overview", t("admin.panelOverview"), LayoutDashboard],
+          ["content", t("admin.panelContent"), Megaphone],
+          ["control", t("admin.panelControl"), Settings2],
         ].map(([id, label, Icon]) => (
           <button
             key={id as string}
@@ -268,28 +268,28 @@ function ContentPublisher({
               {kind === "announcement" ? <Bell className="h-5 w-5" /> : <CalendarPlus className="h-5 w-5" />}
             </span>
             <div>
-              <h2 className="font-bold">Mazmun çap et</h2>
-              <p className="text-xs text-muted-foreground">Täzelikleri talyplar we mugallymlar bilen paýlaşyň.</p>
+              <h2 className="font-bold">{t("admin.publishContent")}</h2>
+              <p className="text-xs text-muted-foreground">{t("admin.shareUpdates")}</p>
             </div>
           </div>
           <div className="mt-5 grid grid-cols-2 gap-2">
-            {([['announcement', 'Bildiriş'], ['event', 'Çäre']] as const).map(([value, label]) => (
+            {([['announcement', t("admin.announcement")], ['event', t("admin.event")]] as const).map(([value, label]) => (
               <button key={value} type="button" onClick={() => setKind(value)} className={cn("rounded-xl px-3 py-2.5 text-sm font-semibold", kind === value ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>{label}</button>
             ))}
           </div>
-          <label className="mt-4 block text-sm font-medium">At<input required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
-          <label className="mt-3 block text-sm font-medium">{kind === "announcement" ? "Habar" : "Düşündiriş"}<textarea required value={body} onChange={(e) => setBody(e.target.value)} rows={4} className="mt-1.5 w-full resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+          <label className="mt-4 block text-sm font-medium">{t("admin.titleField")}<input required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+          <label className="mt-3 block text-sm font-medium">{kind === "announcement" ? t("admin.message") : t("admin.description")}<textarea required value={body} onChange={(e) => setBody(e.target.value)} rows={4} className="mt-1.5 w-full resize-none rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <label className="text-sm font-medium">Sene<input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
-            {kind === "event" ? <label className="text-sm font-medium">Ýer<input value={place} onChange={(e) => setPlace(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label> : null}
+            <label className="text-sm font-medium">{t("admin.date")}<input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label>
+            {kind === "event" ? <label className="text-sm font-medium">{t("admin.place")}<input value={place} onChange={(e) => setPlace(e.target.value)} className="mt-1.5 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal" /></label> : null}
           </div>
-          <button type="submit" className="mt-4 flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"><Megaphone className="h-4 w-4" /> Çap et</button>
-          {published ? <p className="mt-3 text-xs font-medium text-success">Üstünlikli çap edildi.</p> : null}
+          <button type="submit" className="mt-4 flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"><Megaphone className="h-4 w-4" /> {t("admin.publish")}</button>
+          {published ? <p className="mt-3 text-xs font-medium text-success">{t("admin.publishedSuccessfully")}</p> : null}
         </form>
         <div className="rounded-3xl border border-border bg-card p-5 shadow-card">
-          <h2 className="font-bold">Çap edilen mazmun</h2>
+          <h2 className="font-bold">{t("admin.publishedContent")}</h2>
           <div className="mt-4 space-y-2">
-            {[...announcements.slice(0, 4).map((item) => ({ ...item, kind: "Announcement" })), ...events.slice(0, 4).map((item) => ({ ...item, kind: "Event", body: item.description }))].map((item) => (
+            {[...announcements.slice(0, 4).map((item) => ({ ...item, kind: t("admin.announcement") })), ...events.slice(0, 4).map((item) => ({ ...item, kind: t("admin.event"), body: item.description }))].map((item) => (
               <article key={item.id} className="rounded-2xl bg-muted/50 p-3"><div className="flex items-center justify-between gap-3"><p className="font-semibold">{item.title}</p><span className="text-[11px] text-primary">{item.kind}</span></div><p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.body}</p></article>
             ))}
           </div>
