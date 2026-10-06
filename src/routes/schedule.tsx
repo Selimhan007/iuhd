@@ -124,8 +124,8 @@ function SchedulePage() {
       )}
 
       {selected ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 p-0 sm:items-center sm:p-4">
-          <div className="w-full animate-sheet-enter max-w-md rounded-t-3xl border border-border bg-card p-5 sm:rounded-3xl">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/35 p-0 backdrop-blur-lg sm:items-center sm:p-4">
+          <div className="w-full animate-sheet-enter max-w-md rounded-t-3xl border border-border bg-card/95 p-5 shadow-2xl backdrop-blur-xl sm:rounded-3xl">
             <div className="mb-4 flex items-start justify-between">
               <h3 className="text-lg font-bold">{t("schedule.details")}</h3>
               <button
