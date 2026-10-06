@@ -5,7 +5,7 @@ import { Card, EmptyState, Pill, SectionTitle } from "@/components/app/ui-kit";
 import { AnnouncementCard, AssignmentCard, ScheduleCard, lessonStatus } from "@/components/app/cards";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
-import { announcements, assignments, courseById, lessons, teacherOfCourse } from "@/lib/demo-data";
+import { announcements, assignments, courseById, lessons, teacherOfCourse, group, type Lesson } from "@/lib/demo-data";
 import {
   CalendarDays,
   GraduationCap,
@@ -15,6 +15,7 @@ import {
   FileText,
   Clock,
   MapPin,
+  X,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -43,6 +44,7 @@ function HomePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [now, setNow] = useState(() => new Date());
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 30000);
@@ -115,11 +117,33 @@ function HomePage() {
           ) : (
             <div className="space-y-3">
               {todays.map((l) => (
-                <ScheduleCard key={l.id} lesson={l} status={lessonStatus(l, now)} />
+                <ScheduleCard key={l.id} lesson={l} status={lessonStatus(l, now)} onClick={() => setSelectedLesson(l)} />
               ))}
             </div>
           )}
         </section>
+
+        {selectedLesson ? (
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title">
+            <div className="w-full max-w-md rounded-t-3xl border border-border bg-card p-5 shadow-2xl sm:rounded-3xl">
+              <div className="mb-4 flex items-start justify-between">
+                <h2 id="lesson-details-title" className="text-lg font-bold">{t("schedule.details")}</h2>
+                <button type="button" onClick={() => setSelectedLesson(null)} aria-label={t("close")} className="tap-target">
+                  <X className="h-5 w-5 text-muted-foreground" />
+                </button>
+              </div>
+              <Card className="space-y-2">
+                <p className="text-lg font-semibold">{courseById(selectedLesson.courseId)?.name}</p>
+                <Pill tone="primary">{t(`type.${selectedLesson.type}`)}</Pill>
+                <LessonDetailRow label={t("schedule.teacher")} value={teacherOfCourse(selectedLesson.courseId)?.name ?? "—"} />
+                <LessonDetailRow label={t("schedule.room")} value={selectedLesson.room} />
+                <LessonDetailRow label={t("nav.schedule")} value={`${selectedLesson.start} – ${selectedLesson.end}`} />
+                <LessonDetailRow label={t("schedule.group")} value={group.name} />
+                <LessonDetailRow label={t("schedule.notes")} value={selectedLesson.notes ?? "—"} />
+              </Card>
+            </div>
+          </div>
+        ) : null}
 
         <section>
           <SectionTitle title={t("home.tasks")} to="/tasks" label={t("home.viewAll")} />
@@ -180,3 +204,13 @@ function HomePage() {
     </AppShell>
   );
 }
+
+function LessonDetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-4 text-sm">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="text-right font-medium">{value}</span>
+    </div>
+  );
+}
+
