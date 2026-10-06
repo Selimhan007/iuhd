@@ -106,8 +106,6 @@ const ROLE_CONFIG: Record<
     more: [
       { to: "/notifications", icon: Bell, key: "nav.notifications" },
       { to: "/profile", icon: User, key: "nav.profile" },
-      { to: "/notifications", icon: Bell, key: "nav.notifications" },
-      { to: "/profile", icon: User, key: "nav.profile" },
       { to: "/settings", icon: Settings, key: "nav.settings" },
     ],
   },

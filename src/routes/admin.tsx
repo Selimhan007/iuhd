@@ -8,6 +8,7 @@ import {
   Download,
   FileWarning,
   GraduationCap,
+  LayoutDashboard,
   History,
   Mail,
   Megaphone,
@@ -135,20 +136,24 @@ function AdminConsole() {
 
       <nav aria-label="Admin dashboard sections" className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-card p-2 shadow-card">
         {[
-          ["overview", "Overview"],
-          ["content", "Announcements & events"],
-          ["control", "Control center"],
-        ].map(([id, label]) => (
+          ["overview", "Overview", LayoutDashboard],
+          ["content", "Announcements & events", Megaphone],
+          ["control", "Control center", Settings2],
+        ].map(([id, label, Icon]) => (
           <button
-            key={id}
+            key={id as string}
             type="button"
             onClick={() => setPanel(id as AdminPanel)}
+            aria-current={panel === id ? "page" : undefined}
             className={cn(
-              "shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors",
-              panel === id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              "flex min-w-[9.5rem] flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold transition-all",
+              panel === id
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
-            {label}
+            <Icon className="h-4 w-4" />
+            <span className="truncate">{label as string}</span>
           </button>
         ))}
       </nav>
