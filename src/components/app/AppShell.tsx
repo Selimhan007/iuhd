@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, Navigate, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Home,
   CalendarDays,
@@ -127,13 +127,16 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
 
   const unread = demoNotifications.filter((n) => !n.read).length;
 
-  if (!ready || !user || !allowed) {
+  if (!ready) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-100 transition-colors duration-200">
         <LatticeLoader label={t("loading")} pattern="orbit" color="currentColor" cellSize={7} gap={2} fontSize={14} step={90} showTimer={false} />
       </div>
     );
   }
+
+  if (!user) return <Navigate to="/auth" replace />;
+  if (!allowed) return <Navigate to={roleHome(user.role)} replace />;
 
   const kind = roleKind(user.role);
   const config = ROLE_CONFIG[kind];
