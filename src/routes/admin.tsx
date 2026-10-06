@@ -464,12 +464,12 @@ function AdminOperations() {
       ) : section === "groups" ? (
         <ActionGrid
           items={[
-            "Topar döret",
-            "Topary arhiwle",
-            "Talyplary geçir",
-            "Mugallym belle",
-            "Ders döret",
-            "Sanawy eksport et",
+            t("admin.createGroup"),
+            t("admin.archiveGroup"),
+            t("admin.moveStudents"),
+            t("admin.assignTeacher"),
+            t("admin.createSubject"),
+            t("admin.exportRoster"),
           ]}
         />
       ) : section === "audit" ? (
@@ -481,7 +481,7 @@ function AdminOperations() {
                 <div>
                   <p className="text-sm font-medium">{event}</p>
                   <p className="text-xs text-muted-foreground">
-                    {index + 1} sagat öň · ulgam gözegçiligi
+                    {index + 1} {t("admin.hoursAgo")} · {t("admin.systemAudit")}
                   </p>
                 </div>
               </div>
@@ -489,34 +489,34 @@ function AdminOperations() {
           </div>
           <div className="rounded-2xl border border-warning/30 bg-warning/5 p-4">
             <FileWarning className="h-5 w-5 text-warning" />
-            <p className="mt-3 text-sm font-semibold">3 elemente moderasiýa gerek</p>
+            <p className="mt-3 text-sm font-semibold">3 {t("admin.moderationNeeded")}</p>
             <button
               onClick={() => setSaved(true)}
               className="mt-3 rounded-lg bg-warning px-3 py-2 text-xs font-semibold text-warning-foreground"
             >
-              Barlag nobaty
+              {t("admin.reviewQueue")}
             </button>
           </div>
         </div>
       ) : section === "bulk" ? (
         <ActionGrid
           items={[
-            "Saýlanan toparlara habar ber",
-            "Bahalary XLSX eksport et",
-            "Köne toparlary arhiwle",
-            "Faýllary köpçülikleýin barla",
-            "Möhlet ýatlatmasyny iber",
-            "Hereket gündeligini ýükle",
+            t("admin.notifyGroups"),
+            t("admin.exportGrades"),
+            t("admin.archiveOldGroups"),
+            t("admin.bulkFileReview"),
+            t("admin.sendDeadline"),
+            t("admin.downloadActivity"),
           ]}
         />
       ) : section === "integrations" ? (
         <div className="grid gap-3 p-4 sm:grid-cols-3 sm:p-5">
           <IntegrationCard
             icon={CalendarDays}
-            title="Senenama"
-            description="Sapaklary, möhletleri we uniwersitet çärelerini sinhronlaň."
+            title={t("admin.calendar")}
+            description={t("admin.calendarDescription")}
             enabled={integrations.calendar}
-            actionLabel={integrations.calendar ? "Birikdirildi" : "Senenamany birikdir"}
+            actionLabel={integrations.calendar ? t("admin.connected") : t("admin.connectCalendar")}
             onToggle={() => setIntegrations((current) => ({ ...current, calendar: !current.calendar }))}
           />
           <IntegrationCard
