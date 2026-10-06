@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app/AppShell";
 import { Card, EmptyState, Pill, SectionTitle } from "@/components/app/ui-kit";
@@ -41,6 +41,7 @@ const quickActions = [
 function HomePage() {
   const { t } = useI18n();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -81,6 +82,7 @@ function HomePage() {
         </header>
 
         {next ? (
+          <button type="button" onClick={() => navigate({ to: "/schedule" })} className="block w-full text-left">
           <Card className="bg-primary text-primary-foreground shadow-card">
             <p className="text-xs font-semibold uppercase tracking-wide opacity-80">{t("home.nextClass")}</p>
             <p className="mt-2 text-xl font-bold">{courseById(next.courseId)?.name}</p>
@@ -103,6 +105,7 @@ function HomePage() {
                 : t("status.inProgress")}
             </p>
           </Card>
+          </button>
         ) : null}
 
         <section>
@@ -125,7 +128,7 @@ function HomePage() {
           ) : (
             <div className="space-y-3">
               {upcomingTasks.map((a) => (
-                <AssignmentCard key={a.id} a={a} />
+                <AssignmentCard key={a.id} a={a} onClick={() => navigate({ to: "/tasks" })} />
               ))}
             </div>
           )}
@@ -139,7 +142,9 @@ function HomePage() {
               .sort((a, b) => Number(!!b.important) - Number(!!a.important))
               .slice(0, 2)
               .map((a) => (
-                <AnnouncementCard key={a.id} a={a} />
+                <Link key={a.id} to="/announcements" className="block">
+                  <AnnouncementCard a={a} />
+                </Link>
               ))}
           </div>
         </section>
