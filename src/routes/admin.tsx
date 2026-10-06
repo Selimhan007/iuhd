@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import {
   Archive,
   Bell,
@@ -322,16 +322,40 @@ function AdminOperations() {
   const [theme, setTheme] = useState("system");
   const [integrations, setIntegrations] = useState({ calendar: false, email: true, push: true });
   const [actionMessage, setActionMessage] = useState<string | null>(null);
-
-  const runAction = (action: string) => {
-    setActionMessage(action);
-    setSaved(true);
-  };
-  const users = [
+  const importInputRef = useRef<HTMLInputElement>(null);
+  const [users, setUsers] = useState([
     { name: "M. Atayev", role: "Student", group: "1B", status: "Active" },
     { name: "G. Nurygdyyev", role: "Teacher", group: "Software", status: "Active" },
     { name: "S. Ovezova", role: "Student", group: "1B", status: "Blocked" },
-  ];
+  ]);
+
+  const downloadCsv = () => {
+    const csv = ["Name,Role,Group,Status", ...users.map((user) => [user.name, user.role, user.group, user.status].join(","))].join("\\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "users.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importUsers = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setActionMessage(`${file.name} (${file.size} bytes)`);
+    setSaved(true);
+    event.target.value = "";
+  };
+
+  const runAction = (action: string) => {
+    const target = users.find((user) => action.endsWith(user.name));
+    if (target) {
+      setUsers((current) => current.map((user) => user.name === target.name ? { ...user, role: user.role === "Student" ? "Teacher" : "Student" } : user));
+    }
+    if (action === t("admin.exportCsv")) downloadCsv();
+    setActionMessage(action);
+    setSaved(true);
+  };
   const events = [
     "G. Nurygdyyev uploaded lecture-04.pdf",
     "Admin changed S. Ovezova role to Student",
@@ -453,8 +477,9 @@ function AdminOperations() {
             </table>
           </div>
           <div className="flex flex-wrap gap-2 p-4 sm:p-5">
+            <input ref={importInputRef} type="file" accept=".csv,.xlsx" onChange={importUsers} className="sr-only" />
             <button
-              onClick={() => runAction(t("admin.importUsers"))}
+              onClick={() => importInputRef.current?.click()}
               className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
             >
               <Upload className="h-4 w-4" /> {t("admin.importUsers")}
@@ -557,7 +582,11 @@ function AdminOperations() {
             {t("admin.theme")}
             <select
               value={theme}
-              onChange={(e) => setTheme(e.target.value)}
+              onChange={(e) => {
+                const nextTheme = e.target.value;
+                setTheme(nextTheme);
+                document.documentElement.classList.toggle("dark", nextTheme === "dark" || (nextTheme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches));
+              }}
               className="mt-2 w-full rounded-xl border border-input bg-background px-3 py-2.5 font-normal"
             >
               <option value="system">{t("admin.system")}</option>
@@ -575,15 +604,15 @@ function AdminOperations() {
           </label>
           <div className="flex items-end">
             <button
-              onClick={() => setSaved(true)}
+              onClick={() => runAction(t("admin.savePolicy"))}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
             >
-              <Settings2 className="h-4 w-4" /> Save policy
+              <Settings2 className="h-4 w-4" /> {t("admin.savePolicy")}
             </button>
           </div>
           {saved ? (
             <p className="text-xs font-medium text-success sm:col-span-3">
-              Settings saved. Changes will apply to new uploads.
+              {t("admin.policySaved")}
             </p>
           ) : null}
         </div>
@@ -607,6 +636,7 @@ function IntegrationCard({
   actionLabel: string;
   onToggle: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="rounded-2xl border border-border bg-background p-4">
       <div className="flex items-start justify-between gap-3">
@@ -614,7 +644,7 @@ function IntegrationCard({
           <Icon className="h-5 w-5" />
         </span>
         <span className={cn("rounded-full px-2 py-1 text-[11px] font-semibold", enabled ? "bg-success/10 text-success" : "bg-muted text-muted-foreground")}>
-          {enabled ? "Enabled" : "Off"}
+          {enabled ? t("admin.enabled") : t("admin.off")}
         </span>
       </div>
       <h3 className="mt-4 text-sm font-semibold">{title}</h3>
