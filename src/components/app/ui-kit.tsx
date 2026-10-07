@@ -7,9 +7,9 @@ import { useI18n } from "@/lib/i18n";
 
 export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
   return (
-    <div className="mb-5 flex items-end justify-between gap-3">
+    <div className="mb-7 flex items-end justify-between gap-3">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
         {subtitle ? <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p> : null}
       </div>
       {action}
@@ -96,7 +96,7 @@ export function ErrorState({ onRetry }: { onRetry?: () => void }) {
 
 export function ListSkeleton({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       {Array.from({ length: rows }).map((_, i) => (
         <Skeleton key={i} className="h-20 w-full rounded-2xl" />
       ))}

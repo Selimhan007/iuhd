@@ -42,8 +42,8 @@
 }
 
 :root {
-  --radius: 1rem;
-  --background: oklch(0.99 0.003 255);
+  --radius: 1.125rem;
+  --background: oklch(0.985 0.006 255);
   --foreground: oklch(0.21 0.035 262);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.21 0.035 262);
@@ -70,7 +70,7 @@
 }
 
 .dark {
-  --background: oklch(0.17 0.022 264);
+  --background: oklch(0.145 0.025 264);
   --foreground: oklch(0.95 0.008 255);
   --card: oklch(0.22 0.026 264);
   --card-foreground: oklch(0.95 0.008 255);
@@ -140,6 +140,7 @@
 
   body {
     background-color: var(--color-background);
+    background-image: radial-gradient(circle at 50% -12rem, color-mix(in oklch, var(--color-primary) 9%, transparent), transparent 34rem);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -176,6 +177,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-card);
+  background-image: linear-gradient(135deg, color-mix(in oklch, var(--color-card) 96%, var(--color-primary)), var(--color-card));
   transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms ease, border-color 180ms ease;
 }
 
