@@ -134,7 +134,7 @@ function HomePage() {
 
         {selectedLesson ? (
           <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title">
-            <button type="button" aria-label={t("close")} className="absolute inset-0 bg-background/30 backdrop-blur-xl backdrop-saturate-150" onClick={() => setSelectedLesson(null)} />
+            <button type="button" aria-label={t("close")} className="absolute inset-0" onClick={() => setSelectedLesson(null)} />
             <div className="animate-sheet-enter relative z-10 w-full max-h-[min(80vh,36rem)] max-w-md overflow-y-auto rounded-t-[2rem] border border-white/25 bg-card/80 p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl ring-1 ring-white/10 backdrop-blur-xl sm:rounded-3xl sm:pb-5">
               <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-foreground/20 sm:hidden" aria-hidden="true" />
               <div className="mb-4 flex items-start justify-between">
