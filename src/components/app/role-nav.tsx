@@ -257,7 +257,7 @@ export function RoleNav({
               type="button"
               onClick={onToggleTheme}
               aria-label={dark ? "Включить светлую тему" : "Включить ночную тему"}
-              className="tap-target mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-border text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="tap-target mb-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               {dark ? "Светлая тема" : "Ночная тема"}
