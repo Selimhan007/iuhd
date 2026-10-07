@@ -256,37 +256,18 @@ export function RoleNav({
             <button
               type="button"
               onClick={onToggleTheme}
-              aria-pressed={dark}
               aria-label={dark ? "Включить светлую тему" : "Включить ночную тему"}
-              className="tap-target mb-2 flex w-full items-center justify-between rounded-2xl border border-border bg-card/70 px-3.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+              className="tap-target mb-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              <span className="flex items-center gap-2.5">
-                <span className="flex size-8 items-center justify-center rounded-xl bg-primary-soft text-primary">
-                  {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                </span>
-                <span>{dark ? "Светлая тема" : "Ночная тема"}</span>
-              </span>
-              <span
-                aria-hidden="true"
-                className={cn(
-                  "relative flex h-6 w-11 items-center rounded-full p-1 transition-colors",
-                  dark ? "bg-primary" : "bg-muted",
-                )}
-              >
-                <span
-                  className={cn(
-                    "size-4 rounded-full bg-background shadow-sm transition-transform",
-                    dark ? "translate-x-5" : "translate-x-0",
-                  )}
-                />
-              </span>
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {dark ? "Светлая тема" : "Ночная тема"}
             </button>
             <button
               onClick={() => {
                 setSheetOpen(false);
                 onLogout();
               }}
-              className="tap-target mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-border text-sm font-semibold text-destructive"
+              className="tap-target mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border text-sm font-semibold text-destructive"
             >
               <LogOut className="h-4 w-4" />
               {t("settings.logout")}
