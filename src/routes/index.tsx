@@ -5,7 +5,7 @@ import { Card, EmptyState, Pill, SectionTitle } from "@/components/app/ui-kit";
 import { AnnouncementCard, AssignmentCard, ScheduleCard, lessonStatus } from "@/components/app/cards";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
-import { announcements, assignments, courseById, lessons, teacherOfCourse, group, type Lesson } from "@/lib/demo-data";
+import { announcements, assignments, courseById, lessons, teacherOfCourse } from "@/lib/demo-data";
 import {
   CalendarDays,
   GraduationCap,
@@ -15,7 +15,6 @@ import {
   FileText,
   Clock,
   MapPin,
-  X,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -44,16 +43,6 @@ function HomePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [now, setNow] = useState(() => new Date());
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-
-  useEffect(() => {
-    if (!selectedLesson) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelectedLesson(null);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedLesson]);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 30000);
@@ -126,35 +115,11 @@ function HomePage() {
           ) : (
             <div className="space-y-3 motion-card">
               {todays.map((l) => (
-                <ScheduleCard key={l.id} lesson={l} status={lessonStatus(l, now)} onClick={() => setSelectedLesson(l)} />
+                <ScheduleCard key={l.id} lesson={l} status={lessonStatus(l, now)} />
               ))}
             </div>
           )}
         </section>
-
-        {selectedLesson ? (
-          <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title">
-            <button type="button" aria-label={t("close")} className="absolute inset-0" onClick={() => setSelectedLesson(null)} />
-            <div className="animate-sheet-enter relative z-10 w-full max-h-[min(80vh,36rem)] max-w-md overflow-y-auto rounded-t-[2rem] border border-white/25 bg-card/80 p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl ring-1 ring-white/10 backdrop-blur-xl sm:rounded-3xl sm:pb-5">
-              <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-foreground/20 sm:hidden" aria-hidden="true" />
-              <div className="mb-4 flex items-start justify-between">
-                <h2 id="lesson-details-title" className="text-lg font-bold">{t("schedule.details")}</h2>
-                <button type="button" onClick={() => setSelectedLesson(null)} aria-label={t("close")} className="tap-target">
-                  <X className="h-5 w-5 text-muted-foreground" />
-                </button>
-              </div>
-              <Card className="space-y-2">
-                <p className="text-lg font-semibold">{courseById(selectedLesson.courseId)?.name}</p>
-                <Pill tone="primary">{t(`type.${selectedLesson.type}`)}</Pill>
-                <LessonDetailRow label={t("schedule.teacher")} value={teacherOfCourse(selectedLesson.courseId)?.name ?? "—"} />
-                <LessonDetailRow label={t("schedule.room")} value={selectedLesson.room} />
-                <LessonDetailRow label={t("nav.schedule")} value={`${selectedLesson.start} – ${selectedLesson.end}`} />
-                <LessonDetailRow label={t("schedule.group")} value={group.name} />
-                <LessonDetailRow label={t("schedule.notes")} value={selectedLesson.notes ?? "—"} />
-              </Card>
-            </div>
-          </div>
-        ) : null}
 
         <section className="animate-schedule-card" style={{ animationDelay: "120ms" }}>
           <SectionTitle title={t("home.tasks")} to="/tasks" label={t("home.viewAll")} />
@@ -213,15 +178,6 @@ function HomePage() {
         </Link>
       </div>
     </AppShell>
-  );
-}
-
-function LessonDetailRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between gap-4 text-sm">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="text-right font-medium">{value}</span>
-    </div>
   );
 }
 
