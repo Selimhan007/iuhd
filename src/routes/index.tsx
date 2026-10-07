@@ -133,8 +133,8 @@ function HomePage() {
         </section>
 
         {selectedLesson ? (
-          <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/35 p-0 backdrop-blur-lg sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedLesson(null); }}>
-            <div className="animate-sheet-enter w-full max-w-md rounded-t-3xl border border-border bg-card/95 p-5 shadow-2xl backdrop-blur-xl sm:rounded-3xl">
+          <div className="animate-dialog-backdrop fixed inset-0 z-50 flex items-end justify-center bg-foreground/35 p-0 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedLesson(null); }}>
+            <div className="animate-sheet-enter w-full max-w-md rounded-t-3xl border border-border bg-card p-5 shadow-2xl sm:rounded-3xl">
               <div className="mb-4 flex items-start justify-between">
                 <h2 id="lesson-details-title" className="text-lg font-bold">{t("schedule.details")}</h2>
                 <button type="button" onClick={() => setSelectedLesson(null)} aria-label={t("close")} className="tap-target">
