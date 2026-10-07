@@ -133,9 +133,9 @@ function HomePage() {
         </section>
 
         {selectedLesson ? (
-          <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="lesson-details-title">
             <button type="button" aria-label={t("close")} className="absolute inset-0 bg-background/30 backdrop-blur-xl backdrop-saturate-150" onClick={() => setSelectedLesson(null)} />
-            <div className="animate-sheet-enter relative z-10 w-full max-w-md rounded-t-3xl border border-white/20 bg-card/80 p-5 shadow-2xl backdrop-blur-xl sm:rounded-3xl">
+            <div className="animate-sheet-enter relative z-10 w-full max-w-md rounded-3xl border border-white/25 bg-card/75 p-5 shadow-2xl ring-1 ring-white/10 backdrop-blur-xl">
               <div className="mb-4 flex items-start justify-between">
                 <h2 id="lesson-details-title" className="text-lg font-bold">{t("schedule.details")}</h2>
                 <button type="button" onClick={() => setSelectedLesson(null)} aria-label={t("close")} className="tap-target">
