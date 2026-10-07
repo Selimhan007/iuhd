@@ -178,10 +178,10 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
             Интерфейс доступен офлайн. Данные синхронизируются после подключения.
           </div>
         ) : null}
-        <header className="sticky top-0 z-30 border-b border-border/70 bg-background/80 shadow-[0_8px_30px_rgb(15_23_42/0.04)] backdrop-blur-2xl dark:shadow-[0_8px_30px_rgb(0_0_0/0.2)]">
-          <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6">
+        <header className="sticky top-0 z-30 border-b border-border/80 bg-background/95 shadow-[0_2px_14px_rgb(15_23_42/0.06)] backdrop-blur-xl dark:shadow-[0_2px_14px_rgb(0_0_0/0.18)]">
+          <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
             <Link to={home} preload="intent" className="flex items-center gap-2">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <BrandIcon className="h-4 w-4" />
               </span>
               <span className="font-bold">{config.brand}</span>
@@ -223,7 +223,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
           </div>
         </header>
 
-        <main id="main-content" tabIndex={-1} className="mx-auto max-w-6xl animate-page-enter px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-7 sm:px-6 md:pb-32 md:pt-9">
+        <main id="main-content" tabIndex={-1} className="mx-auto max-w-6xl animate-page-enter px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-5 md:pb-32">
           {children}
         </main>
       </div>

@@ -82,10 +82,10 @@ function HomePage() {
 
   return (
     <AppShell allow={["student"]}>
-      <div className="animate-rise flex flex-col gap-9">
+      <div className="animate-rise space-y-8">
         <header>
           <h1 className="text-2xl font-bold tracking-tight">
-            {greeting}, {firstName}
+            {greeting}, {firstName} 👋
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {now.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
@@ -94,7 +94,7 @@ function HomePage() {
 
         {next ? (
           <button type="button" onClick={() => navigate({ to: "/schedule" })} className="block w-full text-left">
-          <Card className="relative overflow-hidden border-primary/20 bg-primary text-primary-foreground shadow-xl shadow-primary/15 before:absolute before:-right-16 before:-top-20 before:size-48 before:rounded-full before:bg-white/10">
+          <Card className="bg-primary text-primary-foreground shadow-card">
             <p className="text-xs font-semibold uppercase tracking-wide opacity-80">{t("home.nextClass")}</p>
             <p className="mt-2 text-xl font-bold">{courseById(next.courseId)?.name}</p>
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm opacity-90">
