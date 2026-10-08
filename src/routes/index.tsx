@@ -1,8 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app/AppShell";
+import { Button } from "@/components/ui/button";
 import { Card, EmptyState, Pill, SectionTitle } from "@/components/app/ui-kit";
-import { AnnouncementCard, AssignmentCard, ScheduleCard, lessonStatus } from "@/components/app/cards";
+import {
+  AnnouncementCard,
+  AssignmentCard,
+  ScheduleCard,
+  lessonStatus,
+} from "@/components/app/cards";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { announcements, assignments, courseById, lessons, teacherOfCourse } from "@/lib/demo-data";
@@ -21,9 +27,15 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Home — Student TM" },
-      { name: "description", content: "Your next class, today's schedule, tasks and university announcements." },
+      {
+        name: "description",
+        content: "Your next class, today's schedule, tasks and university announcements.",
+      },
       { property: "og:title", content: "Home — Student TM" },
-      { property: "og:description", content: "Your next class, today's schedule, tasks and announcements." },
+      {
+        property: "og:description",
+        content: "Your next class, today's schedule, tasks and announcements.",
+      },
     ],
   }),
   component: HomePage,
@@ -50,17 +62,23 @@ function HomePage() {
 
   const weekday = ((now.getDay() + 6) % 7) + 1;
   const todays = useMemo(
-    () => lessons.filter((l) => l.weekday === weekday).sort((a, b) => a.start.localeCompare(b.start)),
+    () =>
+      lessons.filter((l) => l.weekday === weekday).sort((a, b) => a.start.localeCompare(b.start)),
     [weekday],
   );
 
   const mins = now.getHours() * 60 + now.getMinutes();
   const toMin = (s: string) => Number(s.slice(0, 2)) * 60 + Number(s.slice(3));
-  const next = todays.find((l) => !l.cancelled && toMin(l.start) > mins) ?? todays.find((l) => !l.cancelled);
+  const next =
+    todays.find((l) => !l.cancelled && toMin(l.start) > mins) ?? todays.find((l) => !l.cancelled);
   const diff = next ? toMin(next.start) - mins : 0;
 
   const greeting =
-    now.getHours() < 12 ? t("home.morning") : now.getHours() < 18 ? t("home.afternoon") : t("home.evening");
+    now.getHours() < 12
+      ? t("home.morning")
+      : now.getHours() < 18
+        ? t("home.afternoon")
+        : t("home.evening");
   const firstName = (user?.name ?? "").split(" ")[0];
 
   const upcomingTasks = assignments
@@ -76,13 +94,20 @@ function HomePage() {
             {greeting}, {firstName} 👋
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {now.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+            {now.toLocaleDateString(undefined, {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
           </p>
         </header>
 
         {next ? (
           <Card className="bg-primary text-primary-foreground shadow-card">
-            <p className="text-xs font-semibold uppercase tracking-wide opacity-80">{t("home.nextClass")}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide opacity-80">
+              {t("home.nextClass")}
+            </p>
             <p className="mt-2 text-xl font-bold">{courseById(next.courseId)?.name}</p>
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm opacity-90">
               <span className="flex items-center gap-1.5">
@@ -132,7 +157,11 @@ function HomePage() {
         </section>
 
         <section>
-          <SectionTitle title={t("home.announcements")} to="/announcements" label={t("home.viewAll")} />
+          <SectionTitle
+            title={t("home.announcements")}
+            to="/announcements"
+            label={t("home.viewAll")}
+          />
           <div className="space-y-3">
             {announcements
               .slice()
@@ -148,16 +177,19 @@ function HomePage() {
           <SectionTitle title={t("home.quickActions")} />
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
             {quickActions.map((q) => (
-              <Link
+              <Button
                 key={q.to}
-                to={q.to}
-                className="card-surface flex flex-col items-center gap-2 px-2 py-4 text-center transition-transform hover:-translate-y-0.5"
+                asChild
+                variant="outline"
+                className="h-auto flex-col gap-2 px-2 py-4 whitespace-normal"
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
-                  <q.icon className="h-5 w-5" />
-                </span>
-                <span className="text-xs font-medium leading-tight">{t(q.key)}</span>
-              </Link>
+                <Link to={q.to}>
+                  <span className="flex size-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
+                    <q.icon />
+                  </span>
+                  <span className="text-xs font-medium leading-tight">{t(q.key)}</span>
+                </Link>
+              </Button>
             ))}
           </div>
         </section>
