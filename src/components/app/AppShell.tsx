@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { toast } from "sonner";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Home,
@@ -190,6 +191,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
             <Link
               to="/notifications"
               aria-label={t("nav.notifications")}
+              onClick={() => toast("Уведомления", { description: unread > 0 ? `У вас ${unread} непрочитанных уведомления` : "Новых уведомлений нет" })}
               className="tap-target relative flex items-center justify-center rounded-xl border border-border px-3 text-muted-foreground transition-colors hover:bg-muted"
             >
               <Bell className="h-4 w-4" />

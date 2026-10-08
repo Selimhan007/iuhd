@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "../lib/i18n";
 import { AuthProvider } from "../lib/auth";
 import { ThemeProvider } from "../lib/theme";
+import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -179,6 +180,7 @@ function RootComponent() {
           <AuthProvider>
             {/* Required: nested routes render here. */}
             <Outlet />
+            <Toaster position="top-right" closeButton richColors />
             <InstallPromptBanner />
           </AuthProvider>
         </I18nProvider>
