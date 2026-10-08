@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import { Card, Pill, ProgressBar } from "./ui-kit";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -15,7 +16,16 @@ import {
   type Student,
   type Teacher,
 } from "@/lib/demo-data";
-import { Clock, MapPin, FileText, Link2, Video, Image as ImageIcon, FileType2, Presentation } from "lucide-react";
+import {
+  Clock,
+  MapPin,
+  FileText,
+  Link2,
+  Video,
+  Image as ImageIcon,
+  FileType2,
+  Presentation,
+} from "lucide-react";
 
 export type LessonStatus = "upcoming" | "inProgress" | "completed" | "cancelled";
 
@@ -55,7 +65,10 @@ export function ScheduleCard({
           <p className="text-sm font-bold">{lesson.start}</p>
           <p className="text-xs text-muted-foreground">{lesson.end}</p>
         </div>
-        <span className="mt-1 h-10 w-1 shrink-0 rounded-full" style={{ backgroundColor: course?.color }} />
+        <span
+          className="mt-1 h-10 w-1 shrink-0 rounded-full"
+          style={{ backgroundColor: course?.color }}
+        />
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{course?.name}</p>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -113,7 +126,10 @@ export function AssignmentCard({ a, onClick }: { a: Assignment; onClick?: () => 
   return (
     <button onClick={onClick} className="w-full text-left">
       <Card className="flex items-start gap-3 transition-transform active:scale-[0.99]">
-        <span className="mt-1 h-9 w-1 shrink-0 rounded-full" style={{ backgroundColor: course?.color }} />
+        <span
+          className="mt-1 h-9 w-1 shrink-0 rounded-full"
+          style={{ backgroundColor: course?.color }}
+        />
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{a.title}</p>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">{course?.name}</p>
@@ -127,7 +143,15 @@ export function AssignmentCard({ a, onClick }: { a: Assignment; onClick?: () => 
   );
 }
 
-export function GradeCard({ courseId, total, letter }: { courseId: string; total: number; letter: string }) {
+export function GradeCard({
+  courseId,
+  total,
+  letter,
+}: {
+  courseId: string;
+  total: number;
+  letter: string;
+}) {
   const course = courseById(courseId);
   return (
     <Card className="flex items-center gap-3">
@@ -168,7 +192,9 @@ export function ExamCard({ exam }: { exam: Exam }) {
     <Card className="flex items-center gap-4">
       <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-primary-soft text-primary">
         <span className="text-lg font-bold leading-none">{d.getDate()}</span>
-        <span className="text-[10px] uppercase">{d.toLocaleString(undefined, { month: "short" })}</span>
+        <span className="text-[10px] uppercase">
+          {d.toLocaleString(undefined, { month: "short" })}
+        </span>
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold">{course?.name}</p>
@@ -176,7 +202,9 @@ export function ExamCard({ exam }: { exam: Exam }) {
           <Clock className="h-3 w-3" /> {exam.time}
           <MapPin className="h-3 w-3" /> {exam.room}
         </p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{teacherOfCourse(exam.courseId)?.name}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          {teacherOfCourse(exam.courseId)?.name}
+        </p>
       </div>
       <Pill tone="primary">{t(`exam.${exam.type}`)}</Pill>
     </Card>
@@ -232,7 +260,11 @@ export function AnnouncementCard({ a }: { a: Announcement }) {
 function downloadIcs(e: UniEvent) {
   const start = new Date(e.date);
   const end = new Date(start.getTime() + 2 * 3600000);
-  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const fmt = (d: Date) =>
+    d
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .replace(/\.\d{3}/, "");
   const esc = (s: string) => s.replace(/[\\,;]/g, (c) => `\\${c}`).replace(/\n/g, "\\n");
   const ics = [
     "BEGIN:VCALENDAR",
@@ -257,7 +289,15 @@ function downloadIcs(e: UniEvent) {
   URL.revokeObjectURL(url);
 }
 
-export function EventCard({ e, registered, onRegister }: { e: UniEvent; registered: boolean; onRegister: () => void }) {
+export function EventCard({
+  e,
+  registered,
+  onRegister,
+}: {
+  e: UniEvent;
+  registered: boolean;
+  onRegister: () => void;
+}) {
   const { t } = useI18n();
   const d = new Date(e.date);
   return (
@@ -265,7 +305,9 @@ export function EventCard({ e, registered, onRegister }: { e: UniEvent; register
       <div className="flex items-start gap-4">
         <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-accent text-accent-foreground">
           <span className="text-lg font-bold leading-none">{d.getDate()}</span>
-          <span className="text-[10px] uppercase">{d.toLocaleString(undefined, { month: "short" })}</span>
+          <span className="text-[10px] uppercase">
+            {d.toLocaleString(undefined, { month: "short" })}
+          </span>
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-semibold">{e.title}</p>
@@ -274,19 +316,17 @@ export function EventCard({ e, registered, onRegister }: { e: UniEvent; register
         </div>
       </div>
       <div className="mt-4 flex gap-2">
-        <button
+        <Button
           onClick={onRegister}
           disabled={registered}
-          className="tap-target flex-1 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:bg-success disabled:text-success-foreground"
+          className="flex-1"
+          variant={registered ? "secondary" : "default"}
         >
           {registered ? t("events.registered") : t("events.register")}
-        </button>
-        <button
-          onClick={() => downloadIcs(e)}
-          className="tap-target rounded-xl border border-border px-4 text-sm font-medium"
-        >
+        </Button>
+        <Button onClick={() => downloadIcs(e)} variant="outline">
           {t("events.addCalendar")}
-        </button>
+        </Button>
       </div>
     </Card>
   );
@@ -295,8 +335,10 @@ export function EventCard({ e, registered, onRegister }: { e: UniEvent; register
 export function NotificationItem({ n, onRead }: { n: Notification; onRead: () => void }) {
   return (
     <button onClick={onRead} className="w-full text-left">
-      <Card className={`flex items-start gap-3 ${n.read ? "opacity-70" : ""}`}>
-        <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${n.read ? "bg-border" : "bg-primary"}`} />
+      <Card className={`flex items-start gap-3 ${n.read ? "opacity-70" : ""}`} aria-label={n.text}>
+        <span
+          className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${n.read ? "bg-border" : "bg-primary"}`}
+        />
         <div className="min-w-0 flex-1">
           <p className="text-sm">{n.text}</p>
           <p className="mt-1 text-xs text-muted-foreground">{n.time}</p>
@@ -310,7 +352,11 @@ export function StudentCard({ s }: { s: Student }) {
   return (
     <Card className="flex items-center gap-3">
       <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary">
-        {s.name.split(" ").map((p) => p[0]).join("").slice(0, 2)}
+        {s.name
+          .split(" ")
+          .map((p) => p[0])
+          .join("")
+          .slice(0, 2)}
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">{s.name}</p>

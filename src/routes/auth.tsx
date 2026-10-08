@@ -42,10 +42,11 @@ function AuthPage() {
     setInfo("");
     if (mode === "login") {
       const res = login(email, password, remember);
-      if (!res.ok) setError(t("auth.invalid"));
+      if (!res.ok) {
+        setError(t("auth.invalid"));
+      }
     } else if (mode === "register") {
       register(name || email.split("@")[0]!, email);
-      navigate({ to: "/", replace: true });
     } else if (mode === "forgot") {
       setInfo(t("auth.resetSent"));
       setMode("reset");

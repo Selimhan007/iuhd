@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { LayoutGrid, LogOut, Moon, Sun, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export type NavItem = { to: string; icon: LucideIcon; key: string };
 export type RoleKind = "student" | "teacher" | "admin";
@@ -53,8 +55,12 @@ export function RoleNav({
   const styles = ACTIVE_STYLES[kind];
 
   // Keep the admin's key destinations visible in the mobile bottom navigation.
-  const phoneItems = (kind === "admin" ? [main[0], more[0], more[1]] : [main[0], main[1], main[2], main[4]]).filter(Boolean) as NavItem[];
-  const phoneSheet = (kind === "admin" ? more.slice(2) : [main[3], ...more]).filter(Boolean) as NavItem[];
+  const phoneItems = (
+    kind === "admin" ? [main[0], more[0], more[1]] : [main[0], main[1], main[2], main[4]]
+  ).filter(Boolean) as NavItem[];
+  const phoneSheet = (kind === "admin" ? more.slice(2) : [main[3], ...more]).filter(
+    Boolean,
+  ) as NavItem[];
   const moreActive = more.some((m) => isActive(m.to));
 
   useEffect(() => {
@@ -93,6 +99,7 @@ export function RoleNav({
             );
           })}
           <button
+            type="button"
             onClick={() => setSheetOpen(true)}
             aria-expanded={sheetOpen}
             className={cn(
@@ -103,6 +110,18 @@ export function RoleNav({
           >
             <LayoutGrid className="h-5 w-5" />
             {t("nav.more")}
+          </button>
+          <button
+            type="button"
+            onClick={onToggleTheme}
+            aria-label={dark ? "Включить светлую тему" : "Включить ночную тему"}
+            className={cn(
+              "tap-target flex flex-1 flex-col items-center justify-center gap-1 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+              styles.indicator,
+            )}
+          >
+            {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            <span>{dark ? "Светлая" : "Тема"}</span>
           </button>
         </div>
       </nav>
@@ -184,20 +203,21 @@ export function RoleNav({
             );
           })}
           <span className="mx-1.5 h-7 w-px bg-border" aria-hidden />
-          <span
-            title={userName}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft text-xs font-bold text-primary"
-          >
-            {initials}
-          </span>
-          <button
+          <Avatar className="size-9" title={userName}>
+            <AvatarFallback className="bg-primary-soft text-xs font-bold text-primary">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onLogout}
             title={t("settings.logout")}
             aria-label={t("settings.logout")}
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+            className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
           >
-            <LogOut className="h-4.5 w-4.5" />
-          </button>
+            <LogOut data-icon="inline-start" />
+          </Button>
         </div>
       </nav>
 

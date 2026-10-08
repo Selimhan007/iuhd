@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { toast } from "sonner";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Home,
@@ -181,7 +182,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
               onClick={toggle}
               aria-label={dark ? "Включить светлую тему" : "Включить ночную тему"}
               title={dark ? "Светлая тема" : "Ночная тема"}
-              className="tap-target hidden rounded-xl border border-border p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:flex"
+              className="tap-target flex items-center justify-center rounded-xl border border-border bg-card/60 p-2 text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground"
             >
               <span key={dark ? "sun" : "moon"} className="block animate-rise">
                 {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -190,6 +191,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
             <Link
               to="/notifications"
               aria-label={t("nav.notifications")}
+              onClick={() => toast("Уведомления", { description: unread > 0 ? `У вас ${unread} непрочитанных уведомления` : "Новых уведомлений нет" })}
               className="tap-target relative flex items-center justify-center rounded-xl border border-border px-3 text-muted-foreground transition-colors hover:bg-muted"
             >
               <Bell className="h-4 w-4" />
