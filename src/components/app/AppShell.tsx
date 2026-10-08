@@ -181,7 +181,7 @@ export function AppShell({ children, allow }: { children: ReactNode; allow?: Rol
               onClick={toggle}
               aria-label={dark ? "Включить светлую тему" : "Включить ночную тему"}
               title={dark ? "Светлая тема" : "Ночная тема"}
-              className="tap-target hidden rounded-xl border border-border p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:flex"
+              className="tap-target flex items-center justify-center rounded-xl border border-border bg-card/60 p-2 text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground"
             >
               <span key={dark ? "sun" : "moon"} className="block animate-rise">
                 {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
