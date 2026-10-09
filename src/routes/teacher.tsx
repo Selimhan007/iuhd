@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, type FormEvent } from "react";
 import { BookOpen, CalendarDays, CheckSquare, ClipboardList, FileText, Users, BarChart3, type LucideIcon } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
+import { StaffPublisher } from "@/components/app/StaffPublisher";
 import { Card, SectionTitle } from "@/components/app/ui-kit";
 import {
   AttendancePanel,
@@ -93,6 +94,7 @@ function TeacherDashboard() {
 
   return (
     <div className="animate-rise space-y-8">
+      <StaffPublisher />
       <section className="rounded-3xl bg-primary p-6 text-primary-foreground shadow-card">
         <p className="text-xs font-semibold uppercase tracking-wider opacity-80">{t("teacher.title")}</p>
         <h1 className="mt-2 text-balance text-2xl font-bold tracking-tight">

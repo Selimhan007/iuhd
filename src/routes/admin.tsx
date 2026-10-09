@@ -23,6 +23,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
+import { StaffPublisher } from "@/components/app/StaffPublisher";
 import { ResourceManager, type ResourceItem } from "@/components/admin/resource-manager";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -212,12 +213,15 @@ function AdminConsole() {
       </> : null}
 
       {panel === "content" ? (
-        <ContentPublisher
+        <div className="space-y-4">
+          <StaffPublisher />
+          <ContentPublisher
           announcements={publishedAnnouncements}
           events={publishedEvents}
           onAnnouncement={(item) => setPublishedAnnouncements((current) => [item, ...current])}
           onEvent={(item) => setPublishedEvents((current) => [item, ...current])}
         />
+        </div>
       ) : null}
 
       {panel === "control" ? <AdminOperations /> : null}
