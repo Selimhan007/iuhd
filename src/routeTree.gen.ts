@@ -28,6 +28,7 @@ import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as TeacherRouteImport } from './routes/teacher'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses.$courseId'
+import { Route as TeacherPublishRouteImport } from './routes/teacher.publish'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -124,6 +125,11 @@ const CoursesCourseIdRoute = CoursesCourseIdRouteImport.update({
   path: '/$courseId',
   getParentRoute: () => CoursesRoute,
 } as any)
+const TeacherPublishRoute = TeacherPublishRouteImport.update({
+  id: '/publish',
+  path: '/publish',
+  getParentRoute: () => TeacherRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -142,8 +148,9 @@ export interface FileRoutesByFullPath {
   '/schedule': typeof ScheduleRoute
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
-  '/teacher': typeof TeacherRoute
+  '/teacher': typeof TeacherRouteWithChildren
   '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/teacher/publish': typeof TeacherPublishRoute
   '/courses/': typeof CoursesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -162,8 +169,9 @@ export interface FileRoutesByTo {
   '/schedule': typeof ScheduleRoute
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
-  '/teacher': typeof TeacherRoute
+  '/teacher': typeof TeacherRouteWithChildren
   '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/teacher/publish': typeof TeacherPublishRoute
   '/courses': typeof CoursesIndexRoute
 }
 export interface FileRoutesById {
@@ -184,8 +192,9 @@ export interface FileRoutesById {
   '/schedule': typeof ScheduleRoute
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
-  '/teacher': typeof TeacherRoute
+  '/teacher': typeof TeacherRouteWithChildren
   '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/teacher/publish': typeof TeacherPublishRoute
   '/courses/': typeof CoursesIndexRoute
 }
 export interface FileRouteTypes {
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/teacher'
     | '/courses/$courseId'
+    | '/teacher/publish'
     | '/courses/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/teacher'
     | '/courses/$courseId'
+    | '/teacher/publish'
     | '/courses'
   id:
     | '__root__'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/teacher'
     | '/courses/$courseId'
+    | '/teacher/publish'
     | '/courses/'
   fileRoutesById: FileRoutesById
 }
@@ -270,7 +282,7 @@ export interface RootRouteChildren {
   ScheduleRoute: typeof ScheduleRoute
   SettingsRoute: typeof SettingsRoute
   TasksRoute: typeof TasksRoute
-  TeacherRoute: typeof TeacherRoute
+  TeacherRoute: typeof TeacherRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -408,6 +420,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoursesCourseIdRouteImport
       parentRoute: typeof CoursesRoute
     }
+    '/teacher/publish': {
+      id: '/teacher/publish'
+      path: '/publish'
+      fullPath: '/teacher/publish'
+      preLoaderRoute: typeof TeacherPublishRouteImport
+      parentRoute: typeof TeacherRoute
+    }
   }
 }
 
@@ -423,6 +442,17 @@ const CoursesRouteChildren: CoursesRouteChildren = {
 
 const CoursesRouteWithChildren =
   CoursesRoute._addFileChildren(CoursesRouteChildren)
+
+interface TeacherRouteChildren {
+  TeacherPublishRoute: typeof TeacherPublishRoute
+}
+
+const TeacherRouteChildren: TeacherRouteChildren = {
+  TeacherPublishRoute: TeacherPublishRoute,
+}
+
+const TeacherRouteWithChildren =
+  TeacherRoute._addFileChildren(TeacherRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -441,7 +471,7 @@ const rootRouteChildren: RootRouteChildren = {
   ScheduleRoute: ScheduleRoute,
   SettingsRoute: SettingsRoute,
   TasksRoute: TasksRoute,
-  TeacherRoute: TeacherRoute,
+  TeacherRoute: TeacherRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

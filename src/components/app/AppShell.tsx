@@ -80,7 +80,7 @@ const ROLE_CONFIG: Record<
     icon: Presentation,
     main: [
       { to: "/teacher", icon: Presentation, key: "nav.dashboard" },
-      { to: "/schedule", icon: CalendarDays, key: "nav.schedule" },
+      { to: "/teacher/publish", icon: Megaphone, key: "nav.publish" },
       { to: "/courses", icon: BookOpen, key: "nav.courses" },
       { to: "/materials", icon: FileText, key: "nav.materials" },
       { to: "/tasks", icon: ClipboardList, key: "nav.tasks" },
