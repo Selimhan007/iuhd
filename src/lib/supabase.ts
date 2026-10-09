@@ -47,6 +47,12 @@ export async function getMaterialUrl(path: string) {
   return data?.signedUrl ?? null;
 }
 
+export async function getReadPostIds(userId: string) {
+  if (!supabase) return new Set<string>();
+  const { data } = await supabase.from("post_reads").select("post_id").eq("user_id", userId);
+  return new Set((data ?? []).map((row) => row.post_id as string));
+}
+
 export async function markPostRead(postId: string, userId: string) {
   if (!supabase) return;
   await supabase.from("post_reads").upsert({ post_id: postId, user_id: userId });

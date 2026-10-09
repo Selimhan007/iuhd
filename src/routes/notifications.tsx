@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, PageHeader } from "@/components/app/ui-kit";
 import { NotificationItem } from "@/components/app/cards";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
 import { notifications as demoNotifications } from "@/lib/demo-data";
 import { Bell, Radio } from "lucide-react";
-import { supabase, subscribeToPosts, type UniversityPost } from "@/lib/supabase";
+import { getReadPostIds, markPostRead, supabase, subscribeToPosts, type UniversityPost } from "@/lib/supabase";
 
 export const Route = createFileRoute("/notifications")({
   head: () => ({
@@ -22,16 +23,23 @@ export const Route = createFileRoute("/notifications")({
 
 function NotificationsPage() {
   const { t } = useI18n();
+  const { user } = useAuth();
   const [items, setItems] = useState(demoNotifications);
   const [livePosts, setLivePosts] = useState<UniversityPost[]>([]);
+  const [readPostIds, setReadPostIds] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<"all" | "unread">("all");
 
   useEffect(() => {
     let active = true;
     const load = async () => {
-      if (!supabase) return;
-      const { data } = await supabase.from("posts").select("id, author_id, kind, sender_scope, sender_name, title, body, course_id, group_name, due_at, published_at").order("published_at", { ascending: false }).limit(30);
-      if (active && data) setLivePosts(data as UniversityPost[]);
+      if (!supabase || !user) return;
+      const [postsResult, reads] = await Promise.all([
+        supabase.from("posts").select("id, author_id, kind, sender_scope, sender_name, title, body, course_id, group_name, due_at, published_at").order("published_at", { ascending: false }).limit(50),
+        getReadPostIds(user.id),
+      ]);
+      if (!active) return;
+      setReadPostIds(reads);
+      if (postsResult.data) setLivePosts(postsResult.data as UniversityPost[]);
     };
     void load();
     const unsubscribe = subscribeToPosts((post) => {
@@ -40,9 +48,16 @@ function NotificationsPage() {
     return () => { active = false; unsubscribe(); };
   }, []);
 
-  const unread = items.filter((n) => !n.read).length + livePosts.length;
-  const visibleLivePosts = filter === "unread" ? livePosts : livePosts;
+  const unreadLivePosts = useMemo(() => livePosts.filter((post) => !readPostIds.has(post.id)), [livePosts, readPostIds]);
+  const unread = items.filter((n) => !n.read).length + unreadLivePosts.length;
+  const visibleLivePosts = filter === "unread" ? unreadLivePosts : livePosts;
   const visibleItems = filter === "unread" ? items.filter((n) => !n.read) : items;
+
+  const handleRead = async (postId: string) => {
+    if (!user) return;
+    setReadPostIds((current) => new Set(current).add(postId));
+    await markPostRead(postId, user.id);
+  };
 
   return (
     <AppShell>
@@ -69,13 +84,13 @@ function NotificationsPage() {
             <Radio className="h-4 w-4" /> Live updates
           </div>
           {visibleLivePosts.map((post) => (
-            <article key={post.id} className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-soft">
+            <article key={post.id} className={`rounded-2xl border p-4 shadow-soft transition-colors ${readPostIds.has(post.id) ? "border-border bg-card" : "border-primary/20 bg-primary/5"}`}>
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold text-primary">{post.sender_name} · {post.sender_scope}</p>
                   <h2 className="mt-1 font-semibold">{post.title}</h2>
                 </div>
-                <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-bold uppercase text-primary">New</span>
+                {!readPostIds.has(post.id) ? <button type="button" onClick={() => void handleRead(post.id)} className="tap-target rounded-full bg-primary/10 px-3 py-2 text-[10px] font-bold uppercase text-primary">New</button> : null}
               </div>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{post.body}</p>
               {post.due_at ? <p className="mt-3 text-xs font-medium text-muted-foreground">Due {new Date(post.due_at).toLocaleString()}</p> : null}
