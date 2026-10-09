@@ -100,10 +100,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (u) (remember ? localStorage : sessionStorage).setItem(KEY, JSON.stringify(u));
   };
 
-  const login = useCallback((email: string, password: string, remember: boolean) => {
-    const found = DEMO.find(
-      (d) => d.email.toLowerCase() === email.trim().toLowerCase() && d.password === password,
-    );
+  const login = useCallback((identifier: string, password: string, remember: boolean) => {
+    const normalizedIdentifier = identifier.trim().toLowerCase();
+    const found = DEMO.find((d) => {
+      const matchesEmail = d.email.toLowerCase() === normalizedIdentifier;
+      const matchesStudentCode = d.user.studentCode?.toLowerCase() === normalizedIdentifier;
+      return (matchesEmail || matchesStudentCode) && d.password === password;
+    });
     if (!found) return { ok: false };
     setUser(found.user);
     persist(found.user, remember);
