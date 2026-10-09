@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, PageHeader } from "@/components/app/ui-kit";
 import { NotificationItem } from "@/components/app/cards";
 import { useI18n } from "@/lib/i18n";
 import { notifications as demoNotifications } from "@/lib/demo-data";
-import { Bell } from "lucide-react";
+import { Bell, Radio } from "lucide-react";
+import { supabase, subscribeToPosts, type UniversityPost } from "@/lib/supabase";
 
 export const Route = createFileRoute("/notifications")({
   head: () => ({
@@ -22,8 +23,24 @@ export const Route = createFileRoute("/notifications")({
 function NotificationsPage() {
   const { t } = useI18n();
   const [items, setItems] = useState(demoNotifications);
+  const [livePosts, setLivePosts] = useState<UniversityPost[]>([]);
   const [filter, setFilter] = useState<"all" | "unread">("all");
-  const unread = items.filter((n) => !n.read).length;
+
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      if (!supabase) return;
+      const { data } = await supabase.from("posts").select("id, author_id, kind, sender_scope, sender_name, title, body, course_id, group_name, due_at, published_at").order("published_at", { ascending: false }).limit(30);
+      if (active && data) setLivePosts(data as UniversityPost[]);
+    };
+    void load();
+    const unsubscribe = subscribeToPosts((post) => {
+      if (active) setLivePosts((current) => current.some((item) => item.id === post.id) ? current : [post, ...current]);
+    });
+    return () => { active = false; unsubscribe(); };
+  }, []);
+
+  const unread = items.filter((n) => !n.read).length + livePosts.length;
   const visibleItems = filter === "unread" ? items.filter((n) => !n.read) : items;
 
   return (
@@ -45,9 +62,29 @@ function NotificationsPage() {
       <div className="mb-4 inline-flex rounded-xl bg-muted p-1">
         {([['all', 'All'], ['unread', 'Unread']] as const).map(([value, label]) => <button key={value} onClick={() => setFilter(value)} className={`rounded-lg px-3 py-2 text-xs font-semibold ${filter === value ? "bg-card shadow-soft" : "text-muted-foreground"}`}>{label}{value === "unread" ? ` (${unread})` : ""}</button>)}
       </div>
-      {visibleItems.length === 0 ? (
+      {livePosts.length > 0 ? (
+        <section className="mb-5 space-y-3" aria-live="polite">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
+            <Radio className="h-4 w-4" /> Live updates
+          </div>
+          {livePosts.map((post) => (
+            <article key={post.id} className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-soft">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold text-primary">{post.sender_name} · {post.sender_scope}</p>
+                  <h2 className="mt-1 font-semibold">{post.title}</h2>
+                </div>
+                <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-bold uppercase text-primary">New</span>
+              </div>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{post.body}</p>
+              {post.due_at ? <p className="mt-3 text-xs font-medium text-muted-foreground">Due {new Date(post.due_at).toLocaleString()}</p> : null}
+            </article>
+          ))}
+        </section>
+      ) : null}
+      {visibleItems.length === 0 && livePosts.length === 0 ? (
         <EmptyState message={t("empty.notifications")} icon={<Bell className="h-6 w-6" />} />
-      ) : (
+      ) : visibleItems.length > 0 ? (
         <div className="space-y-3">
           {visibleItems.map((n) => (
             <NotificationItem
@@ -57,7 +94,7 @@ function NotificationsPage() {
             />
           ))}
         </div>
-      )}
+      ) : null}
     </AppShell>
   );
 }
