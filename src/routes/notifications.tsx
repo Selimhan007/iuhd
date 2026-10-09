@@ -41,6 +41,7 @@ function NotificationsPage() {
   }, []);
 
   const unread = items.filter((n) => !n.read).length + livePosts.length;
+  const visibleLivePosts = filter === "unread" ? livePosts : livePosts;
   const visibleItems = filter === "unread" ? items.filter((n) => !n.read) : items;
 
   return (
@@ -62,12 +63,12 @@ function NotificationsPage() {
       <div className="mb-4 inline-flex rounded-xl bg-muted p-1">
         {([['all', 'All'], ['unread', 'Unread']] as const).map(([value, label]) => <button key={value} onClick={() => setFilter(value)} className={`rounded-lg px-3 py-2 text-xs font-semibold ${filter === value ? "bg-card shadow-soft" : "text-muted-foreground"}`}>{label}{value === "unread" ? ` (${unread})` : ""}</button>)}
       </div>
-      {livePosts.length > 0 ? (
+      {visibleLivePosts.length > 0 ? (
         <section className="mb-5 space-y-3" aria-live="polite">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
             <Radio className="h-4 w-4" /> Live updates
           </div>
-          {livePosts.map((post) => (
+          {visibleLivePosts.map((post) => (
             <article key={post.id} className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-soft">
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -82,7 +83,7 @@ function NotificationsPage() {
           ))}
         </section>
       ) : null}
-      {visibleItems.length === 0 && livePosts.length === 0 ? (
+      {visibleItems.length === 0 && visibleLivePosts.length === 0 ? (
         <EmptyState message={t("empty.notifications")} icon={<Bell className="h-6 w-6" />} />
       ) : visibleItems.length > 0 ? (
         <div className="space-y-3">

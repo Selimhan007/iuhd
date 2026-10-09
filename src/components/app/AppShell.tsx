@@ -101,6 +101,7 @@ const ROLE_CONFIG: Record<
     icon: Shield,
     main: [
       { to: "/admin", icon: Shield, key: "nav.controlCenter" },
+      { to: "/teacher/publish", icon: Megaphone, key: "nav.publish" },
       { to: "/announcements", icon: Megaphone, key: "nav.announcements" },
       { to: "/events", icon: CalendarHeart, key: "nav.events" },
     ],

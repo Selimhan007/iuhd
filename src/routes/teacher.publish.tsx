@@ -18,7 +18,7 @@ function TeacherPublishPage() {
   const { t } = useI18n();
 
   return (
-    <AppShell allow={["teacher"]}>
+    <AppShell allow={["teacher", "admin"]}>
       <div className="animate-rise space-y-6">
         <section className="rounded-3xl border border-border/70 bg-card p-5 shadow-soft sm:p-7">
           <div className="flex items-start gap-3">
