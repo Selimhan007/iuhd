@@ -66,7 +66,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY) ?? sessionStorage.getItem(KEY);
-      if (raw) setUser(JSON.parse(raw) as SessionUser);
+      if (raw) {
+        const saved = JSON.parse(raw) as SessionUser;
+        void supabase.auth.getSession().then(({ data }) => {
+          if (data.session?.user.email?.toLowerCase() === saved.email.toLowerCase()) setUser(saved);
+          else persist(null);
+          setReady(true);
+        });
+        return;
+      }
     } catch {
       /* ignore corrupt session */
     }
