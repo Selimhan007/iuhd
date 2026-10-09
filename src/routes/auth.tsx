@@ -36,12 +36,12 @@ function AuthPage() {
     if (ready && user) navigate({ to: roleHome(user.role), replace: true });
   }, [ready, user, navigate]);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setInfo("");
     if (mode === "login") {
-      const res = login(email, password, remember);
+      const res = await login(email, password, remember);
       if (!res.ok) setError(t("auth.invalid"));
     } else if (mode === "register") {
       register(name || email.split("@")[0]!, email);

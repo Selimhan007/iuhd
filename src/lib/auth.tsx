@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Role } from "./demo-data";
 import { currentStudent } from "./demo-data";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface SessionUser {
   id: string;
@@ -41,7 +42,7 @@ export const DEMO_ACCOUNTS = DEMO.map((d) => ({ email: d.email, password: d.pass
 interface AuthCtx {
   user: SessionUser | null;
   ready: boolean;
-  login: (email: string, password: string, remember: boolean) => { ok: boolean };
+  login: (email: string, password: string, remember: boolean) => Promise<{ ok: boolean }>;
   register: (name: string, email: string) => void;
   logout: () => void;
   updateUser: (patch: Partial<SessionUser>) => void;
@@ -50,7 +51,7 @@ interface AuthCtx {
 const Ctx = createContext<AuthCtx>({
   user: null,
   ready: false,
-  login: () => ({ ok: false }),
+  login: async () => ({ ok: false }),
   register: () => {},
   logout: () => {},
   updateUser: () => {},
@@ -65,7 +66,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY) ?? sessionStorage.getItem(KEY);
-      if (raw) setUser(JSON.parse(raw) as SessionUser);
+      if (raw) {
+        const saved = JSON.parse(raw) as SessionUser;
+        void supabase.auth.getSession().then(({ data }) => {
+          if (data.session?.user.email?.toLowerCase() === saved.email.toLowerCase()) setUser(saved);
+          else persist(null);
+          setReady(true);
+        });
+        return;
+      }
     } catch {
       /* ignore corrupt session */
     }
@@ -78,11 +87,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (u) (remember ? localStorage : sessionStorage).setItem(KEY, JSON.stringify(u));
   };
 
-  const login = useCallback((email: string, password: string, remember: boolean) => {
+  const login = useCallback(async (email: string, password: string, remember: boolean) => {
     const found = DEMO.find(
       (d) => d.email.toLowerCase() === email.trim().toLowerCase() && d.password === password,
     );
     if (!found) return { ok: false };
+    const { error } = await supabase.auth.signInWithPassword({ email: found.email, password: `${password}::stm-2026` });
+    if (error) return { ok: false };
     setUser(found.user);
     persist(found.user, remember);
     return { ok: true };
@@ -95,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
+    void supabase.auth.signOut();
     setUser(null);
     persist(null);
   }, []);
