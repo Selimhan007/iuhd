@@ -27,6 +27,26 @@ export async function publishPost(input: Omit<UniversityPost, "id" | "published_
   return supabase.from("posts").insert(input).select().single();
 }
 
+export async function uploadMaterial(file: File, postId: string) {
+  if (!supabase) return { data: null, error: new Error("Supabase is not configured") };
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+  const path = `${postId}/${crypto.randomUUID()}-${safeName}`;
+  const upload = await supabase.storage.from("university-materials").upload(path, file, { upsert: false });
+  if (upload.error) return { data: null, error: upload.error };
+  const { data, error } = await supabase.from("attachments").insert({
+    post_id: postId,
+    file_name: file.name,
+    file_url: path,
+  }).select().single();
+  return { data, error };
+}
+
+export async function getMaterialUrl(path: string) {
+  if (!supabase) return null;
+  const { data } = await supabase.storage.from("university-materials").createSignedUrl(path, 3600);
+  return data?.signedUrl ?? null;
+}
+
 export async function markPostRead(postId: string, userId: string) {
   if (!supabase) return;
   await supabase.from("post_reads").upsert({ post_id: postId, user_id: userId });
