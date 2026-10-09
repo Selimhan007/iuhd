@@ -14,16 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_lists: {
+        Row: {
+          items: Json
+          resource: string
+          updated_at: string
+        }
+        Insert: {
+          items?: Json
+          resource: string
+          updated_at?: string
+        }
+        Update: {
+          items?: Json
+          resource?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      publications: {
+        Row: {
+          author_id: string
+          body: string
+          course_id: string | null
+          created_at: string
+          id: string
+          kind: string
+          sender_kind: string
+          sender_name: string
+          title: string
+        }
+        Insert: {
+          author_id?: string
+          body?: string
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          sender_kind: string
+          sender_name: string
+          title: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          sender_kind?: string
+          sender_name?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "student" | "teacher" | "admin" | "superadmin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +227,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["student", "teacher", "admin", "superadmin"],
+    },
   },
 } as const
