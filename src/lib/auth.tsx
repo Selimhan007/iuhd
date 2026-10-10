@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Role } from "./demo-data";
-import { currentStudent } from "./demo-data";
+import { supabase } from "./supabase";
 
 export interface SessionUser {
   id: string;
@@ -15,123 +15,55 @@ export interface SessionUser {
   accessLevel?: string;
 }
 
-const DEMO: { email: string; password: string; user: SessionUser }[] = [
-  {
-    email: "student@student.tm",
-    password: "student123",
-    user: {
-      id: currentStudent.id,
-      name: currentStudent.name,
-      email: currentStudent.email,
-      role: "student",
-      studentCode: currentStudent.studentCode,
-      phone: currentStudent.phone,
-    },
-  },
-  {
-    email: "teacher@student.tm",
-    password: "teacher123",
-    user: {
-      id: "t1",
-      name: "Gowher Yarashowa",
-      email: "teacher@student.tm",
-      role: "teacher",
-      staffCode: "IUHD-T-0142",
-      phone: "+993 65 214 780",
-      office: "Block B, Room 305",
-      officeHours: "Mon, Wed 14:00–16:00",
-    },
-  },
-  {
-    email: "admin@student.tm",
-    password: "admin123",
-    user: {
-      id: "adm1",
-      name: "Musa Yazynov",
-      email: "admin@student.tm",
-      role: "admin",
-      staffCode: "IUHD-A-0007",
-      phone: "+993 12 480 100",
-      office: "Main Building, Room 101",
-      accessLevel: "Full access",
-    },
-  },
-];
-
-export const DEMO_ACCOUNTS = DEMO.map((d) => ({ email: d.email, password: d.password, role: d.user.role }));
+export const DEMO_ACCOUNTS: { email: string; password: string; role: Role }[] = [];
 
 interface AuthCtx {
   user: SessionUser | null;
   ready: boolean;
-  login: (email: string, password: string, remember: boolean) => { ok: boolean };
-  register: (name: string, email: string) => void;
-  logout: () => void;
+  login: (email: string, password: string, remember: boolean) => Promise<{ ok: boolean }>;
+  register: (name: string, email: string, password: string) => Promise<{ ok: boolean; needsConfirmation?: boolean }>;
+  logout: () => Promise<void>;
   updateUser: (patch: Partial<SessionUser>) => void;
 }
 
-const Ctx = createContext<AuthCtx>({
-  user: null,
-  ready: false,
-  login: () => ({ ok: false }),
-  register: () => {},
-  logout: () => {},
-  updateUser: () => {},
-});
+const Ctx = createContext<AuthCtx>({ user: null, ready: false, login: async () => ({ ok: false }), register: async () => ({ ok: false }), logout: async () => {}, updateUser: () => {} });
 
-const KEY = "stm.session";
+async function profileUser(id: string, email: string): Promise<SessionUser> {
+  const { data } = await supabase!.from("profiles").select("id, full_name, role, department, group_name").eq("id", id).maybeSingle();
+  return { id, email, name: data?.full_name ?? email.split("@")[0] ?? "Student", role: (data?.role ?? "student") as Role, office: data?.department ?? undefined, studentCode: data?.group_name ?? undefined };
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [ready, setReady] = useState(false);
 
+  const syncUser = useCallback(async (authUser: { id: string; email?: string } | null) => {
+    if (!authUser || !supabase) { setUser(null); return; }
+    setUser(await profileUser(authUser.id, authUser.email ?? ""));
+  }, []);
+
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(KEY) ?? sessionStorage.getItem(KEY);
-      if (raw) setUser(JSON.parse(raw) as SessionUser);
-    } catch {
-      /* ignore corrupt session */
-    }
-    setReady(true);
+    if (!supabase) { setReady(true); return; }
+    let active = true;
+    void supabase.auth.getUser().then(({ data }) => { if (active) void syncUser(data.user); }).finally(() => { if (active) setReady(true); });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => { void syncUser(session?.user ?? null); });
+    return () => { active = false; listener.subscription.unsubscribe(); };
+  }, [syncUser]);
+
+  const login = useCallback(async (email: string, password: string) => {
+    if (!supabase) return { ok: false };
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    return { ok: !error };
   }, []);
 
-  const persist = (u: SessionUser | null, remember = true) => {
-    localStorage.removeItem(KEY);
-    sessionStorage.removeItem(KEY);
-    if (u) (remember ? localStorage : sessionStorage).setItem(KEY, JSON.stringify(u));
-  };
-
-  const login = useCallback((identifier: string, password: string, remember: boolean) => {
-    const normalizedIdentifier = identifier.trim().toLowerCase();
-    const found = DEMO.find((d) => {
-      const matchesEmail = d.email.toLowerCase() === normalizedIdentifier;
-      const matchesStudentCode = d.user.studentCode?.toLowerCase() === normalizedIdentifier;
-      return (matchesEmail || matchesStudentCode) && d.password === password;
-    });
-    if (!found) return { ok: false };
-    setUser(found.user);
-    persist(found.user, remember);
-    return { ok: true };
+  const register = useCallback(async (name: string, email: string, password: string) => {
+    if (!supabase) return { ok: false };
+    const { data, error } = await supabase.auth.signUp({ email: email.trim(), password, options: { data: { full_name: name.trim() || email.split("@")[0] } } });
+    return { ok: !error, needsConfirmation: !data.session };
   }, []);
 
-  const register = useCallback((name: string, email: string) => {
-    const u: SessionUser = { id: `new-${Date.now()}`, name, email, role: "student", studentCode: "TM-2026-NEW" };
-    setUser(u);
-    persist(u, true);
-  }, []);
-
-  const logout = useCallback(() => {
-    setUser(null);
-    persist(null);
-  }, []);
-
-  const updateUser = useCallback((patch: Partial<SessionUser>) => {
-    setUser((prev) => {
-      if (!prev) return prev;
-      const next = { ...prev, ...patch };
-      persist(next, !!localStorage.getItem(KEY));
-      return next;
-    });
-  }, []);
+  const logout = useCallback(async () => { if (supabase) await supabase.auth.signOut(); setUser(null); }, []);
+  const updateUser = useCallback((patch: Partial<SessionUser>) => setUser((current) => current ? { ...current, ...patch } : current), []);
 
   return <Ctx.Provider value={{ user, ready, login, register, logout, updateUser }}>{children}</Ctx.Provider>;
 }
