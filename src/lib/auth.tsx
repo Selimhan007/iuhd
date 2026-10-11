@@ -45,18 +45,23 @@ function authEmailFromId(id: string) {
 }
 
 async function authRequest(path: string, body?: Record<string, unknown>): Promise<AuthResponse> {
-  const response = await fetch(`/api/auth/${path}`, {
-    ...(body
-      ? {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(body),
-        }
-      : { method: "GET" }),
-    credentials: "include",
-  });
-  const payload = (await response.json().catch(() => ({}))) as AuthResponse;
-  return response.ok ? payload : { error: payload.error ?? { message: "Authentication failed" } };
+  try {
+    const response = await fetch(`/api/auth/${path}`, {
+      ...(body
+        ? {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(body),
+          }
+        : { method: "GET" }),
+      credentials: "include",
+    });
+    const rawPayload: unknown = await response.json().catch(() => null);
+    const payload = rawPayload && typeof rawPayload === "object" ? (rawPayload as AuthResponse) : {};
+    return response.ok ? payload : { error: payload.error ?? { message: "Authentication failed" } };
+  } catch {
+    return { error: { message: "Authentication unavailable" } };
+  }
 }
 
 function profileUser(authUser: { id: string; name?: string; email?: string }): SessionUser {
@@ -90,14 +95,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (id: string, password: string) => {
     if (!/^\d+$/.test(id.trim())) return { ok: false };
     const payload = await authRequest("sign-in/email", { email: authEmailFromId(id), password });
-    return { ok: Boolean(payload.user) };
-  }, []);
+    if (!payload.user) return { ok: false };
+    await syncUser(payload.user);
+    return { ok: true };
+  }, [syncUser]);
 
   const register = useCallback(async (name: string, id: string, password: string) => {
     if (!/^\d+$/.test(id.trim())) return { ok: false, needsConfirmation: false };
     const payload = await authRequest("sign-up/email", { name: name.trim() || `Student ${id.trim()}`, email: authEmailFromId(id), password });
-    return { ok: Boolean(payload.user), needsConfirmation: false };
-  }, []);
+    if (!payload.user) return { ok: false, needsConfirmation: false };
+    await syncUser(payload.user);
+    return { ok: true, needsConfirmation: false };
+  }, [syncUser]);
 
   const logout = useCallback(async () => { await authRequest("sign-out", {}); setUser(null); }, []);
   const updateUser = useCallback((patch: Partial<SessionUser>) => setUser((current) => current ? { ...current, ...patch } : current), []);
