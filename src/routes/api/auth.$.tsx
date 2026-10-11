@@ -1,14 +1,11 @@
-// @ts-expect-error TanStack Start's generated API export is available in the Vite runtime.
-import { createAPIFileRoute } from "@tanstack/react-start/api";
-import { auth } from "../../../lib/better-auth";
+import { createFileRoute } from "@tanstack/react-router";
+import { auth } from "../../lib/better-auth";
 
-async function handle(request: Request) {
-  return auth.handler(request);
-}
-
-export const APIRoute = createAPIFileRoute("/api/auth/$")({
-  GET: ({ request }: { request: Request }) => handle(request),
-  POST: ({ request }: { request: Request }) => handle(request),
+export const Route = createFileRoute("/api/auth/$")({
+  server: {
+    handlers: {
+      GET: ({ request }) => auth.handler(request),
+      POST: ({ request }) => auth.handler(request),
+    },
+  },
 });
-
-export default APIRoute;

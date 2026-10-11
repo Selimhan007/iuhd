@@ -34,7 +34,14 @@ type AuthResponse = {
 };
 
 function authEmailFromId(id: string) {
-  return `${id.trim()}@student.tm`;
+  const normalizedId = id.trim();
+  const seededEmails: Record<string, string> = {
+    "1001": "student@iuhd.local",
+    "1002": "teacher@iuhd.local",
+    "1003": "admin@iuhd.local",
+  };
+
+  return seededEmails[normalizedId] ?? `${normalizedId}@iuhd.local`;
 }
 
 async function authRequest(path: string, body?: Record<string, unknown>): Promise<AuthResponse> {
