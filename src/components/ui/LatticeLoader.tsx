@@ -35,7 +35,7 @@ export interface LatticeLoaderProps {
   label?: string; doneLabel?: string; errorLabel?: string; status?: LoaderStatus; pattern?: PatternName | Pattern; grid?: 3 | 4; shape?: "square" | "round"; color?: string; doneColor?: string; errorColor?: string; cellSize?: number; gap?: number; fontSize?: number; step?: number; idleOpacity?: number; glow?: boolean; glowColor?: string; showTimer?: boolean; elapsed?: number; className?: string; style?: CSSProperties;
 }
 
-export default function LatticeLoader({ label = "Thinking", doneLabel = "Done in", errorLabel = "Failed after", status = "working", pattern = "orbit", grid = 3, shape = "round", color = "currentColor", doneColor = "#22c55e", errorColor = "#ef4444", cellSize = 6, gap = 2, fontSize = 14, step = 90, idleOpacity = 0.15, glow = false, glowColor = "", showTimer = true, elapsed, className = "", style }: LatticeLoaderProps) {
+export default function LatticeLoader({ label = "Ýüklenýär…", doneLabel = "Ýüklenýär…", errorLabel = "Ýüklenýär…", status = "working", pattern = "orbit", grid = 3, shape = "round", color = "currentColor", doneColor = "#22c55e", errorColor = "#ef4444", cellSize = 6, gap = 2, fontSize = 14, step = 90, idleOpacity = 0.15, glow = false, glowColor = "", showTimer = true, elapsed, className = "", style }: LatticeLoaderProps) {
   const n = grid === 4 ? 4 : 3;
   const pat = resolvePattern(pattern, n)!;
   const marks = MARKS[n]!;
