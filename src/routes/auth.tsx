@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Moon, Sun } from "lucide-react";
 import { useI18n, LANGUAGES } from "@/lib/i18n";
+import { useTheme } from "@/lib/theme";
 import { DEMO_ACCOUNTS, useAuth } from "@/lib/auth";
 import { roleHome } from "@/components/app/AppShell";
 
@@ -21,6 +22,7 @@ type Mode = "login" | "register" | "forgot" | "reset";
 
 function AuthPage() {
   const { t, lang, setLang } = useI18n();
+  const { dark, toggle } = useTheme();
   const { login, register, user, ready } = useAuth();
   const navigate = useNavigate();
 
@@ -62,13 +64,25 @@ function AuthPage() {
   return (
     <div className="flex min-h-screen flex-col bg-muted/40 px-4 py-8">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
-        <div className="mb-6 text-center">
-          <span className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-            <GraduationCap className="h-7 w-7" />
-          </span>
-          <h1 className="text-2xl font-bold tracking-tight">Student TM</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t("tagline")}</p>
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div className="flex-1 text-center">
+            <span className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+              <GraduationCap className="h-7 w-7" />
+            </span>
+            <h1 className="text-2xl font-bold tracking-tight">Student TM</h1>
+            <p className="mt-1 text-sm text-muted-foreground">{t("tagline")}</p>
+          </div>
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={dark ? "Включить светлую тему" : "Включить тёмную тему"}
+            title={dark ? "Светлая тема" : "Тёмная тема"}
+            className="tap-target inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            {dark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+          </button>
         </div>
+
 
         <form onSubmit={submit} className="card-surface animate-rise space-y-4 p-6">
           <div>
