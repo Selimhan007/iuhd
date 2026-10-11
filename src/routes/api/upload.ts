@@ -1,8 +1,5 @@
 import { put } from "@vercel/blob";
-import { createAPIFileRoute } from "@tanstack/react-start/api";
-
-export const APIRoute = createAPIFileRoute("/api/upload")({
-  POST: async ({ request }: { request: Request }) => {
+export const APIRoute = async (request: Request) => {
     try {
       const formData = await request.formData();
       const file = formData.get("file");
@@ -21,7 +18,6 @@ export const APIRoute = createAPIFileRoute("/api/upload")({
       console.error("[v0] Blob upload failed", error);
       return Response.json({ error: "Upload failed." }, { status: 500 });
     }
-  },
-});
+};
 
 export default APIRoute;
