@@ -176,10 +176,13 @@ function AuthPage() {
                 <button
                   key={profile.id}
                   type="button"
-                  onClick={() => {
+                  onClick={async () => {
                     setId(profile.id);
                     setPassword(profile.password);
                     setError("");
+                    setInfo("");
+                    const result = await login(profile.id, profile.password, true);
+                    if (!result.ok) setError("Не удалось войти в демо-профиль. Обновите страницу и попробуйте ещё раз.");
                   }}
                   className="rounded-xl border border-border bg-background px-3 py-2 text-left text-xs transition-colors hover:border-primary hover:bg-muted"
                 >
