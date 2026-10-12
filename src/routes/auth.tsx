@@ -10,9 +10,9 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Sign in — Student TM" },
-      { name: "description", content: "Sign in to Student TM with your student ID or email." },
+      { name: "description", content: "Sign in to Student TM with your ID." },
       { property: "og:title", content: "Sign in — Student TM" },
-      { property: "og:description", content: "Sign in to Student TM with your student ID or email." },
+      { property: "og:description", content: "Sign in to Student TM with your ID." },
     ],
   }),
   component: AuthPage,
@@ -108,6 +108,7 @@ function AuthPage() {
               type="text"
               autoComplete="username"
               placeholder={t("auth.email")}
+              aria-label={t("auth.email")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

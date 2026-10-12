@@ -20,7 +20,7 @@ export const DEMO_ACCOUNTS: { email: string; password: string; role: Role }[] = 
 interface AuthCtx {
   user: SessionUser | null;
   ready: boolean;
-  login: (email: string, password: string, remember: boolean) => Promise<{ ok: boolean }>;
+  login: (identifier: string, password: string, remember: boolean) => Promise<{ ok: boolean }>;
   register: (name: string, email: string, password: string) => Promise<{ ok: boolean; needsConfirmation?: boolean }>;
   logout: () => Promise<void>;
   updateUser: (patch: Partial<SessionUser>) => void;
@@ -50,15 +50,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => { active = false; listener.subscription.unsubscribe(); };
   }, [syncUser]);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const toAuthEmail = (identifier: string) => {
+    const value = identifier.trim().toLowerCase();
+    return value.includes("@") ? value : `${value}@student.tm`;
+  };
+
+  const login = useCallback(async (identifier: string, password: string) => {
     if (!supabase) return { ok: false };
-    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    const { error } = await supabase.auth.signInWithPassword({ email: toAuthEmail(identifier), password });
     return { ok: !error };
   }, []);
 
-  const register = useCallback(async (name: string, email: string, password: string) => {
+  const register = useCallback(async (name: string, identifier: string, password: string) => {
     if (!supabase) return { ok: false };
-    const { data, error } = await supabase.auth.signUp({ email: email.trim(), password, options: { data: { full_name: name.trim() || email.split("@")[0] } } });
+    const email = toAuthEmail(identifier);
+    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name.trim() || identifier.trim() } } });
     return { ok: !error, needsConfirmation: !data.session };
   }, []);
 
