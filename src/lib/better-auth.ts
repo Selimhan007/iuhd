@@ -13,6 +13,7 @@ const origins = [
         "https://sb-6ltkcf4gwz69.vercel.run",
         "https://neon-database-user-configuration-18x.v0.build",
         "https://neon-database-user-configuration-5id.v0.build",
+        "https://neon-database-user-configuration-rhv.v0.build",
       ]
     : []),
   process.env["V0_RUNTIME_URL"],
