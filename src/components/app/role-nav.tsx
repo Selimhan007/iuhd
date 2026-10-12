@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { LayoutGrid, LogOut, X, type LucideIcon } from "lucide-react";
+import { LayoutGrid, LogOut, Moon, Sun, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";

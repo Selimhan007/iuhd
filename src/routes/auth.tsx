@@ -25,8 +25,8 @@ function AuthPage() {
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>("login");
-  const [email, setEmail] = useState("student@student.tm");
-  const [password, setPassword] = useState("student123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState("");
