@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/app/AppShell";
 import { Card, EmptyState, PageHeader, Pill } from "@/components/app/ui-kit";
 import { AssignmentCard } from "@/components/app/cards";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
 import { assignments as demoAssignments, courseById, teacherOfCourse, type Assignment } from "@/lib/demo-data";
 import { Upload, X, CheckCircle2, Paperclip } from "lucide-react";
+import { getPublishedPosts, submitContent } from "@/lib/supabase";
 
 export const Route = createFileRoute("/tasks")({
   head: () => ({
@@ -21,13 +24,16 @@ export const Route = createFileRoute("/tasks")({
 
 function TasksPage() {
   const { t } = useI18n();
+  const { user } = useAuth();
   const [filter, setFilter] = useState<"all" | "open" | "done">("all");
   const [open, setOpen] = useState<Assignment | null>(null);
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({});
   const [fileName, setFileName] = useState("");
   const [fileError, setFileError] = useState("");
+  const { data: published = [] } = useQuery({ queryKey: ["published-content"], queryFn: async () => (await getPublishedPosts()).data, staleTime: 10_000 });
+  const liveAssignments: Assignment[] = published.filter((post) => post.kind === "yumuslar").map((post) => ({ id: post.id, courseId: post.course_id ?? "c1", title: post.title, description: post.body, dueInDays: post.due_at ? Math.ceil((new Date(post.due_at).getTime() - Date.now()) / 86400000) : 7, status: "notStarted", attachments: [] }));
 
-  const list = demoAssignments
+  const list = [...liveAssignments, ...demoAssignments]
     .filter((a) =>
       filter === "all"
         ? true
@@ -147,7 +153,11 @@ function TasksPage() {
                 {fileError ? <p role="alert" className="mb-3 text-xs font-medium text-destructive">{fileError}</p> : null}
                 <button
                   disabled={!fileName}
-                  onClick={() => setSubmitted((s) => ({ ...s, [open.id]: true }))}
+                  onClick={async () => {
+                    if (!user) return;
+                    const saved = await submitContent(open.id, user.id, fileName);
+                    if (saved) setSubmitted((s) => ({ ...s, [open.id]: true }));
+                  }}
                   className="tap-target w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground"
                 >
                   {t("tasks.submit")}
