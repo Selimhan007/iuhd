@@ -92,9 +92,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => { active = false; };
   }, [syncUser]);
 
-  const login = useCallback(async (id: string, password: string) => {
-    if (!/^\d+$/.test(id.trim())) return { ok: false };
-    const payload = await authRequest("sign-in/email", { email: authEmailFromId(id), password });
+  const login = useCallback(async (identifier: string, password: string) => {
+    const value = identifier.trim();
+    const email = /^\d+$/.test(value) ? authEmailFromId(value) : value.toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(email)) return { ok: false };
+    const payload = await authRequest("sign-in/email", { email, password });
     if (!payload.user) return { ok: false };
     await syncUser(payload.user);
     return { ok: true };

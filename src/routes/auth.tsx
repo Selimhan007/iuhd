@@ -107,11 +107,9 @@ function AuthPage() {
               className={field}
               type="text"
               autoComplete="username"
-              placeholder="Числовой ID"
-              inputMode="numeric"
-              pattern="[0-9]+"
+              placeholder="ID или email"
               value={id}
-              onChange={(e) => setId(e.target.value.replace(/\D/g, ""))}
+              onChange={(e) => setId(e.target.value)}
               required
             />
           ) : null}
