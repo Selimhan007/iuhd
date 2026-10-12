@@ -28,7 +28,7 @@ interface AuthCtx {
 const Ctx = createContext<AuthCtx>({ user: null, ready: false, login: async () => ({ ok: false }), register: async () => ({ ok: false }), logout: async () => {}, updateUser: () => {} });
 
 type AuthResponse = {
-  user?: { id: string; name?: string; email?: string };
+  user?: { id: string; name?: string; email?: string; role?: Role };
   session?: unknown;
   error?: { message?: string };
 };
@@ -64,13 +64,14 @@ async function authRequest(path: string, body?: Record<string, unknown>): Promis
   }
 }
 
-function profileUser(authUser: { id: string; name?: string; email?: string }): SessionUser {
+function profileUser(authUser: { id: string; name?: string; email?: string; role?: Role }): SessionUser {
   const email = authUser.email ?? "";
+  const seededRole: Role = email === "teacher@iuhd.local" ? "teacher" : email === "admin@iuhd.local" ? "admin" : "student";
   return {
     id: authUser.id,
     email,
     name: authUser.name ?? email.split("@")[0] ?? "Student",
-    role: "student" as Role,
+    role: authUser.role ?? seededRole,
   };
 }
 
