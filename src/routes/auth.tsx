@@ -161,6 +161,36 @@ function AuthPage() {
           </div>
         </form>
 
+        {mode === "login" ? (
+          <section aria-labelledby="demo-profiles-title" className="card-surface mt-4 p-4">
+            <div className="mb-3">
+              <h2 id="demo-profiles-title" className="text-sm font-semibold">Демо-профили</h2>
+              <p className="text-xs text-muted-foreground">Выберите профиль для быстрого входа</p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {[
+                { label: "Студент", id: "1001", password: "student123" },
+                { label: "Преподаватель", id: "1002", password: "teacher123" },
+                { label: "Администратор", id: "1003", password: "admin123" },
+              ].map((profile) => (
+                <button
+                  key={profile.id}
+                  type="button"
+                  onClick={() => {
+                    setId(profile.id);
+                    setPassword(profile.password);
+                    setError("");
+                  }}
+                  className="rounded-xl border border-border bg-background px-3 py-2 text-left text-xs transition-colors hover:border-primary hover:bg-muted"
+                >
+                  <span className="block font-semibold">{profile.label}</span>
+                  <span className="text-muted-foreground">ID {profile.id}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         <div className="mt-4 flex justify-center gap-2">
           {LANGUAGES.map((l) => (
             <button
