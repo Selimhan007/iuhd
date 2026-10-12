@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, PageHeader } from "@/components/app/ui-kit";
 import { AnnouncementCard } from "@/components/app/cards";
 import { useI18n } from "@/lib/i18n";
 import { announcements, type AnnCategory } from "@/lib/demo-data";
 import { Megaphone } from "lucide-react";
+import { getPublishedPosts } from "@/lib/supabase";
 
 export const Route = createFileRoute("/announcements")({
   head: () => ({
@@ -24,8 +26,10 @@ const CATEGORIES: (AnnCategory | "all")[] = ["all", "university", "faculty", "de
 function AnnouncementsPage() {
   const { t } = useI18n();
   const [cat, setCat] = useState<AnnCategory | "all">("all");
+  const { data: published = [] } = useQuery({ queryKey: ["published-content"], queryFn: async () => (await getPublishedPosts()).data, staleTime: 10_000 });
+  const liveAnnouncements = published.filter((post) => post.kind !== "yumuslar" && post.kind !== "material").map((post) => ({ id: post.id, title: post.title, body: post.body, author: post.sender_name, date: post.published_at, category: (post.sender_scope === "teacher" ? "group" : post.sender_scope === "department" ? "department" : "university") as AnnCategory, important: post.kind === "habarnamalar" }));
 
-  const list = announcements
+  const list = [...liveAnnouncements, ...announcements]
     .filter((a) => cat === "all" || a.category === cat)
     .slice()
     .sort((a, b) => Number(!!b.important) - Number(!!a.important) || b.date.localeCompare(a.date));

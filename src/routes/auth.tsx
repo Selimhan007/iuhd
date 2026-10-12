@@ -10,9 +10,9 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Sign in — Student TM" },
-      { name: "description", content: "Sign in to Student TM with your ID." },
+      { name: "description", content: "Sign in to Student TM with your numeric ID." },
       { property: "og:title", content: "Sign in — Student TM" },
-      { property: "og:description", content: "Sign in to Student TM with your ID." },
+      { property: "og:description", content: "Sign in to Student TM with your numeric ID." },
     ],
   }),
   component: AuthPage,
@@ -27,7 +27,7 @@ function AuthPage() {
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>("login");
-  const [identifier, setIdentifier] = useState("student");
+  const [id, setId] = useState("1001");
   const [password, setPassword] = useState("student123");
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState("");
@@ -42,7 +42,7 @@ function AuthPage() {
     setError("");
     setInfo("");
     if (mode === "login") {
-      const res = await login(identifier, password, remember);
+      const res = await login(id, password, remember);
       if (!res.ok) setError(t("auth.invalid"));
       return;
     }
@@ -96,10 +96,10 @@ function AuthPage() {
               className={field}
               type="text"
               autoComplete="username"
-              placeholder={t("auth.email")}
+              placeholder="ID или email"
               aria-label={t("auth.email")}
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              value={id}
+              onChange={(e) => setId(e.target.value)}
               required
             />
           ) : null}
@@ -146,6 +146,39 @@ function AuthPage() {
             </div>
           ) : null}
         </form>
+
+        {mode === "login" ? (
+          <section aria-labelledby="demo-profiles-title" className="card-surface mt-4 p-4">
+            <div className="mb-3">
+              <h2 id="demo-profiles-title" className="text-sm font-semibold">Демо-профили</h2>
+              <p className="text-xs text-muted-foreground">Выберите профиль для быстрого входа</p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {[
+                { label: "Студент", id: "1001", password: "student123" },
+                { label: "Преподаватель", id: "1002", password: "teacher123" },
+                { label: "Администратор", id: "1003", password: "admin123" },
+              ].map((profile) => (
+                <button
+                  key={profile.id}
+                  type="button"
+                  onClick={async () => {
+                    setId(profile.id);
+                    setPassword(profile.password);
+                    setError("");
+                    setInfo("");
+                    const result = await login(profile.id, profile.password, true);
+                    if (!result.ok) setError("Не удалось войти в демо-профиль. Обновите страницу и попробуйте ещё раз.");
+                  }}
+                  className="rounded-xl border border-border bg-background px-3 py-2 text-left text-xs transition-colors hover:border-primary hover:bg-muted"
+                >
+                  <span className="block font-semibold">{profile.label}</span>
+                  <span className="text-muted-foreground">ID {profile.id}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <div className="mt-4 flex justify-center gap-2">
           {LANGUAGES.map((l) => (

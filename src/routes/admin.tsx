@@ -448,7 +448,7 @@ function AdminOperations() {
               <div key={key} className="rounded-2xl bg-muted/60 p-3">
                 <p className="text-lg font-bold">{value}</p>
                 <p className="text-xs text-muted-foreground">
-                  {t(key)}
+                  {t(key as Parameters<typeof t>[0])}
                   {index === 2 ? ` · ${t("admin.reviewNeeded")}` : ""}
                 </p>
               </div>

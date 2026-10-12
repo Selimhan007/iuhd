@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
-const url = import.meta.env.VITE_SUPABASE_URL ?? import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const url = import.meta.env["VITE_SUPABASE_URL"] ?? import.meta.env["NEXT_PUBLIC_SUPABASE_URL"];
+const key = import.meta.env["VITE_SUPABASE_ANON_KEY"] ?? import.meta.env["NEXT_PUBLIC_SUPABASE_ANON_KEY"];
 
 export const supabase = url && key ? createClient(url, key) : null;
 
@@ -23,8 +23,44 @@ export type UniversityPost = {
 };
 
 export async function publishPost(input: Omit<UniversityPost, "id" | "published_at">) {
-  if (!supabase) return { data: null, error: new Error("Supabase is not configured") };
-  return supabase.from("posts").insert(input).select().single();
+  try {
+    const response = await fetch("/api/content", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        authorId: input.author_id,
+        kind: input.kind,
+        senderScope: input.sender_scope,
+        senderName: input.sender_name,
+        title: input.title,
+        body: input.body,
+        courseId: input.course_id,
+        groupName: input.group_name,
+        dueAt: input.due_at,
+      }),
+    });
+    const result = await response.json().catch(() => ({}));
+    return response.ok ? { data: result.post as UniversityPost, error: null } : { data: null, error: new Error(result.error ?? "Publication failed") };
+  } catch (error) {
+    return { data: null, error: error instanceof Error ? error : new Error("Publication failed") };
+  }
+}
+
+export async function getPublishedPosts(): Promise<{ data: UniversityPost[]; error: Error | null }> {
+  try {
+    const response = await fetch("/api/content", { credentials: "include" });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) return { data: [], error: new Error(result.error ?? "Content load failed") };
+    return { data: (result.posts ?? []) as UniversityPost[], error: null };
+  } catch (error) {
+    return { data: [], error: error instanceof Error ? error : new Error("Content load failed") };
+  }
+}
+
+export async function submitContent(postId: string, studentId: string, fileName?: string) {
+  const response = await fetch("/api/content", { method: "POST", headers: { "content-type": "application/json" }, credentials: "include", body: JSON.stringify({ action: "submit", postId, studentId, fileName }) });
+  return response.ok;
 }
 
 export async function uploadMaterial(file: File, postId: string) {

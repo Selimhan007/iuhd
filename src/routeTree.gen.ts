@@ -26,9 +26,14 @@ import { Route as ScheduleRouteImport } from './routes/schedule'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as TeacherRouteImport } from './routes/teacher'
+import { Route as ApiAdminRouteImport } from './routes/api/admin'
+import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
+import { Route as ApiContentRouteImport } from './routes/api/content'
+import { Route as ApiUploadRouteImport } from './routes/api/upload'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses.$courseId'
 import { Route as TeacherPublishRouteImport } from './routes/teacher.publish'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -115,6 +120,26 @@ const TeacherRoute = TeacherRouteImport.update({
   path: '/teacher',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminRoute = ApiAdminRouteImport.update({
+  id: '/api/admin',
+  path: '/api/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAssistantRoute = ApiAssistantRouteImport.update({
+  id: '/api/assistant',
+  path: '/api/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiContentRoute = ApiContentRouteImport.update({
+  id: '/api/content',
+  path: '/api/content',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiUploadRoute = ApiUploadRouteImport.update({
+  id: '/api/upload',
+  path: '/api/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CoursesIndexRoute = CoursesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -129,6 +154,11 @@ const TeacherPublishRoute = TeacherPublishRouteImport.update({
   id: '/publish',
   path: '/publish',
   getParentRoute: () => TeacherRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -149,9 +179,14 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/teacher': typeof TeacherRouteWithChildren
+  '/api/admin': typeof ApiAdminRoute
+  '/api/assistant': typeof ApiAssistantRoute
+  '/api/content': typeof ApiContentRoute
+  '/api/upload': typeof ApiUploadRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/teacher/publish': typeof TeacherPublishRoute
   '/courses/': typeof CoursesIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -170,9 +205,14 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/teacher': typeof TeacherRouteWithChildren
+  '/api/admin': typeof ApiAdminRoute
+  '/api/assistant': typeof ApiAssistantRoute
+  '/api/content': typeof ApiContentRoute
+  '/api/upload': typeof ApiUploadRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/teacher/publish': typeof TeacherPublishRoute
   '/courses': typeof CoursesIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -193,9 +233,14 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/teacher': typeof TeacherRouteWithChildren
+  '/api/admin': typeof ApiAdminRoute
+  '/api/assistant': typeof ApiAssistantRoute
+  '/api/content': typeof ApiContentRoute
+  '/api/upload': typeof ApiUploadRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/teacher/publish': typeof TeacherPublishRoute
   '/courses/': typeof CoursesIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -217,9 +262,14 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/teacher'
+    | '/api/admin'
+    | '/api/assistant'
+    | '/api/content'
+    | '/api/upload'
     | '/courses/$courseId'
     | '/teacher/publish'
     | '/courses/'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -238,9 +288,14 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/teacher'
+    | '/api/admin'
+    | '/api/assistant'
+    | '/api/content'
+    | '/api/upload'
     | '/courses/$courseId'
     | '/teacher/publish'
     | '/courses'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
@@ -260,9 +315,14 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/teacher'
+    | '/api/admin'
+    | '/api/assistant'
+    | '/api/content'
+    | '/api/upload'
     | '/courses/$courseId'
     | '/teacher/publish'
     | '/courses/'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -283,6 +343,11 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   TasksRoute: typeof TasksRoute
   TeacherRoute: typeof TeacherRouteWithChildren
+  ApiAdminRoute: typeof ApiAdminRoute
+  ApiAssistantRoute: typeof ApiAssistantRoute
+  ApiContentRoute: typeof ApiContentRoute
+  ApiUploadRoute: typeof ApiUploadRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -406,6 +471,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeacherRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin': {
+      id: '/api/admin'
+      path: '/api/admin'
+      fullPath: '/api/admin'
+      preLoaderRoute: typeof ApiAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/assistant': {
+      id: '/api/assistant'
+      path: '/api/assistant'
+      fullPath: '/api/assistant'
+      preLoaderRoute: typeof ApiAssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/content': {
+      id: '/api/content'
+      path: '/api/content'
+      fullPath: '/api/content'
+      preLoaderRoute: typeof ApiContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/upload': {
+      id: '/api/upload'
+      path: '/api/upload'
+      fullPath: '/api/upload'
+      preLoaderRoute: typeof ApiUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/courses/': {
       id: '/courses/'
       path: '/'
@@ -426,6 +519,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/teacher/publish'
       preLoaderRoute: typeof TeacherPublishRouteImport
       parentRoute: typeof TeacherRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -472,6 +572,11 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   TasksRoute: TasksRoute,
   TeacherRoute: TeacherRouteWithChildren,
+  ApiAdminRoute: ApiAdminRoute,
+  ApiAssistantRoute: ApiAssistantRoute,
+  ApiContentRoute: ApiContentRoute,
+  ApiUploadRoute: ApiUploadRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

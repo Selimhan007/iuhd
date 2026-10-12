@@ -2,7 +2,7 @@ import { Pool } from "pg";
 
 const globalForAdminDb = globalThis as typeof globalThis & { adminPool?: Pool };
 
-export const adminPool = globalForAdminDb.adminPool ?? new Pool({ connectionString: process.env.DATABASE_URL });
+export const adminPool = globalForAdminDb.adminPool ?? new Pool({ connectionString: process.env["DATABASE_URL"] });
 if (import.meta.env?.DEV) globalForAdminDb.adminPool = adminPool;
 
 export type AdminUser = {

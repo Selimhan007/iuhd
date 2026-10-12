@@ -1,6 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Role } from "./demo-data";
-import { supabase } from "./supabase";
 
 export interface SessionUser {
   id: string;
@@ -20,52 +19,99 @@ export const DEMO_ACCOUNTS: { email: string; password: string; role: Role }[] = 
 interface AuthCtx {
   user: SessionUser | null;
   ready: boolean;
-  login: (identifier: string, password: string, remember: boolean) => Promise<{ ok: boolean }>;
-  register: (name: string, email: string, password: string) => Promise<{ ok: boolean; needsConfirmation?: boolean }>;
+  login: (id: string, password: string, remember: boolean) => Promise<{ ok: boolean }>;
+  register: (name: string, id: string, password: string) => Promise<{ ok: boolean; needsConfirmation?: boolean }>;
   logout: () => Promise<void>;
   updateUser: (patch: Partial<SessionUser>) => void;
 }
 
 const Ctx = createContext<AuthCtx>({ user: null, ready: false, login: async () => ({ ok: false }), register: async () => ({ ok: false }), logout: async () => {}, updateUser: () => {} });
 
-async function profileUser(id: string, email: string): Promise<SessionUser> {
-  const { data } = await supabase!.from("profiles").select("id, full_name, role, department, group_name").eq("id", id).maybeSingle();
-  return { id, email, name: data?.full_name ?? email.split("@")[0] ?? "Student", role: (data?.role ?? "student") as Role, office: data?.department ?? undefined, studentCode: data?.group_name ?? undefined };
+type AuthResponse = {
+  user?: { id: string; name?: string; email?: string; role?: Role };
+  session?: unknown;
+  error?: { message?: string };
+};
+
+function authEmailFromId(id: string) {
+  const normalizedId = id.trim();
+  const seededEmails: Record<string, string> = {
+    "1001": "student@iuhd.local",
+    "1002": "teacher@iuhd.local",
+    "1003": "admin@iuhd.local",
+  };
+
+  return seededEmails[normalizedId] ?? `${normalizedId}@iuhd.local`;
+}
+
+async function authRequest(path: string, body?: Record<string, unknown>): Promise<AuthResponse> {
+  try {
+    const response = await fetch(`/api/auth/${path}`, {
+      ...(body
+        ? {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(body),
+          }
+        : { method: "GET" }),
+      credentials: "include",
+    });
+    const rawPayload: unknown = await response.json().catch(() => null);
+    const payload = rawPayload && typeof rawPayload === "object" ? (rawPayload as AuthResponse) : {};
+    return response.ok ? payload : { error: payload.error ?? { message: "Authentication failed" } };
+  } catch {
+    return { error: { message: "Authentication unavailable" } };
+  }
+}
+
+function profileUser(authUser: { id: string; name?: string; email?: string; role?: Role }): SessionUser {
+  const email = authUser.email ?? "";
+  const seededRole: Role = email === "teacher@iuhd.local" ? "teacher" : email === "admin@iuhd.local" ? "admin" : "student";
+  return {
+    id: authUser.id,
+    email,
+    name: authUser.name ?? email.split("@")[0] ?? "Student",
+    role: authUser.role ?? seededRole,
+  };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [ready, setReady] = useState(false);
 
-  const syncUser = useCallback(async (authUser: { id: string; email?: string } | null) => {
-    if (!authUser || !supabase) { setUser(null); return; }
-    setUser(await profileUser(authUser.id, authUser.email ?? ""));
+  const syncUser = useCallback(async (authUser: { id: string; name?: string; email?: string } | null) => {
+    setUser(authUser ? profileUser(authUser) : null);
   }, []);
 
   useEffect(() => {
-    if (!supabase) { setReady(true); return; }
     let active = true;
-    void supabase.auth.getUser().then(({ data }) => { if (active) void syncUser(data.user); }).finally(() => { if (active) setReady(true); });
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => { void syncUser(session?.user ?? null); });
-    return () => { active = false; listener.subscription.unsubscribe(); };
+    void authRequest("get-session").then((payload) => {
+      if (active) void syncUser(payload.user ?? null);
+    }).finally(() => {
+      if (active) setReady(true);
+    });
+    return () => { active = false; };
   }, [syncUser]);
 
-  const toAuthEmail = (identifier: string) => `${identifier.trim().toLowerCase().replace(/[^a-z0-9._-]/g, "") || "student"}@student.tm`;
-
   const login = useCallback(async (identifier: string, password: string) => {
-    if (!supabase) return { ok: false };
-    const { error } = await supabase.auth.signInWithPassword({ email: toAuthEmail(identifier), password });
-    return { ok: !error };
-  }, []);
+    const value = identifier.trim();
+    const email = /^\d+$/.test(value) ? authEmailFromId(value) : value.toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(email)) return { ok: false };
+    const payload = await authRequest("sign-in/email", { email, password });
+    if (!payload.user) return { ok: false };
+    await syncUser(payload.user);
+    return { ok: true };
+  }, [syncUser]);
 
-  const register = useCallback(async (name: string, identifier: string, password: string) => {
-    if (!supabase) return { ok: false };
-    const email = toAuthEmail(identifier);
-    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name.trim() || identifier.trim() } } });
-    return { ok: !error, needsConfirmation: !data.session };
-  }, []);
+  const register = useCallback(async (name: string, id: string, password: string) => {
+    if (!/^\d+$/.test(id.trim())) return { ok: false, needsConfirmation: false };
+    const payload = await authRequest("sign-up/email", { name: name.trim() || `Student ${id.trim()}`, email: authEmailFromId(id), password });
+    if (!payload.user) return { ok: false, needsConfirmation: false };
+    await syncUser(payload.user);
+    return { ok: true, needsConfirmation: false };
+  }, [syncUser]);
 
-  const logout = useCallback(async () => { if (supabase) await supabase.auth.signOut(); setUser(null); }, []);
+  const logout = useCallback(async () => { await authRequest("sign-out", {}); setUser(null); }, []);
   const updateUser = useCallback((patch: Partial<SessionUser>) => setUser((current) => current ? { ...current, ...patch } : current), []);
 
   return <Ctx.Provider value={{ user, ready, login, register, logout, updateUser }}>{children}</Ctx.Provider>;
