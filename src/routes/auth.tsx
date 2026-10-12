@@ -18,18 +18,17 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-type Mode = "login" | "register" | "forgot" | "reset";
+type Mode = "login" | "forgot" | "reset";
 
 function AuthPage() {
   const { t, lang, setLang } = useI18n();
   const { dark, toggle } = useTheme();
-  const { login, register, user, ready } = useAuth();
+  const { login, user, ready } = useAuth();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>("login");
   const [identifier, setIdentifier] = useState("student");
   const [password, setPassword] = useState("student123");
-  const [name, setName] = useState("");
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
@@ -45,17 +44,17 @@ function AuthPage() {
     if (mode === "login") {
       const res = await login(identifier, password, remember);
       if (!res.ok) setError(t("auth.invalid"));
-    } else if (mode === "register") {
-      const res = await register(name || identifier, identifier, password);
-      if (!res.ok) setError(t("auth.invalid"));
-      else if (res.needsConfirmation) setInfo("Проверьте электронную почту для подтверждения аккаунта.");
-    } else if (mode === "forgot") {
+      return;
+    }
+
+    if (mode === "forgot") {
       setInfo(t("auth.resetSent"));
       setMode("reset");
-    } else {
-      setInfo(t("auth.registered"));
-      setMode("login");
+      return;
     }
+
+    setInfo(t("auth.registered"));
+    setMode("login");
   };
 
   const field =
@@ -87,20 +86,10 @@ function AuthPage() {
         <form onSubmit={submit} className="card-surface animate-rise space-y-4 p-6">
           <div>
             <h2 className="text-lg font-semibold">
-              {mode === "login"
-                ? t("auth.title")
-                : mode === "register"
-                  ? t("auth.register")
-                  : mode === "forgot"
-                    ? t("auth.forgot")
-                    : t("auth.reset")}
+              {mode === "login" ? t("auth.title") : mode === "forgot" ? t("auth.forgot") : t("auth.reset")}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">{t("auth.subtitle")}</p>
           </div>
-
-          {mode === "register" ? (
-            <input className={field} placeholder={t("auth.fullName")} value={name} onChange={(e) => setName(e.target.value)} />
-          ) : null}
 
           {mode !== "reset" ? (
             <input
@@ -115,7 +104,7 @@ function AuthPage() {
             />
           ) : null}
 
-          {mode === "login" || mode === "register" || mode === "reset" ? (
+          {mode === "login" || mode === "reset" ? (
             <input
               className={field}
               type="password"
@@ -146,20 +135,16 @@ function AuthPage() {
             type="submit"
             className="tap-target w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
-            {mode === "login" ? t("auth.login") : mode === "register" ? t("auth.register") : t("auth.reset")}
+            {mode === "login" ? t("auth.login") : t("auth.reset")}
           </button>
 
-          <div className="text-center text-sm text-muted-foreground">
-            {mode === "login" ? (
-              <button type="button" onClick={() => setMode("register")}>
-                {t("auth.noAccount")} <span className="font-semibold text-primary">{t("auth.register")}</span>
-              </button>
-            ) : (
+          {mode !== "login" ? (
+            <div className="text-center text-sm text-muted-foreground">
               <button type="button" onClick={() => setMode("login")} className="font-semibold text-primary">
                 {t("auth.back")}
               </button>
-            )}
-          </div>
+            </div>
+          ) : null}
         </form>
 
         <div className="mt-4 flex justify-center gap-2">
