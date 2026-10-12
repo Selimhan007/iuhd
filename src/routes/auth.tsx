@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { GraduationCap, Moon, Sun } from "lucide-react";
 import { useI18n, LANGUAGES } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
-import { DEMO_ACCOUNTS, useAuth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { roleHome } from "@/components/app/AppShell";
 
 export const Route = createFileRoute("/auth")({
@@ -27,7 +27,7 @@ function AuthPage() {
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>("login");
-  const [email, setEmail] = useState("student@student.tm");
+  const [identifier, setIdentifier] = useState("student");
   const [password, setPassword] = useState("student123");
   const [name, setName] = useState("");
   const [remember, setRemember] = useState(true);
@@ -43,10 +43,10 @@ function AuthPage() {
     setError("");
     setInfo("");
     if (mode === "login") {
-      const res = await login(email, password, remember);
+      const res = await login(identifier, password, remember);
       if (!res.ok) setError(t("auth.invalid"));
     } else if (mode === "register") {
-      const res = await register(name || email.split("@")[0]!, email, password);
+      const res = await register(name || identifier, identifier, password);
       if (!res.ok) setError(t("auth.invalid"));
       else if (res.needsConfirmation) setInfo("Проверьте электронную почту для подтверждения аккаунта.");
     } else if (mode === "forgot") {
@@ -109,8 +109,8 @@ function AuthPage() {
               autoComplete="username"
               placeholder={t("auth.email")}
               aria-label={t("auth.email")}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               required
             />
           ) : null}
@@ -161,28 +161,6 @@ function AuthPage() {
             )}
           </div>
         </form>
-
-        <div className="card-surface mt-4 p-4">
-          <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">{t("auth.demo")}</p>
-          <div className="space-y-2">
-            {DEMO_ACCOUNTS.map((d) => (
-              <button
-                key={d.email}
-                onClick={() => {
-                  setEmail(d.email);
-                  setPassword(d.password);
-                  setMode("login");
-                }}
-                className="flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-sm hover:bg-muted"
-              >
-                <span className="font-medium capitalize">{d.role}</span>
-                <span className="text-xs text-muted-foreground">
-                  {d.email} · {d.password}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
 
         <div className="mt-4 flex justify-center gap-2">
           {LANGUAGES.map((l) => (

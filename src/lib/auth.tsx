@@ -50,10 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => { active = false; listener.subscription.unsubscribe(); };
   }, [syncUser]);
 
-  const toAuthEmail = (identifier: string) => {
-    const value = identifier.trim().toLowerCase();
-    return value.includes("@") ? value : `${value}@student.tm`;
-  };
+  const toAuthEmail = (identifier: string) => `${identifier.trim().toLowerCase().replace(/[^a-z0-9._-]/g, "") || "student"}@student.tm`;
 
   const login = useCallback(async (identifier: string, password: string) => {
     if (!supabase) return { ok: false };
