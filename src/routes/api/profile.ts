@@ -1,4 +1,4 @@
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createFileRoute } from "@tanstack/react-router";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/profile-db";
 import { auth } from "@/lib/server-auth";
@@ -9,8 +9,10 @@ async function getUserId(request: Request) {
   return session.user.id;
 }
 
-export const APIRoute = createAPIFileRoute("/api/profile")({
-  GET: async ({ request }) => {
+export const Route = createFileRoute("/api/profile")({
+  server: {
+    handlers: {
+      GET: async ({ request }) => {
     try {
       const userId = await getUserId(request);
       const result = await db.execute(sql`
@@ -46,7 +48,9 @@ export const APIRoute = createAPIFileRoute("/api/profile")({
       if (error instanceof Response) return error;
       return Response.json({ error: "Unable to save profile" }, { status: 500 });
     }
+      },
+    },
   },
 });
 
-export default APIRoute;
+export default Route;

@@ -1,10 +1,12 @@
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createFileRoute } from "@tanstack/react-router";
 import { generateText } from "ai";
 
 const SYSTEM_PROMPT = `You are okuwçy kömekçisi, a friendly study assistant for students at Student TM. Answer in the user's language when possible. Explain clearly, use short sections and examples, and never invent university-specific facts. If the user asks for homework, guide them step by step instead of only giving an answer.`;
 
-export const APIRoute = createAPIFileRoute("/api/assistant")({
-  POST: async ({ request }) => {
+export const Route = createFileRoute("/api/assistant")({
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
     try {
       const body = (await request.json()) as { message?: unknown };
       const message = typeof body.message === "string" ? body.message.trim() : "";
@@ -25,7 +27,9 @@ export const APIRoute = createAPIFileRoute("/api/assistant")({
       console.error("[v0] Assistant request failed", error);
       return Response.json({ error: "The assistant is temporarily unavailable." }, { status: 500 });
     }
+      },
+    },
   },
 });
 
-export default APIRoute;
+export default Route;
