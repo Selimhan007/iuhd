@@ -36,12 +36,15 @@ type AuthResponse = {
 function authEmailFromId(id: string) {
   const normalizedId = id.trim();
   const seededEmails: Record<string, string> = {
-    "1001": "student@iuhd.local",
-    "1002": "teacher@iuhd.local",
-    "1003": "admin@iuhd.local",
+    "selim": "selim@student.tm",
+    "gowher": "gowher@student.tm",
+    "musa": "musa@student.tm",
+    "1001": "selim@student.tm",
+    "1002": "gowher@student.tm",
+    "1003": "musa@student.tm",
   };
 
-  return seededEmails[normalizedId] ?? `${normalizedId}@iuhd.local`;
+  return seededEmails[normalizedId.toLowerCase()] ?? `${normalizedId.toLowerCase()}@student.tm`;
 }
 
 async function authRequest(path: string, body?: Record<string, unknown>): Promise<AuthResponse> {
