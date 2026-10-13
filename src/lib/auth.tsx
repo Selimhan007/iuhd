@@ -36,7 +36,10 @@ async function getSession(): Promise<SessionUser | null> {
   const response = await fetch("/api/auth/get-session", { credentials: "include" });
   if (!response.ok) return null;
   const payload = (await response.json()) as { user?: { id: string; name: string; email: string } } | null;
-  return payload?.user ? { ...payload.user, role: "student" } : null;
+  if (!payload?.user) return null;
+  const profileResponse = await fetch("/api/profile", { credentials: "include" });
+  const profile = profileResponse.ok ? ((await profileResponse.json()) as Partial<SessionUser> | null) : null;
+  return { ...payload.user, role: (profile?.role as Role | undefined) ?? "student", ...profile };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

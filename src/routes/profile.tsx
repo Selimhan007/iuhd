@@ -81,6 +81,12 @@ function ProfilePage() {
             <button
               onClick={() => {
                 updateUser({ name, email, phone });
+                void fetch("/api/profile", {
+                  method: "PATCH",
+                  headers: { "content-type": "application/json" },
+                  credentials: "include",
+                  body: JSON.stringify({ phone }),
+                });
                 setEditing(false);
                 setSaved(true);
               }}
