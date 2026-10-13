@@ -62,16 +62,14 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  ...(process.env["NODE_ENV"] === "development"
-    ? {
-        advanced: {
-          defaultCookieAttributes: {
-            sameSite: "none" as const,
-            secure: true,
-          },
-        },
-      }
-    : {}),
+  advanced: {
+    defaultCookieAttributes: {
+      // Preview and local development may run over HTTP; Secure cookies are
+      // ignored there and make the app appear to restart after login.
+      sameSite: "lax" as const,
+      secure: process.env["NODE_ENV"] === "production",
+    },
+  },
 });
 
 export type Auth = typeof auth;
