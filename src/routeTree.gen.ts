@@ -26,8 +26,11 @@ import { Route as ScheduleRouteImport } from './routes/schedule'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as TeacherRouteImport } from './routes/teacher'
+import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
+import { Route as ApiProfileRouteImport } from './routes/api/profile'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses.$courseId'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -114,6 +117,16 @@ const TeacherRoute = TeacherRouteImport.update({
   path: '/teacher',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAssistantRoute = ApiAssistantRouteImport.update({
+  id: '/api/assistant',
+  path: '/api/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiProfileRoute = ApiProfileRouteImport.update({
+  id: '/api/profile',
+  path: '/api/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CoursesIndexRoute = CoursesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -123,6 +136,11 @@ const CoursesCourseIdRoute = CoursesCourseIdRouteImport.update({
   id: '/$courseId',
   path: '/$courseId',
   getParentRoute: () => CoursesRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -143,8 +161,11 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/teacher': typeof TeacherRoute
+  '/api/assistant': typeof ApiAssistantRoute
+  '/api/profile': typeof ApiProfileRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses/': typeof CoursesIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -163,8 +184,11 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/teacher': typeof TeacherRoute
+  '/api/assistant': typeof ApiAssistantRoute
+  '/api/profile': typeof ApiProfileRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses': typeof CoursesIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -185,8 +209,11 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/teacher': typeof TeacherRoute
+  '/api/assistant': typeof ApiAssistantRoute
+  '/api/profile': typeof ApiProfileRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses/': typeof CoursesIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -208,8 +235,11 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/teacher'
+    | '/api/assistant'
+    | '/api/profile'
     | '/courses/$courseId'
     | '/courses/'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -228,8 +258,11 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/teacher'
+    | '/api/assistant'
+    | '/api/profile'
     | '/courses/$courseId'
     | '/courses'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
@@ -249,8 +282,11 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/teacher'
+    | '/api/assistant'
+    | '/api/profile'
     | '/courses/$courseId'
     | '/courses/'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -271,6 +307,9 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   TasksRoute: typeof TasksRoute
   TeacherRoute: typeof TeacherRoute
+  ApiAssistantRoute: typeof ApiAssistantRoute
+  ApiProfileRoute: typeof ApiProfileRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -394,6 +433,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeacherRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/assistant': {
+      id: '/api/assistant'
+      path: '/api/assistant'
+      fullPath: '/api/assistant'
+      preLoaderRoute: typeof ApiAssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/profile': {
+      id: '/api/profile'
+      path: '/api/profile'
+      fullPath: '/api/profile'
+      preLoaderRoute: typeof ApiProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/courses/': {
       id: '/courses/'
       path: '/'
@@ -407,6 +460,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/courses/$courseId'
       preLoaderRoute: typeof CoursesCourseIdRouteImport
       parentRoute: typeof CoursesRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -442,6 +502,9 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   TasksRoute: TasksRoute,
   TeacherRoute: TeacherRoute,
+  ApiAssistantRoute: ApiAssistantRoute,
+  ApiProfileRoute: ApiProfileRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

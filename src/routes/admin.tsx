@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import {
   Archive,
   Bell,
+  CalendarDays,
   CalendarPlus,
   CheckCircle2,
   Download,
@@ -208,6 +209,8 @@ function AdminConsole() {
           events={publishedEvents}
           onAnnouncement={(item) => setPublishedAnnouncements((current) => [item, ...current])}
           onEvent={(item) => setPublishedEvents((current) => [item, ...current])}
+          onDeleteAnnouncement={(id) => setPublishedAnnouncements((current) => current.filter((item) => item.id !== id))}
+          onDeleteEvent={(id) => setPublishedEvents((current) => current.filter((item) => item.id !== id))}
         />
       ) : null}
 
@@ -221,11 +224,15 @@ function ContentPublisher({
   events,
   onAnnouncement,
   onEvent,
+  onDeleteAnnouncement,
+  onDeleteEvent,
 }: {
   announcements: Announcement[];
   events: UniEvent[];
   onAnnouncement: (item: Announcement) => void;
   onEvent: (item: UniEvent) => void;
+  onDeleteAnnouncement?: (id: string) => void;
+  onDeleteEvent?: (id: string) => void;
 }) {
   const [kind, setKind] = useState<ContentKind>("announcement");
   const [title, setTitle] = useState("");
@@ -284,8 +291,8 @@ function ContentPublisher({
         <div className="rounded-3xl border border-border bg-card p-5 shadow-card">
           <h2 className="font-bold">Published content</h2>
           <div className="mt-4 space-y-2">
-            {[...announcements.slice(0, 4).map((item) => ({ ...item, kind: "Announcement" })), ...events.slice(0, 4).map((item) => ({ ...item, kind: "Event", body: item.description }))].map((item) => (
-              <article key={item.id} className="rounded-2xl bg-muted/50 p-3"><div className="flex items-center justify-between gap-3"><p className="font-semibold">{item.title}</p><span className="text-[11px] text-primary">{item.kind}</span></div><p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.body}</p></article>
+            {[...announcements.slice(0, 4).map((item) => ({ ...item, kind: "Announcement" as const, onDelete: onDeleteAnnouncement })), ...events.slice(0, 4).map((item) => ({ ...item, kind: "Event" as const, body: item.description, onDelete: onDeleteEvent }))].map((item) => (
+              <article key={item.id} className="rounded-2xl bg-muted/50 p-3"><div className="flex items-center justify-between gap-3"><p className="font-semibold">{item.title}</p><div className="flex items-center gap-2"><span className="text-[11px] text-primary">{item.kind}</span><button type="button" aria-label={`Delete ${item.title}`} onClick={() => item.onDelete?.(item.id)} className="text-xs font-semibold text-destructive hover:underline">Delete</button></div></div><p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.body}</p></article>
             ))}
           </div>
         </div>
@@ -307,14 +314,26 @@ function AdminOperations() {
   const [section, setSection] = useState<(typeof adminSections)[number]["id"]>("users");
   const [search, setSearch] = useState("");
   const [saved, setSaved] = useState(false);
+  const [actionStatus, setActionStatus] = useState("");
   const [fileLimit, setFileLimit] = useState("25");
   const [theme, setTheme] = useState("system");
   const [integrations, setIntegrations] = useState({ calendar: false, email: true, push: true });
-  const users = [
-    { name: "M. Atayev", role: "Student", group: "1B", status: "Active" },
-    { name: "G. Nurygdyyev", role: "Teacher", group: "Software", status: "Active" },
-    { name: "S. Ovezova", role: "Student", group: "1B", status: "Blocked" },
-  ];
+  const [users, setUsers] = useState([
+    { name: "M. Atayev", email: "m.atayev@student.tm", role: "Student", group: "1B", status: "Active" },
+    { name: "G. Nurygdyyev", email: "g.nurygdyyev@student.tm", role: "Teacher", group: "Software", status: "Active" },
+    { name: "S. Ovezova", email: "s.ovezova@student.tm", role: "Student", group: "1B", status: "Blocked" },
+  ]);
+
+  const exportUsers = () => {
+    const csv = ["Name,Email,Role,Group,Status", ...users.map((user) => [user.name, user.email, user.role, user.group, user.status].map((value) => `"${value.replaceAll('"', '""')}"`).join(","))].join("\\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "student-tm-users.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+    setSaved(true);
+  };
   const events = [
     "G. Nurygdyyev uploaded lecture-04.pdf",
     "Admin changed S. Ovezova role to Student",
@@ -368,6 +387,7 @@ function AdminOperations() {
           ))}
         </nav>
       </div>
+      {actionStatus ? <p className="border-b border-border px-5 py-3 text-xs font-medium text-success">{actionStatus}</p> : null}
 
       {section === "users" ? (
         <div className="divide-y divide-border">
@@ -419,7 +439,7 @@ function AdminOperations() {
                       </td>
                       <td className="px-5 py-3">
                         <button
-                          onClick={() => setSaved(true)}
+                          onClick={() => setUsers((current) => current.map((entry) => entry.name === user.name ? { ...entry, role: entry.role === "Student" ? "Teacher" : entry.role === "Teacher" ? "Admin" : "Student" } : entry))}
                           className="rounded-lg bg-muted px-3 py-1.5 text-xs font-semibold hover:bg-primary-soft"
                         >
                           Change role
@@ -438,7 +458,7 @@ function AdminOperations() {
               <Upload className="h-4 w-4" /> Import users
             </button>
             <button
-              onClick={() => setSaved(true)}
+              onClick={exportUsers}
               className="flex items-center gap-2 rounded-xl bg-muted px-4 py-2.5 text-sm font-semibold"
             >
               <Download className="h-4 w-4" /> Export CSV
@@ -452,14 +472,8 @@ function AdminOperations() {
         </div>
       ) : section === "groups" ? (
         <ActionGrid
-          items={[
-            "Create group",
-            "Archive group",
-            "Move students",
-            "Assign teacher",
-            "Create subject",
-            "Export roster",
-          ]}
+          items={["Create group", "Archive group", "Move students", "Assign teacher", "Create subject", "Export roster"]}
+          onAction={(item) => setActionStatus(`${item}: workflow opened`)}
         />
       ) : section === "audit" ? (
         <div className="grid gap-4 p-4 sm:grid-cols-[1fr_auto] sm:p-5">
@@ -489,14 +503,8 @@ function AdminOperations() {
         </div>
       ) : section === "bulk" ? (
         <ActionGrid
-          items={[
-            "Notify selected groups",
-            "Export grades XLSX",
-            "Archive old groups",
-            "Bulk file review",
-            "Send deadline reminder",
-            "Download activity log",
-          ]}
+          items={["Notify selected groups", "Export grades XLSX", "Archive old groups", "Bulk file review", "Send deadline reminder", "Download activity log"]}
+          onAction={(item) => setActionStatus(`${item}: workflow opened`)}
         />
       ) : section === "integrations" ? (
         <div className="grid gap-3 p-4 sm:grid-cols-3 sm:p-5">
@@ -607,13 +615,13 @@ function IntegrationCard({
   );
 }
 
-function ActionGrid({ items }: { items: string[] }) {
+function ActionGrid({ items, onAction }: { items: string[]; onAction: (item: string) => void }) {
   return (
     <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3">
       {items.map((item, index) => (
         <button
           key={item}
-          onClick={() => window.alert(`${item} is ready to configure.`)}
+          onClick={() => onAction(item)}
           className="group flex items-center justify-between rounded-2xl border border-border bg-background p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-card"
         >
           <span>

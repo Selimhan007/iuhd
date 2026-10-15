@@ -111,18 +111,6 @@ export function RoleNav({
             <LayoutGrid className="h-5 w-5" />
             {t("nav.more")}
           </button>
-          <button
-            type="button"
-            onClick={onToggleTheme}
-            aria-label={dark ? "Включить светлую тему" : "Включить ночную тему"}
-            className={cn(
-              "tap-target flex flex-1 flex-col items-center justify-center gap-1 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-              styles.indicator,
-            )}
-          >
-            {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            <span>{dark ? "Светлая" : "Тема"}</span>
-          </button>
         </div>
       </nav>
 
