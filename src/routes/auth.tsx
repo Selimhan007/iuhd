@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, ShieldCheck, UserRound, UsersRound } from "lucide-react";
 import { useI18n, LANGUAGES } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { roleHome } from "@/components/app/AppShell";
@@ -31,10 +31,26 @@ function AuthPage() {
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
+  const [quickLogin, setQuickLogin] = useState<string | null>(null);
+
+  const roleAccounts = [
+    { label: "Студент", email: "student@student.tm", password: "StudentTM2026!", icon: UserRound },
+    { label: "Преподаватель", email: "teacher@student.tm", password: "TeacherTM2026!", icon: UsersRound },
+    { label: "Администратор", email: "admin@student.tm", password: "AdminTM2026!", icon: ShieldCheck },
+  ] as const;
 
   useEffect(() => {
     if (ready && user) navigate({ to: roleHome(user.role), replace: true });
   }, [ready, user, navigate]);
+
+  const quickSignIn = async (account: (typeof roleAccounts)[number]) => {
+    setError("");
+    setInfo("");
+    setQuickLogin(account.email);
+    const res = await login(account.email, account.password, true);
+    setQuickLogin(null);
+    if (!res.ok) setError("Не удалось войти. Проверьте подключение к серверу.");
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,6 +161,31 @@ function AuthPage() {
             )}
           </div>
         </form>
+
+        {mode === "login" ? (
+          <div className="mt-4 rounded-2xl border border-border/70 bg-card/70 p-3">
+            <p className="mb-2 text-center text-xs font-medium text-muted-foreground">Быстрый вход по роли</p>
+            <div className="grid grid-cols-3 gap-2">
+              {roleAccounts.map((account) => {
+                const Icon = account.icon;
+                const isLoading = quickLogin === account.email;
+                return (
+                  <button
+                    key={account.email}
+                    type="button"
+                    onClick={() => void quickSignIn(account)}
+                    disabled={quickLogin !== null}
+                    className="flex min-h-16 flex-col items-center justify-center gap-1 rounded-xl border border-border bg-background px-2 py-2 text-center text-xs font-semibold transition-colors hover:border-primary hover:bg-primary/10 disabled:cursor-wait disabled:opacity-60"
+                    aria-label={`Войти как ${account.label}`}
+                  >
+                    <Icon className="size-4 text-primary" aria-hidden="true" />
+                    <span>{isLoading ? "Вход..." : account.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
 
         <div className="mt-4 flex justify-center gap-2">
           {LANGUAGES.map((l) => (
