@@ -26,7 +26,10 @@ import { Route as ScheduleRouteImport } from './routes/schedule'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as TeacherRouteImport } from './routes/teacher'
+import { Route as ApiAdminRouteImport } from './routes/api/admin'
 import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
+import { Route as ApiContentRouteImport } from './routes/api/content'
+import { Route as ApiNotificationsRouteImport } from './routes/api/notifications'
 import { Route as ApiProfileRouteImport } from './routes/api/profile'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses.$courseId'
@@ -117,9 +120,24 @@ const TeacherRoute = TeacherRouteImport.update({
   path: '/teacher',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminRoute = ApiAdminRouteImport.update({
+  id: '/api/admin',
+  path: '/api/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAssistantRoute = ApiAssistantRouteImport.update({
   id: '/api/assistant',
   path: '/api/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiContentRoute = ApiContentRouteImport.update({
+  id: '/api/content',
+  path: '/api/content',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiNotificationsRoute = ApiNotificationsRouteImport.update({
+  id: '/api/notifications',
+  path: '/api/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiProfileRoute = ApiProfileRouteImport.update({
@@ -161,7 +179,10 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/teacher': typeof TeacherRoute
+  '/api/admin': typeof ApiAdminRoute
   '/api/assistant': typeof ApiAssistantRoute
+  '/api/content': typeof ApiContentRoute
+  '/api/notifications': typeof ApiNotificationsRoute
   '/api/profile': typeof ApiProfileRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses/': typeof CoursesIndexRoute
@@ -184,7 +205,10 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/teacher': typeof TeacherRoute
+  '/api/admin': typeof ApiAdminRoute
   '/api/assistant': typeof ApiAssistantRoute
+  '/api/content': typeof ApiContentRoute
+  '/api/notifications': typeof ApiNotificationsRoute
   '/api/profile': typeof ApiProfileRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses': typeof CoursesIndexRoute
@@ -209,7 +233,10 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/teacher': typeof TeacherRoute
+  '/api/admin': typeof ApiAdminRoute
   '/api/assistant': typeof ApiAssistantRoute
+  '/api/content': typeof ApiContentRoute
+  '/api/notifications': typeof ApiNotificationsRoute
   '/api/profile': typeof ApiProfileRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses/': typeof CoursesIndexRoute
@@ -235,7 +262,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/teacher'
+    | '/api/admin'
     | '/api/assistant'
+    | '/api/content'
+    | '/api/notifications'
     | '/api/profile'
     | '/courses/$courseId'
     | '/courses/'
@@ -258,7 +288,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/teacher'
+    | '/api/admin'
     | '/api/assistant'
+    | '/api/content'
+    | '/api/notifications'
     | '/api/profile'
     | '/courses/$courseId'
     | '/courses'
@@ -282,7 +315,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/teacher'
+    | '/api/admin'
     | '/api/assistant'
+    | '/api/content'
+    | '/api/notifications'
     | '/api/profile'
     | '/courses/$courseId'
     | '/courses/'
@@ -307,7 +343,10 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   TasksRoute: typeof TasksRoute
   TeacherRoute: typeof TeacherRoute
+  ApiAdminRoute: typeof ApiAdminRoute
   ApiAssistantRoute: typeof ApiAssistantRoute
+  ApiContentRoute: typeof ApiContentRoute
+  ApiNotificationsRoute: typeof ApiNotificationsRoute
   ApiProfileRoute: typeof ApiProfileRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -433,11 +472,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeacherRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin': {
+      id: '/api/admin'
+      path: '/api/admin'
+      fullPath: '/api/admin'
+      preLoaderRoute: typeof ApiAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/assistant': {
       id: '/api/assistant'
       path: '/api/assistant'
       fullPath: '/api/assistant'
       preLoaderRoute: typeof ApiAssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/content': {
+      id: '/api/content'
+      path: '/api/content'
+      fullPath: '/api/content'
+      preLoaderRoute: typeof ApiContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/notifications': {
+      id: '/api/notifications'
+      path: '/api/notifications'
+      fullPath: '/api/notifications'
+      preLoaderRoute: typeof ApiNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/profile': {
@@ -502,7 +562,10 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   TasksRoute: TasksRoute,
   TeacherRoute: TeacherRoute,
+  ApiAdminRoute: ApiAdminRoute,
   ApiAssistantRoute: ApiAssistantRoute,
+  ApiContentRoute: ApiContentRoute,
+  ApiNotificationsRoute: ApiNotificationsRoute,
   ApiProfileRoute: ApiProfileRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

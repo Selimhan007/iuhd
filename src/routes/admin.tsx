@@ -70,6 +70,7 @@ function AdminConsole() {
   const [panel, setPanel] = useState<AdminPanel>("overview");
   const [publishedAnnouncements, setPublishedAnnouncements] = useState(() => [...demoAnnouncements]);
   const [publishedEvents, setPublishedEvents] = useState(() => [...demoEvents]);
+  const [contentRefresh, setContentRefresh] = useState(0);
 
   const [data, setData] = useState<Record<TabId, ResourceItem[]>>(() => ({
     students: demoStudents.map((s) => ({
@@ -205,12 +206,14 @@ function AdminConsole() {
 
       {panel === "content" ? (
         <ContentPublisher
+          key={contentRefresh}
           announcements={publishedAnnouncements}
           events={publishedEvents}
           onAnnouncement={(item) => setPublishedAnnouncements((current) => [item, ...current])}
           onEvent={(item) => setPublishedEvents((current) => [item, ...current])}
-          onDeleteAnnouncement={(id) => setPublishedAnnouncements((current) => current.filter((item) => item.id !== id))}
-          onDeleteEvent={(id) => setPublishedEvents((current) => current.filter((item) => item.id !== id))}
+          onDeleteAnnouncement={async (id) => { await fetch(`/api/admin?id=${encodeURIComponent(id)}`, { method: "DELETE" }); setPublishedAnnouncements((current) => current.filter((item) => item.id !== id)); }}
+          onDeleteEvent={async (id) => { await fetch(`/api/admin?id=${encodeURIComponent(id)}`, { method: "DELETE" }); setPublishedEvents((current) => current.filter((item) => item.id !== id)); }}
+          onPublish={async (payload) => { const response = await fetch("/api/admin", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "publish-content", ...payload }) }); if (!response.ok) throw new Error("Publish failed"); setContentRefresh((value) => value + 1); }}
         />
       ) : null}
 
@@ -226,13 +229,15 @@ function ContentPublisher({
   onEvent,
   onDeleteAnnouncement,
   onDeleteEvent,
+  onPublish,
 }: {
   announcements: Announcement[];
   events: UniEvent[];
   onAnnouncement: (item: Announcement) => void;
   onEvent: (item: UniEvent) => void;
-  onDeleteAnnouncement?: (id: string) => void;
-  onDeleteEvent?: (id: string) => void;
+  onDeleteAnnouncement?: (id: string) => Promise<void>;
+  onDeleteEvent?: (id: string) => Promise<void>;
+  onPublish: (payload: { kind: ContentKind; title: string; body: string; date?: string; place?: string }) => Promise<void>;
 }) {
   const [kind, setKind] = useState<ContentKind>("announcement");
   const [title, setTitle] = useState("");
@@ -249,16 +254,18 @@ function ContentPublisher({
     setPublished(true);
   };
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!title.trim() || !body.trim()) return;
-    const id = `admin-${Date.now()}`;
-    if (kind === "announcement") {
-      onAnnouncement({ id, title: title.trim(), body: body.trim(), author: "Administration", date: date || new Date().toISOString().slice(0, 10), category: "university" });
-    } else {
-      onEvent({ id, title: title.trim(), description: body.trim(), date: date || new Date().toISOString().slice(0, 10), place: place.trim() || "Campus" });
+    try {
+      await onPublish({ kind, title: title.trim(), body: body.trim(), ...(date ? { date } : {}), ...(place.trim() ? { place: place.trim() } : {}) });
+      const id = `admin-${Date.now()}`;
+      if (kind === "announcement") onAnnouncement({ id, title: title.trim(), body: body.trim(), author: "Administration", date: date || new Date().toISOString().slice(0, 10), category: "university" });
+      else onEvent({ id, title: title.trim(), description: body.trim(), date: date || new Date().toISOString().slice(0, 10), place: place.trim() || "Campus" });
+      reset();
+    } catch {
+      setPublished(false);
     }
-    reset();
   };
 
   return (
@@ -323,6 +330,8 @@ function AdminOperations() {
     { name: "G. Nurygdyyev", email: "g.nurygdyyev@student.tm", role: "Teacher", group: "Software", status: "Active" },
     { name: "S. Ovezova", email: "s.ovezova@student.tm", role: "Student", group: "1B", status: "Blocked" },
   ]);
+  const [profile, setProfile] = useState({ name: "", email: "", password: "", role: "student", phone: "", groupName: "", program: "", year: "", bio: "" });
+  const [profileLoading, setProfileLoading] = useState(false);
 
   const exportUsers = () => {
     const csv = ["Name,Email,Role,Group,Status", ...users.map((user) => [user.name, user.email, user.role, user.group, user.status].map((value) => `"${value.replaceAll('"', '""')}"`).join(","))].join("\\n");
@@ -334,6 +343,24 @@ function AdminOperations() {
     URL.revokeObjectURL(url);
     setSaved(true);
   };
+  const createProfile = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setProfileLoading(true);
+    setActionStatus("");
+    try {
+      const response = await fetch("/api/admin", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "create-user", ...profile }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? "Unable to create profile");
+      setUsers((current) => [{ name: result.name, email: result.email, role: result.role[0].toUpperCase() + result.role.slice(1), group: profile.groupName || "—", status: "Active" }, ...current]);
+      setProfile({ name: "", email: "", password: "", role: "student", phone: "", groupName: "", program: "", year: "", bio: "" });
+      setActionStatus("Profile created successfully");
+    } catch (error) {
+      setActionStatus(error instanceof Error ? error.message : "Unable to create profile");
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
   const events = [
     "G. Nurygdyyev uploaded lecture-04.pdf",
     "Admin changed S. Ovezova role to Student",
@@ -391,6 +418,14 @@ function AdminOperations() {
 
       {section === "users" ? (
         <div className="divide-y divide-border">
+          <form onSubmit={createProfile} className="m-4 rounded-2xl border border-border bg-background/70 p-4 sm:m-5">
+            <div className="flex flex-col gap-1"><h3 className="font-bold">Add a profile</h3><p className="text-xs text-muted-foreground">Create login credentials and the academic profile in one step.</p></div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {([["name", "Full name"], ["email", "Email"], ["password", "Temporary password"], ["phone", "Phone"], ["groupName", "Group"], ["program", "Program"], ["year", "Year"], ["bio", "Bio"]] as const).map(([key, label]) => <label key={key} className="text-xs font-semibold text-muted-foreground">{label}<input required={key === "name" || key === "email" || key === "password"} type={key === "password" ? "password" : "text"} value={profile[key]} onChange={(event) => setProfile((current) => ({ ...current, [key]: event.target.value }))} className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm font-normal text-foreground outline-none focus:border-ring" /></label>)}
+              <label className="text-xs font-semibold text-muted-foreground">Role<select value={profile.role} onChange={(event) => setProfile((current) => ({ ...current, role: event.target.value }))} className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm font-normal text-foreground"><option value="student">Student</option><option value="teacher">Teacher</option><option value="admin">Admin</option><option value="superadmin">Super admin</option></select></label>
+            </div>
+            <button disabled={profileLoading} type="submit" className="mt-4 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60">{profileLoading ? "Creating..." : "Create profile"}</button>
+          </form>
           <div className="grid gap-3 p-4 sm:grid-cols-3 sm:p-5">
             {["1,248 users", "42 teachers", "18 blocked"].map((label, index) => (
               <div key={label} className="rounded-2xl bg-muted/60 p-3">
