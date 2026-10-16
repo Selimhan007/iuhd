@@ -35,16 +35,17 @@ type AuthResponse = {
 
 function authEmailFromId(id: string) {
   const normalizedId = id.trim();
+  const normalized = normalizedId.toLowerCase();
   const seededEmails: Record<string, string> = {
-    "selim": "selim@student.tm",
-    "gowher": "gowher@student.tm",
-    "musa": "musa@student.tm",
+    selim: "selim@student.tm",
+    gowher: "gowher@student.tm",
+    musa: "musa@student.tm",
     "1001": "selim@student.tm",
     "1002": "gowher@student.tm",
     "1003": "musa@student.tm",
   };
 
-  return seededEmails[normalizedId.toLowerCase()] ?? `${normalizedId.toLowerCase()}@student.tm`;
+  return seededEmails[normalized] ?? `${normalized}@student.tm`;
 }
 
 async function authRequest(path: string, body?: Record<string, unknown>): Promise<AuthResponse> {
@@ -69,7 +70,13 @@ async function authRequest(path: string, body?: Record<string, unknown>): Promis
 
 function profileUser(authUser: { id: string; name?: string; email?: string; role?: Role }): SessionUser {
   const email = authUser.email ?? "";
-  const seededRole: Role = email === "teacher@iuhd.local" ? "teacher" : email === "admin@iuhd.local" ? "admin" : "student";
+  const normalizedEmail = email.toLowerCase();
+  const seededRole: Role =
+    normalizedEmail === "gowher@student.tm" || normalizedEmail === "teacher@iuhd.local"
+      ? "teacher"
+      : normalizedEmail === "musa@student.tm" || normalizedEmail === "admin@iuhd.local"
+        ? "admin"
+        : "student";
   return {
     id: authUser.id,
     email,
