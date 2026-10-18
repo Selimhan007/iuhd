@@ -10,17 +10,17 @@ if (!connectionString) {
   throw new Error("Missing database connection string");
 }
 
-const isDevelopment = process.env["NODE_ENV"] !== "production";
-const developmentConnectionString = isDevelopment
-  ? connectionString.replace(/[?&]sslmode=[^&]*/i, "").replace(/[?&]$/, "")
-  : connectionString;
+// pg lets sslmode in the URL override the ssl object. Remove it so the
+// managed Supabase pooler certificate works consistently in the preview.
+const normalizedConnectionString = connectionString
+  .replace(/[?&]sslmode=[^&]*/i, "")
+  .replace(/[?&]$/, "");
 
 export const pool = new Pool({
-  connectionString: developmentConnectionString,
-  // The local Vercel preview uses a managed Postgres certificate chain that is
-  // not trusted by the sandbox. Keep certificate verification enabled outside
-  // development and only relax it for the preview runtime.
-  ...(isDevelopment ? { ssl: { rejectUnauthorized: false } } : {}),
+  connectionString: normalizedConnectionString,
+  // The Vercel preview uses a managed Postgres certificate chain that is not
+  // trusted by the sandbox.
+  ssl: { rejectUnauthorized: false },
 });
 export const db = drizzle(pool);
 
