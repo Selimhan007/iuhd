@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { GraduationCap, Moon, Sun } from "lucide-react";
 import { useI18n, LANGUAGES } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
-import { useAuth } from "@/lib/auth";
+import { DEMO_ACCOUNTS, useAuth } from "@/lib/auth";
 import { roleHome } from "@/components/app/AppShell";
 
 export const Route = createFileRoute("/auth")({
@@ -18,17 +18,18 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-type Mode = "login" | "forgot" | "reset";
+type Mode = "login" | "register" | "forgot" | "reset";
 
 function AuthPage() {
   const { t, lang, setLang } = useI18n();
   const { dark, toggle } = useTheme();
-  const { login, user, ready } = useAuth();
+  const { login, register, user, ready } = useAuth();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("student@student.tm");
+  const [password, setPassword] = useState("student123");
+  const [name, setName] = useState("");
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
@@ -44,6 +45,10 @@ function AuthPage() {
     if (mode === "login") {
       const res = await login(email, password, remember);
       if (!res.ok) setError(t("auth.invalid"));
+    } else if (mode === "register") {
+      const res = await register(name || email.split("@")[0]!, email, password);
+      if (!res.ok) setError(t("auth.invalid"));
+      else if (res.needsConfirmation) setInfo("Проверьте электронную почту для подтверждения аккаунта.");
     } else if (mode === "forgot") {
       setInfo(t("auth.resetSent"));
       setMode("reset");
@@ -82,10 +87,20 @@ function AuthPage() {
         <form onSubmit={submit} className="card-surface animate-rise space-y-4 p-6">
           <div>
             <h2 className="text-lg font-semibold">
-              {mode === "login" ? t("auth.title") : mode === "forgot" ? t("auth.forgot") : t("auth.reset")}
+              {mode === "login"
+                ? t("auth.title")
+                : mode === "register"
+                  ? t("auth.register")
+                  : mode === "forgot"
+                    ? t("auth.forgot")
+                    : t("auth.reset")}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">{t("auth.subtitle")}</p>
           </div>
+
+          {mode === "register" ? (
+            <input className={field} placeholder={t("auth.fullName")} value={name} onChange={(e) => setName(e.target.value)} />
+          ) : null}
 
           {mode !== "reset" ? (
             <input
@@ -99,7 +114,7 @@ function AuthPage() {
             />
           ) : null}
 
-          {mode === "login" || mode === "reset" ? (
+          {mode === "login" || mode === "register" || mode === "reset" ? (
             <input
               className={field}
               type="password"
@@ -130,17 +145,43 @@ function AuthPage() {
             type="submit"
             className="tap-target w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
-            {mode === "login" ? t("auth.login") : mode === "forgot" ? t("auth.reset") : t("auth.reset")}
+            {mode === "login" ? t("auth.login") : mode === "register" ? t("auth.register") : t("auth.reset")}
           </button>
 
           <div className="text-center text-sm text-muted-foreground">
-            {mode === "login" ? null : (
+            {mode === "login" ? (
+              <button type="button" onClick={() => setMode("register")}>
+                {t("auth.noAccount")} <span className="font-semibold text-primary">{t("auth.register")}</span>
+              </button>
+            ) : (
               <button type="button" onClick={() => setMode("login")} className="font-semibold text-primary">
                 {t("auth.back")}
               </button>
             )}
           </div>
         </form>
+
+        <div className="card-surface mt-4 p-4">
+          <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">{t("auth.demo")}</p>
+          <div className="space-y-2">
+            {DEMO_ACCOUNTS.map((d) => (
+              <button
+                key={d.email}
+                onClick={() => {
+                  setEmail(d.email);
+                  setPassword(d.password);
+                  setMode("login");
+                }}
+                className="flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-sm hover:bg-muted"
+              >
+                <span className="font-medium capitalize">{d.role}</span>
+                <span className="text-xs text-muted-foreground">
+                  {d.email} · {d.password}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="mt-4 flex justify-center gap-2">
           {LANGUAGES.map((l) => (
