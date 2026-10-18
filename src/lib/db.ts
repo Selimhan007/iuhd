@@ -10,7 +10,18 @@ if (!connectionString) {
   throw new Error("Missing database connection string");
 }
 
-export const pool = new Pool({ connectionString });
+const isDevelopment = process.env["NODE_ENV"] !== "production";
+const developmentConnectionString = isDevelopment
+  ? connectionString.replace(/[?&]sslmode=[^&]*/i, "").replace(/[?&]$/, "")
+  : connectionString;
+
+export const pool = new Pool({
+  connectionString: developmentConnectionString,
+  // The local Vercel preview uses a managed Postgres certificate chain that is
+  // not trusted by the sandbox. Keep certificate verification enabled outside
+  // development and only relax it for the preview runtime.
+  ...(isDevelopment ? { ssl: { rejectUnauthorized: false } } : {}),
+});
 export const db = drizzle(pool);
 
 export async function closeDatabase() {
