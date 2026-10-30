@@ -2,7 +2,7 @@
 
 Student TM — Turkmenistan Student SuperApp
 
-Build a modern, production-ready university student platform called Student TM.
+university student platform called Student TM.
 
 1. Product concept
 
