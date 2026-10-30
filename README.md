@@ -2,7 +2,7 @@
 
 Student TM — Turkmenistan Student SuperApp
 
-university student platform called Student TM.
+university student platform
 
 1. Product concept
 
